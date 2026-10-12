@@ -64,6 +64,7 @@ body {
 .screen.dark { background: #5b6648; color: #cfd8b4; }
 .topline { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-variant-numeric: tabular-nums; }
 .stage-name { font-size: 15px; }
+.kimochi { font-size: 13px; align-self: center; white-space: nowrap; }
 .stage { position: relative; height: 236px; display: flex; align-items: flex-end; justify-content: center; }
 #petWrap { transition: transform .25s; line-height: 0; }
 #pet { width: 220px; height: 220px; max-width: 100%; }
@@ -160,7 +161,8 @@ body {
   border: 2px solid var(--lcd-ink); background: var(--cream); color: var(--lcd-ink); cursor: pointer;
 }
 
-.footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--cream); font-size: 12px; }
+.footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--cream); font-size: 12px; padding: 0 6px; }
+.foot-btns { display: flex; gap: 12px; flex-wrap: nowrap; }
 .footer button { font-family: var(--font-body); font-size: 12px; background: rgba(60,20,10,.22); color: var(--cream); border: 0; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
 .confirm { display: flex; gap: 6px; align-items: center; }
 .confirm[hidden] { display: none; }
@@ -168,7 +170,15 @@ body {
 .walk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
 .walk-stats b { display: block; font-family: var(--font-display); font-size: 20px; font-weight: 400; font-variant-numeric: tabular-nums; }
 .walk-stats span { font-size: 11px; letter-spacing: .05em; }
-.top-stats { width: 86%; margin: 0 auto -4px; background: var(--cream); color: #5a2a14; border: 3px solid #7b4a36; border-radius: 18px; padding: 6px 4px 5px; box-shadow: 0 3px 0 rgba(80,30,10,.25); }
+.top-box { width: 88%; margin: 0 auto -4px; background: var(--cream); color: #5a2a14; border: 3px solid #7b4a36; border-radius: 18px; padding: 6px 12px 8px; box-shadow: 0 3px 0 rgba(80,30,10,.25); display: flex; flex-direction: column; gap: 5px; }
+.top-stats { color: #5a2a14; }
+.tgoal { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; }
+.tg-bar { height: 10px; border-radius: 6px; background: #ecdcc4; overflow: hidden; }
+.tg-bar > i { display: block; height: 100%; width: 0; border-radius: 6px; background: #f4891f; transition: width .6s; }
+#gItem .tg-bar > i { background: #e3b23c; }
+.tgoal.done .tg-bar > i { background: #4caf6a; }
+.tg-txt { font-variant-numeric: tabular-nums; white-space: nowrap; min-width: 7.6em; text-align: right; }
+.tg-banana { font-size: 11px; text-align: center; color: #7b4a36; }
 .top-stats b { font-size: 26px; line-height: 1.15; color: #c2410c; }
 .top-stats span { font-size: 11px; font-weight: 700; white-space: nowrap; letter-spacing: 0; }
 .walk-note { font-size: 12px; text-align: center; }
@@ -246,7 +256,6 @@ body {
 .story-card { position: relative; }
 .story-card .face-btn, .story-card .mini-btn { box-shadow: none; font-size: 11px; padding: 4px 10px; background: #fff3d6; color: #b6573a; border: 2px solid #f0d9a8; }
 .story-card .face-btn { position: absolute; top: 10px; right: 10px; }
-#storyEyebrow { padding-right: 78px; }
 .story-card .scene img { height: 96px; width: auto; max-width: 100%; object-fit: contain; display: block; margin: 0 auto; border-radius: 16px; }
 .story-card .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .story-card .row > input:not([type=checkbox]), .story-card .row > select { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 7px 10px; border: 2px solid #f0d9a8; border-radius: 10px; background: #fff; color: #3a2a22; }
@@ -268,15 +277,21 @@ body {
 </style>
 
 <div class="device" role="application" aria-label="チャンドゥの大冒険">
-  <div class="walk-stats top-stats" aria-label="きょうの きろく">
-    <div><b id="wSteps">0</b><span>きょうの歩数</span></div>
-    <div><b id="wBanana">0</b><span>バナナ</span></div>
-    <div><b id="wKm">0.0</b><span>ぼうけん km</span></div>
+  <div class="top-box" aria-label="きょうの きろく">
+    <div class="walk-stats top-stats">
+      <div><b id="wSteps">0</b><span>きょうの歩数</span></div>
+      <div><b id="wBanana">0</b><span>バナナ</span></div>
+      <div><b id="wKm">0.0</b><span>ぼうけん km</span></div>
+    </div>
+    <div class="tgoal" id="gStory"><span class="tg-name">📖 5,000歩</span><span class="tg-bar"><i id="gStoryFill"></i></span><span class="tg-txt" id="gStoryTxt"></span></div>
+    <div class="tgoal" id="gItem"><span class="tg-name">🎁 8,000歩</span><span class="tg-bar"><i id="gItemFill"></i></span><span class="tg-txt" id="gItemTxt"></span></div>
+    <div class="tg-banana" id="wNote"></div>
   </div>
 
   <div class="screen" id="screen">
     <div class="topline">
       <span class="stage-name" id="stageName">たまご</span>
+      <span class="kimochi" id="form">きもち: -</span>
     </div>
     <div class="stage" id="stage">
       <div class="bg" id="bg" aria-hidden="true"></div>
@@ -302,7 +317,6 @@ body {
   </div>
 
   <section class="walk" aria-label="おさんぽ">
-    <div class="walk-note" id="wNote">500歩 あるくごとに バナナが 1ぽん とれるよ</div>
     <details id="wLink">
       <summary>iPhoneの歩数と ぼくを つなぐ</summary>
       <p>iPhoneの「ショートカット」Appで、ヘルスケアの歩数を ぼくに おくれるんだよ。いちど つくれば、タップ1回で とどくんだよ！</p>
@@ -328,9 +342,7 @@ body {
     <div class="voyage-head"><h2 id="vTitle">シンドバッドの ぼうけん</h2><span id="vLap"></span></div>
     <div class="voyage-place" id="vPlace"></div>
     <div class="route" id="route"><div class="route-fill" id="routeFill"></div></div>
-    <div class="goal" aria-hidden="true"><i id="goalFill"></i></div>
     <div class="voyage-next" id="vNext"></div>
-    <div class="voyage-item" id="vItem"></div>
     <div class="treasures" id="treasures"></div>
     <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button></div>
   </section>
@@ -378,7 +390,7 @@ body {
           <li>🍌 バナナは まいにち 3ぼん もらえるよ。500歩 あるくごとに 1ぽん ふえるんだ。ぼくの だいこうぶつで、たべると おなかも げんきも もどるんだ。つかれたら ちょうだいね！</li>
           <li>📖 1日 5,000歩 あるくと、ぼうけんが 1わ すすむよ。シンドバッドの ものがたり → にっぽん一周 → せかいりょこうの じゅんばんだ！</li>
           <li>🎁 1日 8,000歩 あるくと、そのとき いる とちの お宝が もらえるよ！ にっぽん一周と せかいりょこうの あいだだけだから、ずかんを うめてね。お宝は ぼくの ぼうしに して かぶれるんだ！</li>
-          <li>⚙️ せっていで、きみの なまえや ぼうし、キャラクターの がぞうを かえられるよ。</li>
+          <li>⚙️ せっていで、きみの なまえや ぼうしを かえられるよ。</li>
           <li>📊 おなか・ごきげん・げんき・きれいの 4つを たもってね。あそぶ・ねる・おそうじ・くすりで ぼくの おせわを してくれると うれしいな。</li>
           <li>⏰ アプリを とじてても じかんは すすむよ。たまに ぼくの ようすを みにきてね！</li>
           <li>📱 iPhoneアプリなら、あるいた 歩数が そのまま ぼくに とどくんだよ。</li>
@@ -397,7 +409,6 @@ body {
       <p id="storyText"></p>
       <div class="say" id="storySay"></div>
       <div class="reward" id="storyReward"></div>
-      <button type="button" class="face-btn" id="faceBtn" hidden>📷 がぞう</button>
       <button type="button" id="storyNext">オッケー！</button>
     </div>
   </div>
@@ -423,10 +434,6 @@ body {
         <h4>🎩 チャンドゥの ぼうし</h4>
         <div class="row"><select id="setHat" aria-label="ぼうし"></select></div>
         <p class="note">お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
-        <h4>📷 キャラクターの がぞう</h4>
-        <p class="note">キャラを タップすると、iPhoneの しゃしんから がぞうを えらべるよ（かいわの とき みぎうえの「📷 がぞう」でも OK）。<span id="faceWhere"></span></p>
-        <div class="row"><input id="faceFind" placeholder="🔍 キャラの なまえで さがす" aria-label="キャラを さがす"></div>
-        <div class="face-list" id="faceList"></div>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -450,8 +457,8 @@ body {
   </div>
 
   <div class="footer">
-    <span><span id="form">ぼくの きもち: -</span> <small id="ver" style="opacity:.7"></small></span>
-    <span>
+    <small id="ver" style="opacity:.7"></small>
+    <span class="foot-btns">
       <button type="button" class="set-btn" id="bSet">⚙️ せってい</button>
       <button type="button" class="help-btn" id="bHelp">❓ あそびかた</button>
     </span>
@@ -460,7 +467,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.13";
+  const VERSION = "1.14";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -2542,7 +2549,6 @@ body {
     const sc = $("storyScene"), url = name && faceOf(name);
     if (url) { sc.innerHTML = ""; faceImg(url, icon, sc); }
     else sc.textContent = icon;
-    $("faceBtn").hidden = !name; $("faceBtn").dataset.name = name || "";
   }
   const fill = (t) => String(t).replace(/\{name\}/g, S.userName || "きみ");
   function renderStoryPage() {
@@ -2651,15 +2657,19 @@ body {
     const last = c.ci === g.chapters.length - 1;
     const n = g.chapters.length;
     $("routeFill").style.width = (n > 1 ? ((last ? c.ci : c.ci + frac) / (n - 1)) * (100 - 100 / n) : 0) + "%";
-    $("goalFill").style.width = frac * 100 + "%";
     const next = chapterAt(k + 1).c;
     $("vNext").textContent = stageOf().id === "egg" ? "ぼくが たまごから でたら、しゅっこうだよ！"
       : doneToday ? `${c.title}の おはなしは おしまい！ あしたは「${next.title}」へ しゅっぱつだよ！`
-      : `きょう ${S.stepsToday.toLocaleString()} / ${DAILY_GOAL.toLocaleString()}歩！ あと ${(DAILY_GOAL - S.stepsToday).toLocaleString()}歩で「${c.title}」の 後編だよ！`;
-    const itemHere = reachedAny && c.item, gotToday = S.itemDay === S.stepDay;
-    $("vItem").hidden = !itemHere;
-    if (itemHere) $("vItem").textContent = gotToday ? "🎁 きょうの お宝は ゲットずみだよ！"
-      : `🎁 8,000歩で ${c.place.replace(/（.*）/, "")}の お宝が もらえるよ！（あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}歩）`;
+      : `5,000歩で「${c.title}」の 後編が はじまるよ！`;
+    // today's goals, shown in the box at the top
+    const gs = $("gStory"), egg = stageOf().id === "egg";
+    gs.hidden = egg; gs.classList.toggle("done", doneToday);
+    $("gStoryFill").style.width = frac * 100 + "%";
+    $("gStoryTxt").textContent = doneToday ? "後編 クリア！" : `${Math.floor(frac * 100)}%・あと ${Math.max(0, DAILY_GOAL - S.stepsToday).toLocaleString()}`;
+    const itemHere = reachedAny && !egg && c.item, gotToday = S.itemDay === S.stepDay;
+    $("gItem").hidden = !itemHere; $("gItem").classList.toggle("done", !!(itemHere && gotToday));
+    $("gItemFill").style.width = (gotToday ? 1 : Math.min(1, S.stepsToday / ITEM_GOAL)) * 100 + "%";
+    $("gItemTxt").textContent = gotToday ? "お宝 ゲット！" : `${Math.floor(Math.min(1, S.stepsToday / ITEM_GOAL) * 100)}%・あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}`;
     $("vPlace").textContent = reachedAny ? "📍 ぼく いま: " + c.place : "";
     $("treasures").innerHTML = "";
     Object.entries(S.treasures).forEach(([name, cnt]) => { const sp = document.createElement("span"); sp.textContent = name + (cnt > 1 ? " ×" + cnt : ""); $("treasures").appendChild(sp); });
@@ -2678,7 +2688,7 @@ body {
     $("wBanana").textContent = S.bananas;
     $("wKm").textContent = (S.totalSteps * 0.0007).toFixed(1);
     const next = STEPS_PER_BANANA - (S.stepsToday % STEPS_PER_BANANA);
-    $("wNote").textContent = ($("wNote").dataset.live ? "📡 歩数 リアルタイムで とどいてるよ · " : "") + (S.bananas <= 0 ? `バナナが ないよ〜！ あと ${next}歩 あるいてほしいな！` : `あと ${next}歩で バナナ 1ぽん ふえるよ！`);
+    $("wNote").textContent = ($("wNote").dataset.live ? "📡 " : "") + `🍌 あと ${next}歩で バナナ +1` + (S.bananas <= 0 ? "（バナナ ないよ〜！）" : "");
     meter("Hunger", S.hunger); meter("Happy", S.happy); meter("Energy", S.energy); meter("Clean", S.clean);
     $("poops").innerHTML = POOP.repeat(S.poops);
     $("zzz").hidden = !S.sleeping;
@@ -2689,7 +2699,7 @@ body {
     ["bFeed", "bPlay", "bClean", "bSleep"].forEach((b) => ($(b).disabled = egg || gameOn));
     $("bMed").disabled = egg || !S.sick;
     const a = careAvg();
-    $("form").textContent = "ぼくの きもち: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ さいこー！" : a >= 45 ? "○ まあまあ" : "△ かまって〜");
+    $("form").textContent = "きもち: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ さいこー！" : a >= 45 ? "○ まあまあ" : "△ かまって〜");
     renderVoyage();
     renderBg();
     drawPet();
@@ -3013,7 +3023,7 @@ body {
   $("ver").textContent = "ver " + VERSION;
   // Inside the iPhone app, the native side pushes today's step total as you walk.
   window.chanduSetSteps = (n) => applySteps(n, true);
-  if (window.CHANDU_NATIVE) { $("wLink").hidden = true; $("wNote").dataset.live = "1"; }
+  if (window.CHANDU_NATIVE) { $("wLink").closest("section").hidden = true; $("wNote").dataset.live = "1"; }
 
   if (TEST) { if (S.age < 100) S.age = 100; S.energy = 100; S.sleeping = false; $("ver").textContent += " · テスト"; }
   rollDay();
@@ -3034,7 +3044,6 @@ body {
   };
   // ---- face pictures ----
   let faceFor = "";
-  $("faceBtn").onclick = () => { faceFor = $("faceBtn").dataset.name; $("faceFile").value = ""; $("faceFile").click(); };
   const pickFace = (who) => { faceFor = who; $("faceFile").value = ""; $("faceFile").click(); };
   $("faceFile").onchange = () => {
     const f = $("faceFile").files[0], who = faceFor;
@@ -3063,6 +3072,7 @@ body {
     return cast;
   }
   function renderFaceList() {
+    if (!$("faceList")) return;                              // pictures are set in the spreadsheet now
     const box = $("faceList"), q = $("faceFind").value.trim(); box.innerHTML = "";
     let shown = 0;
     allCast().forEach((icon, n) => {
@@ -3086,7 +3096,7 @@ body {
     if (shown > 60 && !q) { const p = document.createElement("p"); p.className = "note"; p.textContent = `ほかに ${shown - 60}にん いるよ。なまえで さがしてね。`; box.appendChild(p); }
     $("faceWhere").textContent = syncUrl() ? "がぞうは シートに しまわれて、おなじ シートを つないだ iPhoneにも でるよ。" : "いまは この iPhoneの なかだけに しまわれるよ（シートを つなぐと ほかの iPhoneにも でるよ）。";
   }
-  $("faceFind").oninput = renderFaceList;
+
 
   // ---- name ----
   function setName(v) {
