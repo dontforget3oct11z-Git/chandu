@@ -458,7 +458,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.10";
+  const VERSION = "1.11";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -631,7 +631,7 @@ body {
         <ellipse cx="116" cy="58" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
         <path d="M112 53 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/>`;
     const hatItem = S.hat && ITEM_BY_KEY[S.hat];
-    const hat = hatItem ? `<text x="112" y="74" font-size="58" text-anchor="middle" transform="rotate(-8 112 54)">${hatItem.icon}</text>` : turban;
+    const hat = hatItem ? `<text x="112" y="62" font-size="58" text-anchor="middle" transform="rotate(-8 112 42)">${hatItem.icon}</text>` : turban;
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
       <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
