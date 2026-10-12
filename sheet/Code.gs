@@ -2,6 +2,7 @@
 // シートの「拡張機能 → Apps Script」に まるごと はりつけて、ウェブアプリとして デプロイします。
 //   GET  … エリア / キャラクター / はいけい の 3つの シートと、キャラの がぞうを JSONで かえす
 //          キャラクター シートの アイコン欄に いれた がぞう（セル内の がぞう / =IMAGE("URL")）も icons で かえす
+//          「アイコン」シートの がぞうは キャラクター シートの おなじ なまえの アイコン欄にも コピーする
 //          「チャンドゥ」シートに ならべた がぞうは chandu（リスト）で かえす。アプリが ランダムに つかう
 //   POST … {op:"image", name, data}            キャラの がぞうを「がぞう」シートに しまう（data が からなら けす）
 //          {op:"rows", tab, rows:[{No:…, 列名:値}]}  No が おなじ ぎょうを うわがき（なければ ついか）
@@ -13,6 +14,7 @@ const TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけ�
 
 function doGet() {
   const ss = SpreadsheetApp.getActive(), out = {};
+  try { out.iconsSynced = syncIcons(ss); } catch (e) { out.iconsSynced = "error: " + e.message; }
   Object.keys(TABS).forEach((k) => (out[k] = readTab(ss.getSheetByName(TABS[k]))));
   out.images = readImages(ss);
   const a = readIcons(ss.getSheetByName(TABS.chars)), b = readIcons(ss.getSheetByName(ICONS));
@@ -38,12 +40,62 @@ function doPost(e) {
       if (sh.getMaxColumns() < w) sh.insertColumnsAfter(sh.getMaxColumns(), w - sh.getMaxColumns());
       if (sh.getMaxRows() < vals.length) sh.insertRowsAfter(sh.getMaxRows(), vals.length - sh.getMaxRows());
       sh.getRange(1, 1, vals.length, w).setValues(vals);
+      if (b.tab === TABS.chars) { forgetSync(); syncIcons(ss); }
       return json({ ok: true, rows: vals.length });
     }
     return json({ ok: false, error: "unknown op" });
   } finally {
     lock.releaseLock();
   }
+}
+
+// Pictures put in the アイコン tab are copied into the matching アイコン cells of the キャラクター tab
+// (same name in the キャラクター column next to it). Runs when the app reads the sheet, when the アイコン tab is
+// edited, and from the 🐯チャンドゥ menu. Each copied cell remembers name + picture, so it is copied only once.
+function syncIcons(ss) {
+  const src = ss.getSheetByName(ICONS), dst = ss.getSheetByName(TABS.chars);
+  if (!src || !dst || src.getLastRow() < 2 || dst.getLastRow() < 2) return 0;
+  const sr = src.getDataRange(), sv = sr.getValues(), sf = sr.getFormulas(), sh = sv[0].map(String);
+  const ni = sh.indexOf("キャラクター"), ii = sh.indexOf("アイコン"), want = {};
+  if (ni < 0 || ii < 0) return 0;
+  for (let i = 1; i < sv.length; i++) {
+    const name = String(sv[i][ni]).trim(), u = cellImageUrl(sv[i][ii], sf[i][ii]);
+    if (name && u && !want[name]) want[name] = { row: i + 1, tag: name + "|" + hash(u) };
+  }
+  const dv = dst.getDataRange().getDisplayValues(), dh = dv[0].map(String);
+  const props = PropertiesService.getScriptProperties(), done = props.getProperties(), put = {};
+  dh.forEach((c, j) => {
+    const k = c.match(/^アイコン(\d*)$/); if (!k) return;
+    const nj = k[1] ? dh.indexOf("キャラクター" + k[1]) : dh.indexOf("キャラクター"); if (nj < 0) return;
+    for (let i = 1; i < dv.length; i++) {
+      const w = want[String(dv[i][nj]).trim()], key = "s:" + (i + 1) + ":" + (j + 1);
+      if (!w || done[key] === w.tag) continue;
+      src.getRange(w.row, ii + 1).copyTo(dst.getRange(i + 1, j + 1));
+      put[key] = w.tag;
+    }
+  });
+  if (Object.keys(put).length) props.setProperties(put);
+  return Object.keys(put).length;
+}
+
+function forgetSync() {
+  const props = PropertiesService.getScriptProperties();
+  Object.keys(props.getProperties()).forEach((k) => { if (k.startsWith("s:")) props.deleteProperty(k); });
+}
+
+function hash(t) { let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+
+function onEdit(e) {
+  if (e && e.range && e.range.getSheet().getName() === ICONS) syncIcons(e.source);
+}
+
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu("🐯チャンドゥ").addItem("アイコンをキャラクタータブに反映", "syncNow").addToUi();
+}
+
+function syncNow() {
+  const n = syncIcons(SpreadsheetApp.getActive());
+  SpreadsheetApp.getActive().toast(n + "か所に アイコンを はりました", "チャンドゥ");
 }
 
 function readTab(sh) {
@@ -125,6 +177,7 @@ function saveRows(sh, rows, key) {
     if (i < 0) { const line = h.map((c) => (c in r ? r[c] : "")); sh.appendRow(line); v.push(line); return; }
     // Only the given cells are written, in runs of neighbouring columns, so pictures in other cells stay put.
     const cols = Object.keys(r).map((c) => h.indexOf(c)).sort((a, b) => a - b);
+    if (sh.getName() === TABS.chars) cols.forEach((ci) => { if (/^アイコン/.test(h[ci])) PropertiesService.getScriptProperties().deleteProperty("s:" + (i + 1) + ":" + (ci + 1)); });
     for (let s = 0; s < cols.length;) {
       let e = s; while (e + 1 < cols.length && cols[e + 1] === cols[e] + 1) e++;
       sh.getRange(i + 1, cols[s] + 1, 1, e - s + 1).setValues([cols.slice(s, e + 1).map((ci) => r[h[ci]])]);
