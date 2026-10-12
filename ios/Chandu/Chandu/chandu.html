@@ -460,7 +460,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.12";
+  const VERSION = "1.13";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -494,8 +494,9 @@ body {
   try { faces = JSON.parse(localStorage.getItem(FACE_KEY)) || {}; } catch (e) {}
   function saveFaces() { try { localStorage.setItem(FACE_KEY, JSON.stringify(faces)); return true; } catch (e) { return false; } }
   // Pictures put in the アイコン columns of the spreadsheet's キャラクター tab. A picture picked in the app wins.
-  let sheetFaces = {};
-  const faceOf = (n) => faces[n] || sheetFaces[n] || "";
+  let sheetFaces = {}, chanduFaces = [];
+  // Chandu alone can have many pictures (the チャンドゥ tab); a random one shows each time.
+  const faceOf = (n) => (n === "チャンドゥ" && chanduFaces.length ? chanduFaces[Math.floor(Math.random() * chanduFaces.length)] : faces[n] || sheetFaces[n] || "");
   function faceImg(url, icon, box) {
     const im = new Image(); im.alt = ""; im.src = url;
     im.onerror = () => { box.textContent = icon; };     // offline or the link went stale: back to the emoji
@@ -3152,7 +3153,7 @@ body {
   function sheetNote() {
     if (!prefs.sheet) return "いまは アプリに はいってる データを つかってるよ。";
     if (!sheetInfo || sheetInfo.id !== prefs.sheet) return "まだ よみこめて ないよ。";
-    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい・シートの アイコン ${sheetInfo.icons_n || 0}まい）`
+    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい・シートの アイコン ${sheetInfo.icons_n || 0}まい・チャンドゥ ${(sheetInfo.chandu || []).length}まい）`
       + (sheetInfo.missed ? `\n⚠️ セルの うえに おいた がぞうが ${sheetInfo.missed}まい よめなかったよ。「そうにゅう → がぞう → セル内に がぞうを そうにゅう」で いれてね` : "");
     const d = new Date(sheetInfo.at);
     return `✅ ${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}に よみこんだよ（エリア ${sheetInfo.n}こ を はんえい）` + (sheetInfo.err ? `\n⚠️ ${sheetInfo.err}` : "");
@@ -3218,8 +3219,8 @@ body {
         const imgs = data.images || {};
         Object.entries(facePending).forEach(([n, d]) => { if (d) imgs[n] = d; else delete imgs[n]; });   // not uploaded yet
         faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
-        sheetFaces = data.icons || {};
-        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, icons: sheetFaces, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
+        sheetFaces = data.icons || {}; chanduFaces = data.chandu || [];
+        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, icons: sheetFaces, chandu: chanduFaces, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
         try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}
         bgKey = ""; const rk = $("route"); if (rk) rk.dataset.key = ""; render(); drawPet();
         if (storyPages && !$("story").hidden) renderStoryPage();
@@ -3241,7 +3242,7 @@ body {
       })
       .catch(() => { if (user) $("sheetStatus").textContent = "よみこめなかったよ。シートの きょうゆうを「リンクを しっている ぜんいん」に して、もう いちど ためしてね。"; });
   }
-  if (prefs.sheet && sheetInfo && sheetInfo.id === prefs.sheet) { sheetFaces = sheetInfo.icons || {}; applySheet(sheetInfo.data); render(); }
+  if (prefs.sheet && sheetInfo && sheetInfo.id === prefs.sheet) { sheetFaces = sheetInfo.icons || {}; chanduFaces = sheetInfo.chandu || []; applySheet(sheetInfo.data); render(); }
   if (prefs.sheet) loadSheet(false);
 
   // Rows for the spreadsheet: what is in the app now, one tab per list.

@@ -2,10 +2,12 @@
 // シートの「拡張機能 → Apps Script」に まるごと はりつけて、ウェブアプリとして デプロイします。
 //   GET  … エリア / キャラクター / はいけい の 3つの シートと、キャラの がぞうを JSONで かえす
 //          キャラクター シートの アイコン欄に いれた がぞう（セル内の がぞう / =IMAGE("URL")）も icons で かえす
+//          「チャンドゥ」シートに ならべた がぞうは chandu（リスト）で かえす。アプリが ランダムに つかう
 //   POST … {op:"image", name, data}            キャラの がぞうを「がぞう」シートに しまう（data が からなら けす）
 //          {op:"rows", tab, rows:[{No:…, 列名:値}]}  No が おなじ ぎょうを うわがき（なければ ついか）
 //          {op:"tab", tab, values:[[…],[…]]}     シートを まるごと いれかえる
 const IMG = "がぞう";
+const CHANDU = "チャンドゥ";
 const TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけい" };
 
 function doGet() {
@@ -13,6 +15,9 @@ function doGet() {
   Object.keys(TABS).forEach((k) => (out[k] = readTab(ss.getSheetByName(TABS[k]))));
   out.images = readImages(ss);
   Object.assign(out, readIcons(ss.getSheetByName(TABS.chars)));
+  let ch = ss.getSheetByName(CHANDU);
+  if (!ch) { ch = ss.insertSheet(CHANDU); ch.appendRow(["チャンドゥの がぞう（この下の セルに「セル内に がぞうを そうにゅう」で 1まいずつ）"]); ch.setColumnWidth(1, 240); }
+  out.chandu = readChandu(ch);
   return json(out);
 }
 
@@ -48,22 +53,33 @@ function readTab(sh) {
 // Pictures put in the アイコン columns of the キャラクター tab → {character name: image URL}.
 // Works for "insert image in cell" and for =IMAGE("https://…"); a picture floating over the cells has no
 // readable link unless it was inserted from a URL, so those only count toward iconsMissed.
+function cellImageUrl(x, fx) {
+  const m = String(fx || "").match(/^=IMAGE\(\s*"([^"]+)"/i);
+  if (m) return m[1];
+  if (x && typeof x === "object" && x.getContentUrl) { try { return x.getContentUrl() || x.getUrl() || ""; } catch (e) { return x.getUrl ? x.getUrl() || "" : ""; } }
+  return /^https?:\/\/\S+$/.test(String(x)) ? String(x) : "";
+}
+
+// Every picture on the チャンドゥ tab below the header row, in any column, top to bottom.
+function readChandu(sh) {
+  const out = [];
+  if (!sh || sh.getLastRow() < 2) return out;
+  const r = sh.getDataRange(), v = r.getValues(), f = r.getFormulas();
+  for (let i = 1; i < v.length; i++) v[i].forEach((x, j) => { const u = cellImageUrl(x, f[i][j]); if (u) out.push(u); });
+  sh.getImages().forEach((im) => { let u = ""; try { u = im.getUrl() || ""; } catch (e) {} if (u && im.getAnchorCell().getRow() > 1) out.push(u); });
+  return out;
+}
+
 function readIcons(sh) {
   const out = {};
   let missed = 0;
   if (!sh || sh.getLastRow() < 2) return { icons: out, iconsMissed: 0 };
   const r = sh.getDataRange(), v = r.getValues(), f = r.getFormulas(), h = v[0].map(String);
-  const urlOf = (x, fx) => {
-    const m = String(fx || "").match(/^=IMAGE\(\s*"([^"]+)"/i);
-    if (m) return m[1];
-    if (x && typeof x === "object" && x.getContentUrl) { try { return x.getContentUrl() || x.getUrl() || ""; } catch (e) { return x.getUrl ? x.getUrl() || "" : ""; } }
-    return /^https?:\/\/\S+$/.test(String(x)) ? String(x) : "";
-  };
   for (let i = 1; i < v.length; i++) h.forEach((c, j) => {
     const k = c.match(/^アイコン(\d*)$/); if (!k) return;
     const ni = h.indexOf(k[1] ? "キャラクター" + k[1] : "なまえ"), name = ni >= 0 ? String(v[i][ni]).trim() : "";
     if (!name || out[name]) return;
-    const u = urlOf(v[i][j], f[i][j]); if (u) out[name] = u;
+    const u = cellImageUrl(v[i][j], f[i][j]); if (u) out[name] = u;
   });
   sh.getImages().forEach((im) => {
     const a = im.getAnchorCell(), col = h[a.getColumn() - 1] || "", k = col.match(/^アイコン(\d*)$/);
