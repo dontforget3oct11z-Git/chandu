@@ -1,0 +1,593 @@
+<title>チャンドゥ育成</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Layout: one handheld "egg device" centered on the page; LCD screen on top, stat meters, then a row of round buttons. */
+:root {
+  --ground: #f3e9dc;      /* warm paper behind the device */
+  --shell: #ff9a76;       /* device shell, coral */
+  --shell-dark: #e2704c;
+  --lcd: #dfe8c6;         /* LCD screen, pale olive */
+  --lcd-ink: #3b4a2a;     /* LCD ink */
+  --ink: #3a2a22;         /* text on paper */
+  --cream: #fff8ef;
+  --meter-good: #6fae5c;
+  --meter-mid: #e6b34a;
+  --meter-low: #d9573f;
+  --font-display: "DotGothic16", "Hiragino Maru Gothic ProN", monospace;
+  --font-body: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ground: #2a2230; --ink: #f1e6dc; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --ground: #2a2230; --ink: #f1e6dc; color-scheme: dark; }
+
+html, body { height: 100%; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  padding: 16px;
+  padding-block: 20px;
+  box-sizing: border-box;
+  display: flex; justify-content: center; align-items: flex-start;
+}
+* { box-sizing: border-box; }
+
+.device {
+  width: 100%; max-width: 420px;
+  background: radial-gradient(120% 90% at 30% 10%, #ffb898 0%, var(--shell) 45%, var(--shell-dark) 100%);
+  border-radius: 46% 46% 40% 40% / 30% 30% 22% 22%;
+  padding: 34px 28px 56px;
+  box-shadow: inset 0 -10px 0 rgba(0,0,0,.08), inset 0 6px 0 rgba(255,255,255,.35), 0 18px 40px rgba(80,30,10,.25);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.brand {
+  text-align: center; color: var(--cream);
+  font-family: var(--font-display); letter-spacing: .2em; font-size: 15px;
+  text-shadow: 0 2px 0 rgba(0,0,0,.15);
+}
+.screen {
+  background: var(--lcd);
+  border-radius: 18px;
+  border: 6px solid #7b4a36;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.08), inset 0 8px 18px rgba(0,0,0,.08);
+  color: var(--lcd-ink);
+  font-family: var(--font-display);
+  padding: 10px 12px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  position: relative; overflow: hidden;
+}
+.screen.dark { background: #5b6648; color: #cfd8b4; }
+.topline { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.stage-name { font-size: 15px; }
+.stage { position: relative; height: 236px; display: flex; align-items: flex-end; justify-content: center; }
+#petWrap { transition: transform .25s; line-height: 0; }
+#pet { width: 220px; height: 220px; max-width: 100%; }
+.bubble {
+  position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+  background: var(--cream); color: var(--lcd-ink);
+  border: 2px solid var(--lcd-ink); border-radius: 12px;
+  padding: 4px 10px; font-size: 14px; width: max-content; max-width: 92%; text-align: center; z-index: 1;
+
+  transition: opacity .3s;
+}
+.bubble:empty { opacity: 0; }
+.poops { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 2px; }
+.poops svg { width: 28px; height: 24px; }
+.zzz { position: absolute; left: 62%; top: 30px; font-size: 22px; animation: zz 2s infinite; }
+@keyframes zz { 0% { transform: translate(0,0); opacity: 0 } 30% { opacity: 1 } 100% { transform: translate(18px,-26px); opacity: 0 } }
+
+.bounce { animation: bounce 1.6s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes bounce { 0%,100% { transform: translateY(0) scale(1,1) } 45% { transform: translateY(-6px) scale(.98,1.02) } 55% { transform: translateY(-6px) } 80% { transform: translateY(0) scale(1.03,.97) } }
+.wobble { animation: wobble 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes wobble { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-6deg) } 75% { transform: rotate(6deg) } }
+.joy { animation: joy .5s ease-in-out 3; transform-origin: 50% 100%; }
+@keyframes joy { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
+.breathe { animation: breathe 3s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes breathe { 0%,100% { transform: scale(1,1) } 50% { transform: scale(1.03,.97) } }
+@media (prefers-reduced-motion: reduce) { .bounce, .wobble, .joy, .breathe, .zzz { animation: none; } }
+
+.meters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; color: var(--cream); }
+.meter { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.meter-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.bar { height: 10px; border-radius: 6px; background: rgba(60,20,10,.28); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 50%; border-radius: 6px; background: var(--meter-good); transition: width .5s, background .5s; }
+
+.buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; color: var(--cream); font-family: var(--font-body); font-weight: 700; font-size: 12px;
+  padding: 0;
+}
+.btn .cap {
+  width: 52px; height: 52px; max-width: 100%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fffaf2, #f2dcc6 70%);
+  box-shadow: 0 4px 0 #b6573a, 0 6px 10px rgba(0,0,0,.18);
+  display: grid; place-items: center; font-size: 24px;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn:active .cap { transform: translateY(3px); box-shadow: 0 1px 0 #b6573a; }
+.btn:focus-visible { outline: none; }
+.btn:focus-visible .cap { outline: 3px solid var(--cream); outline-offset: 3px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+.game { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 14px; }
+.game[hidden] { display: none; }
+.game-row { display: flex; gap: 10px; }
+.game-row button {
+  font-family: var(--font-display); font-size: 18px; padding: 6px 18px; border-radius: 10px;
+  border: 2px solid var(--lcd-ink); background: var(--cream); color: var(--lcd-ink); cursor: pointer;
+}
+
+.footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--cream); font-size: 12px; }
+.footer button { font-family: var(--font-body); font-size: 12px; background: rgba(60,20,10,.22); color: var(--cream); border: 0; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.confirm { display: flex; gap: 6px; align-items: center; }
+.confirm[hidden] { display: none; }
+.walk { background: rgba(60,20,10,.2); border-radius: 16px; padding: 12px 14px; color: var(--cream); display: flex; flex-direction: column; gap: 8px; }
+.walk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+.walk-stats b { display: block; font-family: var(--font-display); font-size: 20px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.walk-stats span { font-size: 11px; letter-spacing: .05em; }
+.walk-note { font-size: 12px; text-align: center; }
+.walk details { font-size: 12px; line-height: 1.7; }
+.walk summary { cursor: pointer; font-weight: 700; }
+.walk ol { margin: 6px 0; padding-left: 1.3em; }
+.walk code { font-family: var(--font-display); background: rgba(255,255,255,.18); padding: 1px 4px; border-radius: 4px; word-break: break-all; }
+.walk-form { display: flex; gap: 6px; margin-top: 6px; }
+.walk-form input { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 6px 10px; border-radius: 10px; border: 0; background: var(--cream); color: #3a2a22; }
+.walk-form button, .copy { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 10px; padding: 6px 12px; cursor: pointer; }
+.help { color: var(--cream); font-size: 12px; line-height: 1.6; opacity: .92; }
+
+@media (max-width: 380px) {
+  .device { padding: 26px 16px 24px; }
+  .btn .cap { width: 44px; height: 44px; font-size: 20px; }
+  .btn { font-size: 11px; }
+}
+</style>
+
+<div class="device" role="application" aria-label="チャンドゥ育成ゲーム">
+  <div class="brand">CHANDU · チャンドゥ</div>
+
+  <div class="screen" id="screen">
+    <div class="topline">
+      <span class="stage-name" id="stageName">たまご</span>
+      <span id="age">0さい 0ふん</span>
+    </div>
+    <div class="stage" id="stage">
+      <div class="bubble" id="bubble" aria-live="polite"></div>
+      <div id="petWrap"><svg id="pet" viewBox="0 0 200 200" aria-hidden="true"></svg></div>
+      <div class="zzz" id="zzz" hidden>Z<small>z</small></div>
+      <div class="poops" id="poops"></div>
+    </div>
+    <div class="game" id="game" hidden>
+      <div id="gameText">チャンドゥは どっちを むくかな？</div>
+      <div class="game-row">
+        <button type="button" id="gLeft">← ひだり</button>
+        <button type="button" id="gRight">みぎ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="meters">
+    <div class="meter"><div class="meter-label"><span>おなか</span><span id="vHunger">-</span></div><div class="bar"><i id="mHunger"></i></div></div>
+    <div class="meter"><div class="meter-label"><span>ごきげん</span><span id="vHappy">-</span></div><div class="bar"><i id="mHappy"></i></div></div>
+    <div class="meter"><div class="meter-label"><span>げんき</span><span id="vEnergy">-</span></div><div class="bar"><i id="mEnergy"></i></div></div>
+    <div class="meter"><div class="meter-label"><span>きれい</span><span id="vClean">-</span></div><div class="bar"><i id="mClean"></i></div></div>
+  </div>
+
+  <section class="walk" aria-label="おさんぽ">
+    <div class="walk-stats">
+      <div><b id="wSteps">0</b><span>きょうの歩数</span></div>
+      <div><b id="wBanana">0</b><span>バナナ</span></div>
+      <div><b id="wKm">0.0</b><span>ぼうけん km</span></div>
+    </div>
+    <div class="walk-note" id="wNote">500歩 あるくごとに バナナが 1ぽん とれるよ</div>
+    <details id="wLink">
+      <summary>iPhoneの歩数と つなぐ</summary>
+      <p>iPhoneの「ショートカット」Appで、ヘルスケアの歩数を このゲームに おくります。いちど つくれば、タップ1回で 歩数が はんえいされます。</p>
+      <ol>
+        <li>ショートカットAppで「＋」を押して 新しいショートカットを つくる</li>
+        <li>「ヘルスケアサンプルを検索」を追加し、種類を「歩数」、開始日を「今日」にする</li>
+        <li>「統計を計算」を追加し、「合計」にする</li>
+        <li>「数値を丸める」を追加する（小数点をなくすため）</li>
+        <li>「URL」を追加し、下のアドレスの うしろに「丸めた数値」を つなげる</li>
+        <li>「URLを開く」を追加して完成。名前は「チャンドゥさんぽ」など</li>
+      </ol>
+      <p>URL: <code id="wUrl">https://claude.ai/artifact/7CTwVXui6onSx7CDKFxnko#s</code> <button type="button" class="copy" id="wCopy">コピー</button></p>
+      <p>「オートメーション」で 毎日決まった時間に実行するようにすると、さらに らくです。Safariで claude.ai に ログインしておいてください。</p>
+      <label for="wInput">歩数を 手で いれる</label>
+      <div class="walk-form">
+        <input id="wInput" type="number" inputmode="numeric" min="0" step="1" placeholder="きょうの歩数（例: 6500）">
+        <button type="button" id="wApply">はんえい</button>
+      </div>
+    </details>
+  </section>
+
+  <div class="buttons">
+    <button class="btn" id="bFeed" type="button"><span class="cap">🍌</span>バナナ</button>
+    <button class="btn" id="bPlay" type="button"><span class="cap">🎾</span>あそぶ</button>
+    <button class="btn" id="bSleep" type="button"><span class="cap" id="sleepIcon">🌙</span><span id="sleepLabel">ねる</span></button>
+    <button class="btn" id="bClean" type="button"><span class="cap">🧹</span>おそうじ</button>
+    <button class="btn" id="bMed" type="button"><span class="cap">💊</span>くすり</button>
+  </div>
+
+  <div class="footer">
+    <span><span id="form">そだてかた: -</span> <small id="ver" style="opacity:.7"></small></span>
+    <span>
+      <button type="button" id="bReset">はじめから</button>
+      <span class="confirm" id="confirm" hidden>
+        ほんとうに？
+        <button type="button" id="bYes">はい</button>
+        <button type="button" id="bNo">いいえ</button>
+      </span>
+    </span>
+  </div>
+  <p class="help">ページを とじても じかんは すすみます。バナナは 毎日3ぼん もらえて、あるくと もっと ふえます。おなか・ごきげん・げんき・きれいを たもって、シンドバッドの あいぼう チャンドゥを おとなに そだてよう。 こうぶつは バナナだよ。</p>
+</div>
+
+<script>
+(() => {
+  const VERSION = "1.1";
+  const KEY = "chandu-save-v1";
+  const MAX_OFFLINE_MIN = 12 * 60;
+  // Stage thresholds in minutes of age
+  const STAGES = [
+    { id: "egg",   name: "たまご",   until: 0.5 },
+    { id: "baby",  name: "ベビー",   until: 15 },
+    { id: "child", name: "こども",   until: 90 },
+    { id: "adult", name: "おとな",   until: Infinity },
+  ];
+
+  const clamp = (v) => Math.max(0, Math.min(100, v));
+  const $ = (id) => document.getElementById(id);
+
+  function today() { const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function fresh() {
+    const now = Date.now();
+    return { born: now, last: now, age: 0, hunger: 80, happy: 80, energy: 90, clean: 100,
+             poops: 0, sleeping: false, sick: false, careSum: 0, careTime: 0, lowTime: 0,
+             bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0 };
+  }
+  function load() {
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.age === "number") return Object.assign({ bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0 }, s); } catch (e) {}
+    return fresh();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  let S = (window.claude?.hot?.data && window.claude.hot.data.S) || load();
+  window.claude?.hot?.snapshot?.(() => ({ S }));
+
+  const stageOf = () => STAGES.find((st) => S.age < st.until);
+  const careAvg = () => (S.careTime > 0 ? S.careSum / S.careTime : 80);
+  function adultForm() {
+    const a = careAvg();
+    if (a >= 70) return { name: "キラキラ チャンドゥ", color: "#ffd166", crown: true };
+    if (a >= 45) return { name: "げんき チャンドゥ", color: "#ffb38a", crown: false };
+    return { name: "のんびり チャンドゥ", color: "#b9c7e8", crown: false, pale: true };
+  }
+
+  // ---- simulation: dt in minutes ----
+  function step(dt) {
+    const st = stageOf().id;
+    S.age += dt;
+    if (st === "egg") return;
+    const speed = st === "baby" ? 1.3 : 1;
+    if (S.sleeping) {
+      S.hunger -= 0.4 * dt * speed;
+      S.happy -= 0.2 * dt;
+      S.energy += 3 * dt;
+      if (S.energy >= 100) { S.energy = 100; S.sleeping = false; say("ふぁ〜 よくねた！"); }
+    } else {
+      S.hunger -= 1.2 * dt * speed;
+      S.happy -= 0.9 * dt;
+      S.energy -= 0.7 * dt;
+      if (S.hunger > 30 && Math.random() < 0.06 * dt) { S.poops = Math.min(4, S.poops + 1); }
+    }
+    S.clean -= (0.15 + S.poops * 0.8) * dt;
+    if (S.poops > 0) S.happy -= 0.3 * S.poops * dt;
+    if (S.sick) { S.happy -= 0.6 * dt; S.energy -= 0.4 * dt; }
+    ["hunger", "happy", "energy", "clean"].forEach((k) => (S[k] = clamp(S[k])));
+
+    const low = S.hunger < 15 || S.clean < 20 || S.energy < 10;
+    S.lowTime = low ? S.lowTime + dt : Math.max(0, S.lowTime - dt);
+    if (!S.sick && S.lowTime > 3) { S.sick = true; say("うう… ぐあいが わるい…"); }
+
+    const avg = (S.hunger + S.happy + S.energy + S.clean) / 4 - (S.sick ? 15 : 0);
+    S.careSum += avg * dt; S.careTime += dt;
+  }
+
+  function catchUp() {
+    const now = Date.now();
+    let mins = Math.min(MAX_OFFLINE_MIN, (now - S.last) / 60000);
+    const away = mins;
+    while (mins > 0) { const d = Math.min(1, mins); step(d); mins -= d; }
+    S.last = now;
+    if (away > 5 && stageOf().id !== "egg") say(["おかえり！ まってたよ", "シンドバッドかと おもった！ おかえり"][Math.floor(Math.random() * 2)]);
+  }
+
+  // ---- speech ----
+  let sayTimer = 0;
+  function say(t, ms = 3200) {
+    $("bubble").textContent = t;
+    clearTimeout(sayTimer);
+    sayTimer = setTimeout(() => ($("bubble").textContent = ""), ms);
+  }
+
+  // ---- drawing ----
+  function mood() {
+    if (S.sleeping) return "sleep";
+    if (S.sick) return "sick";
+    const m = Math.min(S.hunger, S.happy, S.clean);
+    if (m < 25) return "sad";
+    if (S.happy > 70 && S.hunger > 50) return "happy";
+    return "ok";
+  }
+  function drawPet() {
+    const st = stageOf().id;
+    const svg = $("pet");
+    const ink = "#3b4a2a";
+    const setCls = (c) => { if (!cheering) svg.setAttribute("class", c); };
+    const setHTML = (h) => { if (svg._h !== h) { svg.innerHTML = h; svg._h = h; } };
+    if (st === "egg") {
+      setCls("wobble");
+      setHTML(`
+        <ellipse cx="100" cy="190" rx="50" ry="7" fill="rgba(59,74,42,.18)"/>
+        <path d="M100 40 C140 40 158 110 152 140 C146 175 124 188 100 188 C76 188 54 175 48 140 C42 110 60 40 100 40 Z" fill="#fff8ef" stroke="${ink}" stroke-width="4"/>
+        <circle cx="80" cy="110" r="9" fill="#ff9a76"/><circle cx="120" cy="140" r="12" fill="#ff9a76"/><circle cx="112" cy="82" r="6" fill="#ff9a76"/>
+        <path d="M66 150 l10 -8 l8 8 l10 -9 l9 9" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`);
+      return;
+    }
+    const size = st === "baby" ? 0.62 : st === "child" ? 0.82 : 1;
+    const adult = st === "adult" ? adultForm() : null;
+    const md = mood();
+    const sc = size;
+    const K = "#2b1d14";           // outline / stripes
+    const OR = adult && adult.pale ? "#f6a95c" : "#f4891f"; // tiger orange
+    const W = "#fffdf8";           // white fur
+    const RED = "#d3123f";         // turban red
+    const GOLD = "#e3b23c";
+    // eyes: big white eyes with dark irises, like the reference
+    let eyes;
+    if (md === "sleep") eyes = `<path d="M70 104 q10 8 20 0 M110 104 q10 8 20 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    else if (md === "happy") eyes = `<path d="M70 106 q10 -13 20 0 M110 106 q10 -13 20 0" stroke="${K}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+    else if (md === "sick") eyes = `<path d="M72 96 l14 14 M86 96 l-14 14 M114 96 l14 14 M128 96 l-14 14" stroke="${K}" stroke-width="4" stroke-linecap="round"/>`;
+    else {
+      const look = md === "sad" ? 3 : 0;
+      eyes = `<ellipse cx="80" cy="102" rx="13" ry="15" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="120" cy="102" rx="13" ry="15" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="82" cy="${104 + look}" rx="8" ry="10" fill="#3a2316"/><ellipse cx="118" cy="${104 + look}" rx="8" ry="10" fill="#3a2316"/>
+        <circle cx="85" cy="${100 + look}" r="3" fill="#fff"/><circle cx="121" cy="${100 + look}" r="3" fill="#fff"/>
+        ${md === "sad" ? `<path d="M68 86 l18 4 M132 86 l-18 4" stroke="${K}" stroke-width="3" stroke-linecap="round"/>` : `<path d="M68 86 q12 -6 22 0 M110 86 q12 -6 22 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`}`;
+    }
+    let mouth;
+    if (md === "happy") mouth = `<path d="M90 130 q10 14 20 0 z" fill="#e0576a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    else if (md === "sad" || md === "sick") mouth = `<path d="M91 136 q9 -7 18 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    else if (md === "sleep") mouth = `<ellipse cx="100" cy="133" rx="3.5" ry="2.5" fill="${K}"/>`;
+    else mouth = `<path d="M100 125 v4 M90 129 q5 5 10 0 q5 5 10 0" stroke="${K}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    const sweat = md === "sick" || md === "sad" ? `<path d="M148 80 q6 10 0 14 q-6 -4 0 -14z" fill="#7fb6e8" stroke="${K}" stroke-width="2"/>` : "";
+    const sparkle = adult && adult.crown ? `<g fill="${GOLD}" stroke="${K}" stroke-width="1.5"><path d="M32 60 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 z"/><path d="M172 44 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 z"/></g>` : "";
+    const tail = st !== "baby" ? `
+        <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${K}" stroke-width="16" stroke-linecap="round"/>
+        <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${OR}" stroke-width="10" stroke-linecap="round"/>
+        <path d="M161 166 l8 -6 M171 148 l8 -2 M174 128 l7 2 M170 112 l6 4" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="168" cy="100" r="5" fill="${K}"/>` : "";
+    const whiskers = `<path d="M70 124 l-36 -8 M70 130 l-38 2 M130 124 l36 -8 M130 130 l38 2" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>`;
+    const gem = adult && adult.crown ? 11 : 9;
+    const turban = `
+        <circle cx="114" cy="54" r="28" fill="${RED}" stroke="${K}" stroke-width="3"/>
+        <path d="M88 48 q26 -14 52 0 M87 60 q27 -12 54 0 M92 70 q22 -8 44 0 M114 26 q-10 28 0 56" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="116" cy="58" rx="${gem + 3}" ry="${gem + 5}" fill="${GOLD}" stroke="${K}" stroke-width="2"/>
+        <ellipse cx="116" cy="58" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
+        <path d="M112 53 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/>`;
+    setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
+    setHTML(`
+      <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
+      <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
+        ${sparkle}${tail}
+        <ellipse cx="100" cy="162" rx="40" ry="30" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
+        <path d="M66 152 l10 4 M64 166 l11 2 M134 152 l-10 4 M136 166 l-11 2" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="100" cy="166" rx="20" ry="22" fill="${W}"/>
+        <ellipse cx="82" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="118" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <path d="M78 183 v6 M86 183 v6 M114 183 v6 M122 183 v6" stroke="${K}" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="58" cy="66" r="17" fill="${K}"/><circle cx="58" cy="66" r="12" fill="${W}"/>
+        <circle cx="142" cy="66" r="17" fill="${K}"/><circle cx="142" cy="66" r="12" fill="${W}"/>
+        <path d="M100 58 C146 58 158 88 156 112 C154 138 130 148 100 148 C70 148 46 138 44 112 C42 88 54 58 100 58 Z" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
+        <path d="M46 112 q4 30 30 34 q-8 -10 -6 -22 z M154 112 q-4 30 -30 34 q8 -10 6 -22 z" fill="${W}"/>
+        <path d="M94 64 l2 12 M106 64 l-2 12 M100 62 v10 M48 96 l12 2 M47 108 l12 -1 M152 96 l-12 2 M153 108 l-12 -1" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="89" cy="128" rx="14" ry="11" fill="${W}"/><ellipse cx="111" cy="128" rx="14" ry="11" fill="${W}"/>
+        <path d="M92 116 q8 -4 16 0 q-2 8 -8 10 q-6 -2 -8 -10 z" fill="#e88a9c" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>
+        ${whiskers}${eyes}${mouth}
+        <path d="M74 146 q26 10 52 0" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="100" cy="158" r="10" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
+        <path d="M91 157 h18 M100 160 v7" stroke="${K}" stroke-width="2"/><circle cx="96" cy="153" r="2.5" fill="#fff6c8"/>
+        ${turban}${sweat}
+      </g>`);
+  }
+  const POOP = `<svg viewBox="0 0 28 24"><path d="M4 22 q-3 -6 4 -8 q-2 -6 6 -7 q0 -6 4 -6 q2 4 6 6 q4 2 0 7 q6 2 2 8 z" fill="#8a5a3a" stroke="#3b4a2a" stroke-width="1.5"/></svg>`;
+
+  function meter(id, v) {
+    const bar = $("m" + id); bar.style.width = v + "%";
+    bar.style.background = v > 55 ? "var(--meter-good)" : v > 25 ? "var(--meter-mid)" : "var(--meter-low)";
+    $("v" + id).textContent = Math.round(v);
+  }
+  function fmtAge(m) {
+    const d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = Math.floor(m % 60);
+    return d > 0 ? `${d}にち ${h}じかん` : h > 0 ? `${h}じかん ${mm}ふん` : `${mm}ふん`;
+  }
+
+  let lastStage = stageOf().id;
+  function render() {
+    const st = stageOf();
+    if (st.id !== lastStage) {
+      const msg = { baby: "うまれたよ！ チャンドゥです！", child: "おおきくなった！ シンドバッドと ぼうけんしたいな", adult: `おとなに なった！ ${adultForm().name}！ シンドバッドの あいぼうだよ` }[st.id];
+      if (msg) say(msg, 5000);
+      lastStage = st.id; save();
+    }
+    $("stageName").textContent = st.id === "adult" ? adultForm().name : st.name + (S.sick ? "（びょうき）" : "");
+    $("age").textContent = "うまれて " + fmtAge(S.age);
+    $("wSteps").textContent = S.stepsToday.toLocaleString();
+    $("wBanana").textContent = S.bananas;
+    $("wKm").textContent = (S.totalSteps * 0.0007).toFixed(1);
+    const next = STEPS_PER_BANANA - (S.stepsToday % STEPS_PER_BANANA);
+    $("wNote").textContent = ($("wNote").dataset.live ? "📡 歩数リアルタイム連動中 · " : "") + (S.bananas <= 0 ? `バナナが ないよ！ あと ${next}歩 あるくと 1ぽん` : `あと ${next}歩 で つぎの バナナ`);
+    meter("Hunger", S.hunger); meter("Happy", S.happy); meter("Energy", S.energy); meter("Clean", S.clean);
+    $("poops").innerHTML = POOP.repeat(S.poops);
+    $("zzz").hidden = !S.sleeping;
+    $("screen").classList.toggle("dark", S.sleeping);
+    $("sleepIcon").textContent = S.sleeping ? "☀️" : "🌙";
+    $("sleepLabel").textContent = S.sleeping ? "おきる" : "ねる";
+    const egg = st.id === "egg";
+    ["bFeed", "bPlay", "bClean", "bSleep"].forEach((b) => ($(b).disabled = egg || gameOn));
+    $("bMed").disabled = egg || !S.sick;
+    const a = careAvg();
+    $("form").textContent = "そだてかた: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ じょうず" : a >= 45 ? "○ ふつう" : "△ がんばろう");
+    drawPet();
+  }
+
+  let cheering = false;
+  function cheer() {
+    cheering = false; drawPet();
+    $("pet").setAttribute("class", ""); void $("pet").getBoundingClientRect();
+    $("pet").setAttribute("class", "joy"); cheering = true;
+    setTimeout(() => { cheering = false; drawPet(); }, 1600);
+  }
+
+  // ---- walking (steps from iPhone Shortcuts via #s1234, or typed in) ----
+  const STEPS_PER_BANANA = 500;
+  const DAILY_BANANAS = 3;
+  function rollDay() {
+    const t = today();
+    if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); }
+  }
+  function applySteps(n, live) {
+    rollDay();
+    n = Math.floor(n);
+    if (!(n >= 0) || n > 200000) return live ? undefined : say("その歩数は よめなかったよ");
+    const delta = n - S.stepsToday;
+    if (delta <= 0) return live ? undefined : say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう はんえいずみだよ`);
+    const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(S.stepsToday / STEPS_PER_BANANA);
+    S.stepsToday = n; S.totalSteps += delta;
+    S.bananas = Math.min(99, S.bananas + got);
+    if (stageOf().id !== "egg") {
+      S.age += (delta / 1000) * 5;            // walking speeds up growth: 1000 steps = 5 minutes
+      S.happy = clamp(S.happy + Math.min(30, delta / 200));
+      S.energy = clamp(S.energy + Math.min(15, delta / 500));
+    }
+    if (live) {   // steady stream from the iPhone app: only speak when a banana drops
+      if (got > 0) { say(`バナナ ${got}ぽん ゲット！ おさんぽ たのしいね`, 4000); cheer(); }
+      save(); render(); return;
+    }
+    say(got > 0 ? `${delta.toLocaleString()}歩 おさんぽ！ バナナ ${got}ぽん ゲット！` : `${delta.toLocaleString()}歩 あるいたね！ いっしょに ぼうけん！`, 5000);
+    cheer(); save(); render();
+  }
+  function readHash() {
+    const m = /^#s(\d{1,6})$/.exec(location.hash || "");
+    if (!m) return;
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    applySteps(Number(m[1]));
+  }
+
+  // ---- actions ----
+  function feed() {
+    if (S.sleeping) return say("Zzz… いまは ねてるよ");
+    rollDay();
+    if (S.hunger >= 95) { S.happy = clamp(S.happy - 5); say("バナナでも もう はいらない…"); }
+    else if (S.bananas <= 0) { say("バナナが ない… おさんぽして とってこよう！"); }
+    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすき！", "あまくて しあわせ〜", "ごちそうさま！ もう1ぽん…？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.35) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
+    save(); render();
+  }
+  function sleepToggle() {
+    if (S.sleeping) { S.sleeping = false; S.happy = clamp(S.happy - (S.energy < 60 ? 8 : 0)); say(S.energy < 60 ? "まだ ねむいよ…" : "おはよう！"); }
+    else { S.sleeping = true; say("おやすみ…"); }
+    save(); render();
+  }
+  function clean() {
+    if (S.poops === 0 && S.clean > 90) return say("もう ぴかぴかだよ");
+    S.poops = 0; S.clean = 100; S.happy = clamp(S.happy + 5); say("すっきり！ ありがとう"); cheer(); save(); render();
+  }
+  function medicine() {
+    if (!S.sick) return;
+    S.sick = false; S.lowTime = 0; S.happy = clamp(S.happy - 5); S.energy = clamp(S.energy + 10);
+    say("にがい… でも げんきに なった！"); save(); render();
+  }
+
+  // mini game: guess which way Chandu looks, 3 rounds
+  let gameOn = false, round = 0, wins = 0;
+  function play() {
+    if (S.sleeping) return say("Zzz… いまは ねてるよ");
+    if (S.energy < 15) return say("つかれて あそべないよ…");
+    if (S.sick) return say("ぐあいが わるくて あそべない…");
+    gameOn = true; round = 0; wins = 0;
+    $("game").hidden = false; $("gameText").textContent = "チャンドゥは どっちを むくかな？（1/3）";
+    render(); $("gLeft").focus();
+  }
+  function guess(dir) {
+    if (!gameOn) return;
+    const pick = Math.random() < 0.5 ? "L" : "R";
+    const svg = $("petWrap");
+    svg.style.transform = pick === "L" ? "scaleX(-1) rotate(-8deg)" : "rotate(8deg)";
+    const hit = pick === dir; if (hit) wins++;
+    round++;
+    say(hit ? "あたり！ やったね" : "ざんねん〜", 1500);
+    setTimeout(() => { svg.style.transform = ""; }, 700);
+    if (round >= 3) {
+      gameOn = false; $("game").hidden = true;
+      S.happy = clamp(S.happy + 8 + wins * 8); S.energy = clamp(S.energy - 12); S.hunger = clamp(S.hunger - 5);
+      setTimeout(() => { say(wins >= 2 ? `${wins}かい あたり！ たのしかった！` : `${wins}かい あたり。 またあそぼ！`, 4000); cheer(); }, 800);
+      save(); render();
+    } else {
+      $("gameText").textContent = `チャンドゥは どっちを むくかな？（${round + 1}/3）`;
+    }
+  }
+
+  $("bFeed").onclick = feed;
+  $("bPlay").onclick = play;
+  $("bSleep").onclick = sleepToggle;
+  $("bClean").onclick = clean;
+  $("bMed").onclick = medicine;
+  $("gLeft").onclick = () => guess("L");
+  $("gRight").onclick = () => guess("R");
+  $("pet").onclick = () => {
+    if (stageOf().id === "egg") return say("ころころ… もうすぐ うまれそう！");
+    if (S.sleeping) return say("Zzz…");
+    S.happy = clamp(S.happy + 1); say(["えへへ", "なでなで うれしい", "チャンドゥだよ！", "あそぼ〜", "シンドバッド どこかな？", "バナナ ある？"][Math.floor(Math.random() * 6)]); render();
+  };
+  $("bReset").onclick = () => { $("bReset").hidden = true; $("confirm").hidden = false; };
+  $("bNo").onclick = () => { $("bReset").hidden = false; $("confirm").hidden = true; };
+  $("bYes").onclick = () => {
+    S = Object.assign(fresh(), { totalSteps: S.totalSteps, stepsToday: S.stepsToday, stepDay: S.stepDay }); lastStage = "egg"; gameOn = false; $("game").hidden = true;
+    $("bReset").hidden = false; $("confirm").hidden = true; save(); say("あたらしい たまごが きたよ"); render();
+  };
+
+  $("wApply").onclick = () => { const v = $("wInput").value; if (v !== "") { applySteps(Number(v)); $("wInput").value = ""; } };
+  $("wInput").addEventListener("keydown", (e) => { if (e.key === "Enter") $("wApply").click(); });
+  $("wCopy").onclick = () => {
+    const t = $("wUrl").textContent;
+    const done = () => { $("wCopy").textContent = "コピーしました"; setTimeout(() => ($("wCopy").textContent = "コピー"), 2000); };
+    try { navigator.clipboard.writeText(t).then(done, () => selectUrl()); } catch (e) { selectUrl(); }
+  };
+  function selectUrl() { const r = document.createRange(); r.selectNodeContents($("wUrl")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+  window.addEventListener("hashchange", readHash);
+  // On the GitHub Pages copy, the Shortcuts link should point back to that page.
+  if (/github\.io$/.test(location.hostname)) $("wUrl").textContent = location.origin + location.pathname + "#s";
+  $("ver").textContent = "ver " + VERSION;
+  // Inside the iPhone app, the native side pushes today's step total as you walk.
+  window.chanduSetSteps = (n) => applySteps(n, true);
+  if (window.CHANDU_NATIVE) { $("wLink").hidden = true; $("wNote").dataset.live = "1"; }
+
+  rollDay();
+  catchUp();
+  if (stageOf().id === "egg") say("たまごを みまもってね");
+  render();
+  readHash();
+  setInterval(() => {
+    const now = Date.now(); const dt = Math.min(5, (now - S.last) / 60000); S.last = now;
+    step(dt); render(); save();
+  }, 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { catchUp(); render(); } });
+})();
+</script>
