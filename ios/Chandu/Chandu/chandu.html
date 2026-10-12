@@ -467,7 +467,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.16";
+  const VERSION = "1.17";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -634,12 +634,13 @@ body {
         <circle cx="168" cy="100" r="5" fill="${K}"/>` : "";
     const whiskers = `<path d="M70 124 l-36 -8 M70 130 l-38 2 M130 124 l36 -8 M130 130 l38 2" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>`;
     const gem = adult && adult.crown ? 11 : 9;
-    const turban = `
+    // a little taller than round: stretched upward from its bottom edge
+    const turban = `<g transform="translate(0 76) scale(1 1.16) translate(0 -76)">
         <circle cx="114" cy="48" r="28" fill="${RED}" stroke="${K}" stroke-width="3"/>
         <path d="M88 42 q26 -14 52 0 M87 54 q27 -12 54 0 M92 64 q22 -8 44 0 M114 20 q-10 28 0 56" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         <ellipse cx="116" cy="52" rx="${gem + 3}" ry="${gem + 5}" fill="${GOLD}" stroke="${K}" stroke-width="2"/>
         <ellipse cx="116" cy="52" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
-        <path d="M112 47 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/>`;
+        <path d="M112 47 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/></g>`;
     const hatItem = S.hat && ITEM_BY_KEY[S.hat];
     const hat = hatItem ? `<text x="112" y="56" font-size="58" text-anchor="middle" transform="rotate(-8 112 36)">${hatItem.icon}</text>` : turban;
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
