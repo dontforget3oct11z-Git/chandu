@@ -7,6 +7,7 @@
 //   POST … {op:"image", name, data}            キャラの がぞうを「がぞう」シートに しまう（data が からなら けす）
 //          {op:"rows", tab, rows:[{No:…, 列名:値}]}  No が おなじ ぎょうを うわがき（なければ ついか）
 //          {op:"tab", tab, values:[[…],[…]]}     シートを まるごと いれかえる
+//          {op:"chanduImages", data:["data:image/jpeg;base64,…"]}  チャンドゥ シートの アイコン欄の あいている ところに じゅんに いれる
 const IMG = "がぞう";
 const ICONS = "アイコン";   // one row per character: put its picture in the アイコン column
 const CHANDU = "チャンドゥ";
@@ -31,6 +32,7 @@ function doPost(e) {
   lock.waitLock(20000);
   try {
     if (b.op === "image") return json(saveImage(ss, String(b.name || ""), String(b.data || "")));
+    if (b.op === "chanduImages") return json(addChanduImages(ss, b.data || []));
     if (b.op === "rows") return json(saveRows(ss.getSheetByName(b.tab), b.rows || [], b.key || "No"));
     if (b.op === "tab") {
       const sh = ss.getSheetByName(b.tab) || ss.insertSheet(b.tab);
@@ -122,6 +124,29 @@ function readChandu(sh) {
   for (let i = 1; i < v.length; i++) v[i].forEach((x, j) => { const u = cellImageUrl(x, f[i][j]); if (u) out.push(u); });
   sh.getImages().forEach((im) => { let u = ""; try { u = im.getUrl() || ""; } catch (e) {} if (u && im.getAnchorCell().getRow() > 1) out.push(u); });
   return out;
+}
+
+// Pictures sent as data URLs go, in order, into the チャンドゥ tab's アイコン cells that hold no picture yet
+// (an emoji or nothing); new rows are added below when the list runs out.
+function addChanduImages(ss, data) {
+  const sh = ss.getSheetByName(CHANDU);
+  if (!sh) return { ok: false, error: "no チャンドゥ tab" };
+  const h = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String), ic = h.indexOf("アイコン") + 1;
+  if (ic < 1) return { ok: false, error: "no アイコン column" };
+  const last = sh.getLastRow(), r = last > 1 ? sh.getRange(2, 1, last - 1, sh.getLastColumn()) : null;
+  const v = r ? r.getValues() : [], f = r ? r.getFormulas() : [], free = [];
+  v.forEach((row, i) => { if (!cellImageUrl(row[ic - 1], f[i][ic - 1])) free.push(i + 2); });
+  let next = last + 1, n = 0, no = v.reduce((m, row) => Math.max(m, Number(row[0]) || 0), 0);
+  const errors = [];
+  data.forEach((d, k) => {
+    const row = free.length ? free.shift() : next++;
+    try {
+      const img = SpreadsheetApp.newCellImage().setSourceUrl(d).setAltTextTitle("チャンドゥ").build();
+      if (row > last) sh.getRange(row, 1, 1, Math.max(2, ic - 1)).setValues([[++no, "チャンドゥ"].concat(Array(Math.max(0, ic - 3)).fill(""))]);
+      sh.getRange(row, ic).setValue(img); n++;
+    } catch (e) { errors.push((k + 1) + ": " + e.message); }
+  });
+  return { ok: !errors.length, added: n, errors };
 }
 
 function readIcons(sh) {
