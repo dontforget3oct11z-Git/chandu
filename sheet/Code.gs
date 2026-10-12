@@ -1,6 +1,7 @@
 // チャンドゥの大冒険: スプレッドシートと アプリを つなぐ Apps Script
 // シートの「拡張機能 → Apps Script」に まるごと はりつけて、ウェブアプリとして デプロイします。
 //   GET  … エリア / キャラクター / はいけい の 3つの シートと、キャラの がぞうを JSONで かえす
+//          キャラクター シートの アイコン欄に いれた がぞう（セル内の がぞう / =IMAGE("URL")）も icons で かえす
 //   POST … {op:"image", name, data}            キャラの がぞうを「がぞう」シートに しまう（data が からなら けす）
 //          {op:"rows", tab, rows:[{No:…, 列名:値}]}  No が おなじ ぎょうを うわがき（なければ ついか）
 //          {op:"tab", tab, values:[[…],[…]]}     シートを まるごと いれかえる
@@ -11,6 +12,7 @@ function doGet() {
   const ss = SpreadsheetApp.getActive(), out = {};
   Object.keys(TABS).forEach((k) => (out[k] = readTab(ss.getSheetByName(TABS[k]))));
   out.images = readImages(ss);
+  Object.assign(out, readIcons(ss.getSheetByName(TABS.chars)));
   return json(out);
 }
 
@@ -41,6 +43,36 @@ function readTab(sh) {
   if (!sh || sh.getLastRow() < 1) return [];
   const v = sh.getDataRange().getDisplayValues(), h = v.shift().map(String);
   return v.filter((r) => r.some((x) => x !== "")).map((r) => Object.fromEntries(h.map((k, i) => [k, r[i]])));
+}
+
+// Pictures put in the アイコン columns of the キャラクター tab → {character name: image URL}.
+// Works for "insert image in cell" and for =IMAGE("https://…"); a picture floating over the cells has no
+// readable link unless it was inserted from a URL, so those only count toward iconsMissed.
+function readIcons(sh) {
+  const out = {};
+  let missed = 0;
+  if (!sh || sh.getLastRow() < 2) return { icons: out, iconsMissed: 0 };
+  const r = sh.getDataRange(), v = r.getValues(), f = r.getFormulas(), h = v[0].map(String);
+  const urlOf = (x, fx) => {
+    const m = String(fx || "").match(/^=IMAGE\(\s*"([^"]+)"/i);
+    if (m) return m[1];
+    if (x && typeof x === "object" && x.getContentUrl) { try { return x.getContentUrl() || x.getUrl() || ""; } catch (e) { return x.getUrl ? x.getUrl() || "" : ""; } }
+    return /^https?:\/\/\S+$/.test(String(x)) ? String(x) : "";
+  };
+  for (let i = 1; i < v.length; i++) h.forEach((c, j) => {
+    const k = c.match(/^アイコン(\d*)$/); if (!k) return;
+    const ni = h.indexOf(k[1] ? "キャラクター" + k[1] : "なまえ"), name = ni >= 0 ? String(v[i][ni]).trim() : "";
+    if (!name || out[name]) return;
+    const u = urlOf(v[i][j], f[i][j]); if (u) out[name] = u;
+  });
+  sh.getImages().forEach((im) => {
+    const a = im.getAnchorCell(), col = h[a.getColumn() - 1] || "", k = col.match(/^アイコン(\d*)$/);
+    if (!k || a.getRow() < 2) return;
+    const ni = h.indexOf(k[1] ? "キャラクター" + k[1] : "なまえ"), name = ni >= 0 ? String(v[a.getRow() - 1][ni]).trim() : "";
+    let u = ""; try { u = im.getUrl() || ""; } catch (e) {}
+    if (name && !out[name]) { if (u) out[name] = u; else missed++; }
+  });
+  return { icons: out, iconsMissed: missed };
 }
 
 // A picture can be longer than one cell allows (50,000 characters), so it is split across columns C, D, E…

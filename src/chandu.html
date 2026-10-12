@@ -458,7 +458,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.9";
+  const VERSION = "1.10";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -491,6 +491,14 @@ body {
   let faces = {};
   try { faces = JSON.parse(localStorage.getItem(FACE_KEY)) || {}; } catch (e) {}
   function saveFaces() { try { localStorage.setItem(FACE_KEY, JSON.stringify(faces)); return true; } catch (e) { return false; } }
+  // Pictures put in the アイコン columns of the spreadsheet's キャラクター tab. A picture picked in the app wins.
+  let sheetFaces = {};
+  const faceOf = (n) => faces[n] || sheetFaces[n] || "";
+  function faceImg(url, icon, box) {
+    const im = new Image(); im.alt = ""; im.src = url;
+    im.onerror = () => { box.textContent = icon; };     // offline or the link went stale: back to the emoji
+    box.appendChild(im);
+  }
   // Settings that are not part of the game save: photo style and the linked spreadsheet.
   const PREF_KEY = "chandu-prefs-v1";
   let prefs = { toon: true, sheet: "" };
@@ -2528,8 +2536,8 @@ body {
   }
   // Character pictures the player picks from their own photo library. They stay on this device only.
   function setPortrait(name, icon) {
-    const sc = $("storyScene"), url = name && faces[name];
-    if (url) { sc.innerHTML = ""; const im = new Image(); im.alt = ""; im.src = url; sc.appendChild(im); }
+    const sc = $("storyScene"), url = name && faceOf(name);
+    if (url) { sc.innerHTML = ""; faceImg(url, icon, sc); }
     else sc.textContent = icon;
     $("faceBtn").hidden = !name; $("faceBtn").dataset.name = name || "";
   }
@@ -3056,11 +3064,11 @@ body {
     let shown = 0;
     allCast().forEach((icon, n) => {
       if (q && !n.includes(q)) return;
-      if (++shown > 60 && !faces[n]) return;               // keep the list short until the player searches
+      if (++shown > 60 && !faceOf(n)) return;               // keep the list short until the player searches
       const f = document.createElement("figure");
       f.innerHTML = `<button type="button" class="face-pick"></button><figcaption></figcaption>`;
       const b = f.querySelector(".face-pick");
-      if (faces[n]) { const im = new Image(); im.alt = ""; im.src = faces[n]; b.appendChild(im); } else b.textContent = icon;
+      if (faceOf(n)) faceImg(faceOf(n), icon, b); else b.textContent = icon;
       b.setAttribute("aria-label", n + "の がぞうを えらぶ");
       b.onclick = () => pickFace(n);
       f.querySelector("figcaption").textContent = n;
@@ -3142,7 +3150,8 @@ body {
   function sheetNote() {
     if (!prefs.sheet) return "いまは アプリに はいってる データを つかってるよ。";
     if (!sheetInfo || sheetInfo.id !== prefs.sheet) return "まだ よみこめて ないよ。";
-    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい）`;
+    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい・シートの アイコン ${sheetInfo.icons_n || 0}まい）`
+      + (sheetInfo.missed ? `\n⚠️ セルの うえに おいた がぞうが ${sheetInfo.missed}まい よめなかったよ。「そうにゅう → がぞう → セル内に がぞうを そうにゅう」で いれてね` : "");
     const d = new Date(sheetInfo.at);
     return `✅ ${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}に よみこんだよ（エリア ${sheetInfo.n}こ を はんえい）` + (sheetInfo.err ? `\n⚠️ ${sheetInfo.err}` : "");
   }
@@ -3207,9 +3216,12 @@ body {
         const imgs = data.images || {};
         Object.entries(facePending).forEach(([n, d]) => { if (d) imgs[n] = d; else delete imgs[n]; });   // not uploaded yet
         faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
-        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, n: applySheet(data), faces: Object.keys(imgs).length };
+        sheetFaces = data.icons || {};
+        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, icons: sheetFaces, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
         try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}
         bgKey = ""; const rk = $("route"); if (rk) rk.dataset.key = ""; render(); drawPet();
+        if (storyPages && !$("story").hidden) renderStoryPage();
+        if (!$("settings").hidden) renderFaceList();
         if (user) $("sheetStatus").textContent = sheetNote();
       }).catch(() => { if (user) $("sheetStatus").textContent = "よみこめなかったよ。Apps Scriptの デプロイで アクセスできる ユーザーを「全員」に して、もう いちど ためしてね。"; });
     }
@@ -3227,7 +3239,7 @@ body {
       })
       .catch(() => { if (user) $("sheetStatus").textContent = "よみこめなかったよ。シートの きょうゆうを「リンクを しっている ぜんいん」に して、もう いちど ためしてね。"; });
   }
-  if (prefs.sheet && sheetInfo && sheetInfo.id === prefs.sheet) { applySheet(sheetInfo.data); render(); }
+  if (prefs.sheet && sheetInfo && sheetInfo.id === prefs.sheet) { sheetFaces = sheetInfo.icons || {}; applySheet(sheetInfo.data); render(); }
   if (prefs.sheet) loadSheet(false);
 
   // Rows for the spreadsheet: what is in the app now, one tab per list.
