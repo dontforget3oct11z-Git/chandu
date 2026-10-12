@@ -140,6 +140,34 @@ body {
 .walk-form { display: flex; gap: 6px; margin-top: 6px; }
 .walk-form input { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 6px 10px; border-radius: 10px; border: 0; background: var(--cream); color: #3a2a22; }
 .walk-form button, .copy { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 10px; padding: 6px 12px; cursor: pointer; }
+.voyage { background: rgba(60,20,10,.2); border-radius: 16px; padding: 12px 14px; color: var(--cream); display: flex; flex-direction: column; gap: 10px; }
+.voyage-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 8px; }
+.voyage-head h2, .voyage-head span { white-space: nowrap; }
+.voyage-head h2 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 16px; letter-spacing: .06em; }
+.voyage-head span { font-size: 12px; font-variant-numeric: tabular-nums; }
+.route { position: relative; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding-top: 4px; }
+.route::before { content: ""; position: absolute; left: 6%; right: 6%; top: 22px; border-top: 3px dashed rgba(255,248,239,.45); }
+.route-fill { position: absolute; left: 6%; top: 21px; height: 5px; border-radius: 3px; background: #ffd166; transition: width .6s; }
+.stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 0; color: var(--cream); font-family: var(--font-body); font-size: 9px; font-weight: 700; line-height: 1.2; text-align: center; cursor: pointer; min-width: 0; }
+.stop i { width: 36px; height: 36px; max-width: 100%; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 18px; background: rgba(60,20,10,.35); border: 2px solid rgba(255,248,239,.5); filter: grayscale(1); opacity: .55; }
+.stop.done i { background: var(--cream); border-color: #ffd166; filter: none; opacity: 1; }
+.stop.here i { box-shadow: 0 0 0 3px #ffd166; filter: none; opacity: 1; background: #fff3d6; }
+.stop[disabled] { cursor: default; }
+.stop:focus-visible i { outline: 3px solid var(--cream); outline-offset: 2px; }
+.voyage-next { font-size: 12px; text-align: center; }
+.treasures { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; font-size: 12px; }
+.treasures span { background: rgba(255,248,239,.18); border-radius: 999px; padding: 2px 9px; }
+.story { position: fixed; inset: 0; background: rgba(40,20,10,.55); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.story-card { width: 100%; max-width: 360px; background: var(--cream); color: #3a2a22; border-radius: 20px; border: 5px solid #7b4a36; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 16px 40px rgba(0,0,0,.35); animation: pop .35s ease-out; }
+@keyframes pop { from { transform: scale(.9); opacity: 0 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .story-card { animation: none; } }
+.story-card .eyebrow { font-size: 11px; letter-spacing: .12em; color: #b6573a; font-weight: 700; }
+.story-card h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 22px; text-wrap: balance; }
+.story-card .scene { font-size: 56px; text-align: center; line-height: 1.1; }
+.story-card p { margin: 0; font-size: 14px; line-height: 1.8; }
+.story-card .say { background: #fff3d6; border-radius: 12px; padding: 8px 12px; font-size: 13px; }
+.story-card .reward { font-size: 13px; font-weight: 700; color: #6b3a1e; }
+.story-card button { align-self: center; font-family: var(--font-body); font-weight: 700; font-size: 15px; background: var(--shell); color: var(--cream); border: 0; border-radius: 999px; padding: 9px 28px; cursor: pointer; box-shadow: 0 3px 0 var(--shell-dark); }
 .help { color: var(--cream); font-size: 12px; line-height: 1.6; opacity: .92; }
 
 @media (max-width: 380px) {
@@ -207,6 +235,25 @@ body {
     </details>
   </section>
 
+  <section class="voyage" aria-label="ぼうけんの地図">
+    <div class="voyage-head"><h2>シンドバッドの ぼうけん</h2><span id="vLap">1かいめの こうかい</span></div>
+    <div class="route" id="route"><div class="route-fill" id="routeFill"></div></div>
+    <div class="voyage-next" id="vNext"></div>
+    <div class="treasures" id="treasures"></div>
+  </section>
+
+  <div class="story" id="story" hidden role="dialog" aria-modal="true" aria-labelledby="storyTitle">
+    <div class="story-card">
+      <div class="eyebrow" id="storyEyebrow"></div>
+      <div class="scene" id="storyScene" aria-hidden="true"></div>
+      <h3 id="storyTitle"></h3>
+      <p id="storyText"></p>
+      <div class="say" id="storySay"></div>
+      <div class="reward" id="storyReward"></div>
+      <button type="button" id="storyNext">つぎへ</button>
+    </div>
+  </div>
+
   <div class="buttons">
     <button class="btn" id="bFeed" type="button"><span class="cap">🍌</span>バナナ</button>
     <button class="btn" id="bPlay" type="button"><span class="cap">🎾</span>あそぶ</button>
@@ -231,7 +278,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.1";
+  const VERSION = "1.2";
   const KEY = "chandu-save-v1";
   const MAX_OFFLINE_MIN = 12 * 60;
   // Stage thresholds in minutes of age
@@ -250,10 +297,10 @@ body {
     const now = Date.now();
     return { born: now, last: now, age: 0, hunger: 80, happy: 80, energy: 90, clean: 100,
              poops: 0, sleeping: false, sick: false, careSum: 0, careTime: 0, lowTime: 0,
-             bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0 };
+             bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, storySeen: 0, treasures: {} };
   }
   function load() {
-    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.age === "number") return Object.assign({ bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0 }, s); } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.age === "number") return Object.assign({ bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, storySeen: 0, treasures: {} }, s); } catch (e) {}
     return fresh();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
@@ -421,11 +468,108 @@ body {
   }
 
   let lastStage = stageOf().id;
+  // ---- Sindbad's voyage: total steps carry Chandu and Sindbad from port to port ----
+  const LAP_STEPS = 80000;
+  const SCENES = [
+    { at: 0, icon: "⛵", short: "みなと", title: "シンドバッドの みなと",
+      text: "にぎやかな みなとで、シンドバッドと チャンドゥの たびが はじまる。はたや のぼりが ゆれて、みんなが みおくってくれる。3にんの けんじゃが「あらしに きをつけろ」と よびかけた。",
+      say: "いってきます！ シンドバッド、いこう！" },
+    { at: 3000, icon: "🧜", short: "マーメイド", title: "マーメイドの いわば",
+      text: "あらしで ふねが いわに ぶつかってしまった。でも マーメイドたちが うたで たすけてくれて、あたらしい ふねで ぼうけんを つづけられることに なった。",
+      say: "マーメイドさん ありがとう！ うたが きれいだったね", reward: { bananas: 2, item: "しんじゅ" } },
+    { at: 8000, icon: "🪶", short: "ルフ鳥", title: "ルフ鳥の しま",
+      text: "おおきな ルフ鳥の たまごから、かいぞくが はねを ぬすもうと していた。シンドバッドと チャンドゥが とめると、ルフ鳥が かいぞくを つかんで とんでいった。",
+      say: "かいぞくめ！ ルフ鳥の たまごに さわるな〜！", reward: { bananas: 2, item: "ルフの はね" } },
+    { at: 15000, icon: "🎻", short: "巨人", title: "巨人の どうくつ",
+      text: "ルフの はねで ろうやの かぎを あけて、つかまっていた 巨人を たすけた。チャンドゥも かいぞくを おいはらったよ。巨人は おれいに 弦楽器を ひいて、きんかを くれた。",
+      say: "巨人さんの うた、おなかに ひびく〜！", reward: { bananas: 3, item: "きんか" } },
+    { at: 25000, icon: "🐘", short: "宮殿", title: "サルタンの 宮殿",
+      text: "ぞうが はこぶ こしの そばを とおって、サルタンの 宮殿へ。サルタンは、あばれる サルたちを しずめるための まほうの 楽器を さずけてくれた。チャンドゥは おおきな たいこで ぴょんぴょん。",
+      say: "たいこ たのしい！ ぼよーん ぼよーん！", reward: { bananas: 3, item: "まほうの 楽器" } },
+    { at: 40000, icon: "🐒", short: "サルの国", title: "サルの 国",
+      text: "まほうの 楽器を ならすと、サルたちも いっしょに えんそう！ サルの 王さまとも ともだちに なった。おれいに バナナが どっさり ふねに おろされた。",
+      say: "バナナの やま！ ここに すみたい…！", reward: { bananas: 10, item: "サルの 王さまの かんむり" } },
+    { at: 60000, icon: "🐋", short: "クジラ", title: "クジラの かいきょう",
+      text: "月あかりの なか、おおきな クジラが あらわれた。やさしい クジラは シンドバッドと チャンドゥを せなかに のせて、あらなみを こえていった。",
+      say: "クジラさんの せなか、ひろーい！ しおが ぷしゅー！", reward: { bananas: 3, item: "クジラの しお" } },
+    { at: 75000, icon: "🎆", short: "ただいま", title: "おかえり、シンドバッド！",
+      text: "みなとに かえると「おかえり シンドバッド」の のぼりと はなび。たからものを ひろげて わかったのは、いちばんの たからものは たびで できた ともだち だということ。チャンドゥは あんしんして すやすや。",
+      say: "ただいま… たのしかったね… むにゃ", reward: { bananas: 5, item: "ともだちの きずな" } },
+  ];
+  const threshold = (k) => Math.floor(k / SCENES.length) * LAP_STEPS + SCENES[k % SCENES.length].at;
+  const storyQueue = [];
+  function checkVoyage() {
+    // storySeen counts scenes reached across all laps; scene 0 of lap 1 is shown when the egg hatches
+    if (stageOf().id === "egg") return;
+    while (threshold(S.storySeen) <= S.totalSteps) {
+      const k = S.storySeen; S.storySeen++;
+      const sc = SCENES[k % SCENES.length];
+      if (sc.reward) {
+        S.bananas = Math.min(99, S.bananas + sc.reward.bananas);
+        S.treasures[sc.reward.item] = (S.treasures[sc.reward.item] || 0) + 1;
+        S.happy = clamp(S.happy + 15);
+      }
+      storyQueue.push(k);
+      if (S.storySeen > 200) break;
+    }
+    save();
+    if (storyQueue.length && $("story").hidden) showStory(storyQueue.shift(), true);
+  }
+  function showStory(k, isNew) {
+    const sc = SCENES[k % SCENES.length], lap = Math.floor(k / SCENES.length) + 1;
+    $("storyEyebrow").textContent = (isNew ? "あたらしい ばしょに ついた！ · " : "") + `${lap}かいめの こうかい · ${k % SCENES.length + 1} / ${SCENES.length}`;
+    $("storyScene").textContent = sc.icon;
+    $("storyTitle").textContent = sc.title;
+    $("storyText").textContent = sc.text;
+    $("storySay").textContent = "チャンドゥ「" + sc.say + "」";
+    $("storyReward").textContent = sc.reward ? `ごほうび: バナナ ${sc.reward.bananas}ぽん ・ ${sc.reward.item}` : "";
+    $("storyReward").hidden = !sc.reward;
+    $("story").hidden = false;
+    $("storyNext").textContent = storyQueue.length ? "つぎへ" : "とじる";
+    $("storyNext").focus();
+  }
+  function renderVoyage() {
+    const seen = Math.max(S.storySeen, 1);
+    const k = seen - 1;                                     // last reached scene
+    const lap = Math.floor(k / SCENES.length);
+    const idx = k % SCENES.length;
+    $("vLap").textContent = `${lap + 1}かいめの こうかい`;
+    const route = $("route");
+    if (!route.querySelector(".stop")) {
+      SCENES.forEach((sc, i) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "stop"; b.dataset.i = i;
+        b.innerHTML = `<i>${sc.icon}</i><span>${sc.short}</span>`;
+        b.onclick = () => { const kk = Math.floor((Math.max(S.storySeen, 1) - 1) / SCENES.length) * SCENES.length + i; if (kk < S.storySeen) showStory(kk, false); };
+        route.appendChild(b);
+      });
+    }
+    route.querySelectorAll(".stop").forEach((b, i) => {
+      const reached = S.storySeen > 0 && i <= idx;
+      b.classList.toggle("done", reached && i < idx);
+      b.classList.toggle("here", reached && i === idx);
+      b.disabled = !reached;
+      b.setAttribute("aria-label", SCENES[i].title + (reached ? "（とうちゃく）" : "（まだ）"));
+    });
+    // progress line between the current stop and the next
+    const nextAt = threshold(seen), prevAt = threshold(k);
+    const frac = Math.max(0, Math.min(1, (S.totalSteps - prevAt) / Math.max(1, nextAt - prevAt)));
+    const pos = idx === SCENES.length - 1 ? idx : idx + frac;
+    $("routeFill").style.width = (pos / (SCENES.length - 1)) * 88 + "%";
+    const nextScene = SCENES[seen % SCENES.length];
+    $("vNext").textContent = stageOf().id === "egg" ? "たまごが かえったら しゅっこう！"
+      : `つぎは「${nextScene.title}」まで あと ${Math.max(0, nextAt - S.totalSteps).toLocaleString()}歩`;
+    const t = Object.entries(S.treasures);
+    $("treasures").innerHTML = "";
+    t.forEach(([name, n]) => { const sp = document.createElement("span"); sp.textContent = name + (n > 1 ? " ×" + n : ""); $("treasures").appendChild(sp); });
+  }
+
   function render() {
     const st = stageOf();
     if (st.id !== lastStage) {
       const msg = { baby: "うまれたよ！ チャンドゥです！", child: "おおきくなった！ シンドバッドと ぼうけんしたいな", adult: `おとなに なった！ ${adultForm().name}！ シンドバッドの あいぼうだよ` }[st.id];
       if (msg) say(msg, 5000);
+      if (st.id === "baby") setTimeout(checkVoyage, 2500);
       lastStage = st.id; save();
     }
     $("stageName").textContent = st.id === "adult" ? adultForm().name : st.name + (S.sick ? "（びょうき）" : "");
@@ -446,6 +590,7 @@ body {
     $("bMed").disabled = egg || !S.sick;
     const a = careAvg();
     $("form").textContent = "そだてかた: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ じょうず" : a >= 45 ? "○ ふつう" : "△ がんばろう");
+    renderVoyage();
     drawPet();
   }
 
@@ -472,6 +617,7 @@ body {
     if (delta <= 0) return live ? undefined : say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう はんえいずみだよ`);
     const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(S.stepsToday / STEPS_PER_BANANA);
     S.stepsToday = n; S.totalSteps += delta;
+    setTimeout(checkVoyage, 1200);
     S.bananas = Math.min(99, S.bananas + got);
     if (stageOf().id !== "egg") {
       S.age += (delta / 1000) * 5;            // walking speeds up growth: 1000 steps = 5 minutes
@@ -560,7 +706,7 @@ body {
   $("bReset").onclick = () => { $("bReset").hidden = true; $("confirm").hidden = false; };
   $("bNo").onclick = () => { $("bReset").hidden = false; $("confirm").hidden = true; };
   $("bYes").onclick = () => {
-    S = Object.assign(fresh(), { totalSteps: S.totalSteps, stepsToday: S.stepsToday, stepDay: S.stepDay }); lastStage = "egg"; gameOn = false; $("game").hidden = true;
+    S = Object.assign(fresh(), { totalSteps: S.totalSteps, stepsToday: S.stepsToday, stepDay: S.stepDay, storySeen: S.storySeen, treasures: S.treasures }); lastStage = "egg"; gameOn = false; $("game").hidden = true;
     $("bReset").hidden = false; $("confirm").hidden = true; save(); say("あたらしい たまごが きたよ"); render();
   };
 
@@ -585,6 +731,8 @@ body {
   if (stageOf().id === "egg") say("たまごを みまもってね");
   render();
   readHash();
+  $("storyNext").onclick = () => { if (storyQueue.length) showStory(storyQueue.shift(), true); else $("story").hidden = true; };
+  setTimeout(checkVoyage, 800);
   setInterval(() => {
     const now = Date.now(); const dt = Math.min(5, (now - S.last) / 60000); S.last = now;
     step(dt); render(); save();
