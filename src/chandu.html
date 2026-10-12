@@ -167,6 +167,7 @@ body {
 .walk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
 .walk-stats b { display: block; font-family: var(--font-display); font-size: 20px; font-weight: 400; font-variant-numeric: tabular-nums; }
 .walk-stats span { font-size: 11px; letter-spacing: .05em; }
+.top-stats { color: var(--cream); width: 74%; margin: 0 auto -4px; text-shadow: 0 2px 0 rgba(0,0,0,.15); }
 .walk-note { font-size: 12px; text-align: center; }
 .walk details { font-size: 12px; line-height: 1.7; }
 .walk summary { cursor: pointer; font-weight: 700; }
@@ -240,6 +241,8 @@ body {
 .face-list figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; text-align: center; }
 .face-list img { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; background: #fff3d6; }
 .story-card .face-list button { box-shadow: none; font-size: 10px; padding: 2px 8px; background: #efe6da; color: #6b3a1e; }
+.story-card .face-list .face-pick { width: 56px; height: 56px; padding: 0; font-size: 30px; background: #fff3d6; border: 2px solid #f0d9a8; border-radius: 10px; display: grid; place-items: center; overflow: hidden; }
+.face-list .face-pick img { width: 100%; height: 100%; }
 .bg img.toon, .bgt-pic img.toon { filter: url(#toon) saturate(1.25) contrast(1.05); }
 
 @media (max-width: 380px) {
@@ -250,7 +253,11 @@ body {
 </style>
 
 <div class="device" role="application" aria-label="チャンドゥの大冒険">
-  <div class="brand">CHANDU · チャンドゥ</div>
+  <div class="walk-stats top-stats" aria-label="きょうの きろく">
+    <div><b id="wSteps">0</b><span>きょうの歩数</span></div>
+    <div><b id="wBanana">0</b><span>バナナ</span></div>
+    <div><b id="wKm">0.0</b><span>ぼうけん km</span></div>
+  </div>
 
   <div class="screen" id="screen">
     <div class="topline">
@@ -280,11 +287,6 @@ body {
   </div>
 
   <section class="walk" aria-label="おさんぽ">
-    <div class="walk-stats">
-      <div><b id="wSteps">0</b><span>きょうの歩数</span></div>
-      <div><b id="wBanana">0</b><span>バナナ</span></div>
-      <div><b id="wKm">0.0</b><span>ぼうけん km</span></div>
-    </div>
     <div class="walk-note" id="wNote">500歩 あるくごとに バナナが 1ぽん とれるよ</div>
     <details id="wLink">
       <summary>iPhoneの歩数と ぼくを つなぐ</summary>
@@ -395,14 +397,14 @@ body {
         <div class="row"><select id="setHat" aria-label="ぼうし"></select></div>
         <p class="note">お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
         <h4>📷 キャラクターの がぞう</h4>
-        <p class="note">かいわの とき、みぎうえの「📷 がぞう」で その キャラの がぞうを iPhoneの しゃしんから えらべるよ。がぞうは この iPhoneの なかだけに しまわれて、ネットには でないよ。</p>
-        <div class="row"><button type="button" class="mini-btn" id="setChanduFace">🐯 チャンドゥの がぞうを えらぶ</button></div>
+        <p class="note">キャラを タップすると、iPhoneの しゃしんから がぞうを えらべるよ（かいわの とき みぎうえの「📷 がぞう」でも OK）。<span id="faceWhere"></span></p>
+        <div class="row"><input id="faceFind" placeholder="🔍 キャラの なまえで さがす" aria-label="キャラを さがす"></div>
         <div class="face-list" id="faceList"></div>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
-        <p class="note">Googleスプレッドシートの URLを いれると、シートの エリア・キャラクター・はいけいが アプリに はんえいされるよ（アプリを ひらく たびに よみなおすよ）。</p>
-        <div class="row"><input id="setSheet" placeholder="https://docs.google.com/spreadsheets/d/…" aria-label="スプレッドシートの URL" inputmode="url"></div>
+        <p class="note">シートの Apps Scriptの URL（https://script.google.com/macros/s/…/exec）を いれると、シートの エリア・キャラクター・はいけいと、キャラの がぞうが アプリに はんえいされるよ。おなじ URLを いれた iPhoneどうしで がぞうも きょうゆうされるんだ。アプリを ひらく たびに よみなおすよ。</p>
+        <div class="row"><input id="setSheet" placeholder="https://script.google.com/macros/s/…/exec" aria-label="シートの URL" inputmode="url"></div>
         <div class="row"><button type="button" class="mini-btn" id="setSheetOk">よみこむ</button><button type="button" class="mini-btn" id="setSheetOff">はずす</button></div>
         <p class="note" id="sheetStatus"></p>
       </div>
@@ -431,7 +433,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.7";
+  const VERSION = "1.8";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -553,7 +555,7 @@ body {
         <path d="M66 150 l10 -8 l8 8 l10 -9 l9 9" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`);
       return;
     }
-    const size = st === "baby" ? 0.62 : st === "child" ? 0.82 : 1;
+    const size = st === "baby" ? 0.54 : st === "child" ? 0.72 : 0.86;
     const adult = st === "adult" ? adultForm() : null;
     const md = mood();
     const sc = size;
@@ -3000,7 +3002,7 @@ body {
   // ---- face pictures ----
   let faceFor = "";
   $("faceBtn").onclick = () => { faceFor = $("faceBtn").dataset.name; $("faceFile").value = ""; $("faceFile").click(); };
-  $("setChanduFace").onclick = () => { faceFor = "チャンドゥ"; $("faceFile").value = ""; $("faceFile").click(); };
+  const pickFace = (who) => { faceFor = who; $("faceFile").value = ""; $("faceFile").click(); };
   $("faceFile").onchange = () => {
     const f = $("faceFile").files[0], who = faceFor;
     if (!f || !who) return;
@@ -3014,25 +3016,44 @@ body {
       if (d.length > 160000) d = cv.toDataURL("image/jpeg", 0.85);
       faces[who] = d;
       if (!saveFaces()) { delete faces[who]; say("がぞうが いっぱいで しまえないよ… いらない がぞうを けしてね"); return; }
+      shareFace(who, d);
       if (storyPages) renderStoryPage();
       drawPet(); if (!$("settings").hidden) renderFaceList();
     };
     im.onerror = () => { URL.revokeObjectURL(url); say("その がぞうは よめなかったよ…"); };
     im.src = url;
   };
+  // Everyone who speaks anywhere in the story, in order of first appearance, with Chandu first.
+  function allCast() {
+    const cast = new Map([["チャンドゥ", "🐯"]]);
+    CHAPTERS.forEach((c) => [...(c.talkA || []), ...(c.talkB || [])].forEach(([n, i]) => { if (!cast.has(n)) cast.set(n, i); }));
+    return cast;
+  }
   function renderFaceList() {
-    const box = $("faceList"); box.innerHTML = "";
-    Object.keys(faces).forEach((n) => {
+    const box = $("faceList"), q = $("faceFind").value.trim(); box.innerHTML = "";
+    let shown = 0;
+    allCast().forEach((icon, n) => {
+      if (q && !n.includes(q)) return;
+      if (++shown > 60 && !faces[n]) return;               // keep the list short until the player searches
       const f = document.createElement("figure");
-      f.innerHTML = `<img alt=""><figcaption></figcaption><button type="button">けす</button>`;
-      f.querySelector("img").src = faces[n];
+      f.innerHTML = `<button type="button" class="face-pick"></button><figcaption></figcaption>`;
+      const b = f.querySelector(".face-pick");
+      if (faces[n]) { const im = new Image(); im.alt = ""; im.src = faces[n]; b.appendChild(im); } else b.textContent = icon;
+      b.setAttribute("aria-label", n + "の がぞうを えらぶ");
+      b.onclick = () => pickFace(n);
       f.querySelector("figcaption").textContent = n;
-      f.querySelector("button").setAttribute("aria-label", n + "の がぞうを けす");
-      f.querySelector("button").onclick = () => { delete faces[n]; saveFaces(); drawPet(); renderFaceList(); };
+      if (faces[n]) {
+        const del = document.createElement("button"); del.type = "button"; del.textContent = "けす";
+        del.setAttribute("aria-label", n + "の がぞうを けす");
+        del.onclick = () => { delete faces[n]; saveFaces(); shareFace(n, ""); drawPet(); renderFaceList(); };
+        f.appendChild(del);
+      }
       box.appendChild(f);
     });
-    if (!box.children.length) box.innerHTML = '<p class="note">まだ がぞうは ないよ。</p>';
+    if (shown > 60 && !q) { const p = document.createElement("p"); p.className = "note"; p.textContent = `ほかに ${shown - 60}にん いるよ。なまえで さがしてね。`; box.appendChild(p); }
+    $("faceWhere").textContent = syncUrl() ? "がぞうは シートに しまわれて、おなじ シートを つないだ iPhoneにも でるよ。" : "いまは この iPhoneの なかだけに しまわれるよ（シートを つなぐと ほかの iPhoneにも でるよ）。";
   }
+  $("faceFind").oninput = renderFaceList;
 
   // ---- name ----
   function setName(v) {
@@ -3063,7 +3084,14 @@ body {
   $("setToon").onchange = () => { prefs.toon = $("setToon").checked; savePrefs(); bgKey = ""; renderBg(); };
   $("setSheetOk").onclick = () => {
     const id = sheetId($("setSheet").value);
-    if (!id) { $("sheetStatus").textContent = "URLが よめなかったよ。シートの URLを まるごと はってね。"; return; }
+    const v = $("setSheet").value.trim();
+    if (/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec/.test(v)) {
+      prefs.sheet = v.replace(/\?.*$/, ""); savePrefs(); $("sheetStatus").textContent = "よみこみ ちゅう…";
+      // pictures picked before the sheet was linked go up once so the other iPhone sees them too
+      Object.keys(faces).forEach((n) => shareFace(n, faces[n]));
+      return loadSheet(true);
+    }
+    if (!id) { $("sheetStatus").textContent = "URLが よめなかったよ。URLを まるごと はってね。"; return; }
     prefs.sheet = id; savePrefs();
     $("sheetStatus").textContent = "よみこみ ちゅう…";
     loadSheet(true);
@@ -3075,12 +3103,24 @@ body {
   // ---- Google Sheets: the エリア / キャラクター / はいけい tabs override the built-in story data ----
   const SHEET_KEY = "chandu-sheet-v1";
   const SHEET_TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけい" };
+  // An Apps Script web app on the player's sheet: reads every tab and stores shared character pictures.
+  const syncUrl = () => (/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec/.test(prefs.sheet) ? prefs.sheet : "");
+  const facePending = {};
+  function shareFace(name, data) {
+    const u = syncUrl(); if (!u) return;
+    facePending[name] = data;
+    fetch(u, { method: "POST", body: JSON.stringify({ op: "image", name, data }) })   // text/plain: no CORS preflight
+      .then((r) => r.json()).then((r) => { if (!r.ok) throw 0; if (data) say("がぞうを シートに しまったよ！ ほかの iPhoneにも でるからね"); })
+      .catch(() => say("がぞうを シートに おくれなかったよ… この iPhoneには でてるよ"))
+      .finally(() => { if (facePending[name] === data) delete facePending[name]; });
+  }
   const sheetId = (v) => { v = String(v || "").trim(); const m = v.match(/\/d\/([\w-]{20,})/); return m ? m[1] : /^[\w-]{20,}$/.test(v) ? v : ""; };
   let sheetInfo = null;
   try { sheetInfo = JSON.parse(localStorage.getItem(SHEET_KEY)); } catch (e) {}
   function sheetNote() {
     if (!prefs.sheet) return "いまは アプリに はいってる データを つかってるよ。";
     if (!sheetInfo || sheetInfo.id !== prefs.sheet) return "まだ よみこめて ないよ。";
+    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい）`;
     const d = new Date(sheetInfo.at);
     return `✅ ${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}に よみこんだよ（エリア ${sheetInfo.n}こ を はんえい）` + (sheetInfo.err ? `\n⚠️ ${sheetInfo.err}` : "");
   }
@@ -3112,7 +3152,10 @@ body {
   function applySheet(data) {
     const icons = {};
     CHAPTERS.forEach((c) => [...(c.talkA || []), ...(c.talkB || [])].forEach(([n, i]) => { if (!icons[n]) icons[n] = i; }));
-    (data.chars || []).forEach((r) => { if (r["なまえ"] && r["アイコン"]) icons[r["なまえ"]] = r["アイコン"]; });
+    (data.chars || []).forEach((r) => {
+      if (r["なまえ"] && r["アイコン"]) icons[r["なまえ"]] = r["アイコン"];
+      for (let i = 1; i <= 6; i++) if (r["キャラクター" + i] && r["アイコン" + i]) icons[r["キャラクター" + i]] = r["アイコン" + i];
+    });
     let n = 0;
     (data.areas || []).forEach((r) => {
       const c = CHAPTERS[Number(r["No"]) - 1]; if (!c) return;
@@ -3137,6 +3180,17 @@ body {
   }
   function loadSheet(user) {
     const id = prefs.sheet; if (!id) return;
+    if (syncUrl()) {
+      return fetch(id, { cache: "no-store" }).then((r) => r.json()).then((data) => {
+        const imgs = data.images || {};
+        Object.entries(facePending).forEach(([n, d]) => { if (d) imgs[n] = d; else delete imgs[n]; });   // not uploaded yet
+        faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
+        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, n: applySheet(data), faces: Object.keys(imgs).length };
+        try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}
+        bgKey = ""; const rk = $("route"); if (rk) rk.dataset.key = ""; render(); drawPet();
+        if (user) $("sheetStatus").textContent = sheetNote();
+      }).catch(() => { if (user) $("sheetStatus").textContent = "よみこめなかったよ。Apps Scriptの デプロイで アクセスできる ユーザーを「全員」に して、もう いちど ためしてね。"; });
+    }
     const url = (tab) => `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`;
     const keys = Object.keys(SHEET_TABS);
     Promise.all(keys.map((k) => fetch(url(SHEET_TABS[k]), { cache: "no-store" }).then((r) => (r.ok ? r.text() : Promise.reject(r.status))).then((t) => toObjs(parseCSV(t)), () => null)))
@@ -3167,7 +3221,11 @@ body {
       const save = S.chapter; S.chapter = no; const id = bgOf(i); S.chapter = save;
       bgs.push({ No: no, "タイトル": c.title, "イラスト": id, "イラストの なまえ": BGS[id].name, "しゃしんの けんさくご": c.photoQ || "" });
     });
-    const charRows = Object.values(chars).map((e) => ({ "なまえ": e["なまえ"], "アイコン": e["アイコン"], "でる エリア": e.nos.length > 12 ? `${e.nos.length}かしょ` : e.nos.join(", ") }));
+    const charRows = CHAPTERS.map((c, i) => {
+      const r = { No: i + 1, "エリア": c.title }; let k = 0;
+      [...(c.talkA || []), ...(c.talkB || [])].forEach(([n, ic]) => { if (n === "チャンドゥ" || Object.values(r).includes(n)) return; k++; r["キャラクター" + k] = n; r["アイコン" + k] = ic; });
+      return r;
+    });
     return { areas, chars: charRows, bgs, themes: Object.entries(BGS).map(([k, b]) => ({ id: k, name: b.name })) };
   };
 
