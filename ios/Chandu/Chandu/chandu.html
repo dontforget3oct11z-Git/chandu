@@ -246,7 +246,8 @@ body {
 .story-card { position: relative; }
 .story-card .face-btn, .story-card .mini-btn { box-shadow: none; font-size: 11px; padding: 4px 10px; background: #fff3d6; color: #b6573a; border: 2px solid #f0d9a8; }
 .story-card .face-btn { position: absolute; top: 10px; right: 10px; }
-.story-card .scene img { width: 96px; height: 96px; object-fit: contain; display: block; margin: 0 auto; border-radius: 16px; }
+#storyEyebrow { padding-right: 78px; }
+.story-card .scene img { height: 96px; width: auto; max-width: 100%; object-fit: contain; display: block; margin: 0 auto; border-radius: 16px; }
 .story-card .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .story-card .row > input:not([type=checkbox]), .story-card .row > select { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 7px 10px; border: 2px solid #f0d9a8; border-radius: 10px; background: #fff; color: #3a2a22; }
 .story-card h4 { margin: 4px 0 0; font-size: 13px; color: #6b3a1e; }
@@ -459,7 +460,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.11";
+  const VERSION = "1.12";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -3039,7 +3040,7 @@ body {
     if (!f || !who) return;
     const url = URL.createObjectURL(f), im = new Image();
     im.onload = () => {
-      const max = 256, r = Math.min(1, max / Math.max(im.width, im.height));
+      const r = Math.min(1, 256 / im.height, 768 / im.width);   // wide pictures keep their full height
       const cv = document.createElement("canvas"); cv.width = Math.round(im.width * r); cv.height = Math.round(im.height * r);
       cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
       URL.revokeObjectURL(url);
