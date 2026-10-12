@@ -16,7 +16,7 @@ function doGet() {
   out.images = readImages(ss);
   Object.assign(out, readIcons(ss.getSheetByName(TABS.chars)));
   let ch = ss.getSheetByName(CHANDU);
-  if (!ch) { ch = ss.insertSheet(CHANDU); ch.appendRow(["チャンドゥの がぞう（この下の セルに「セル内に がぞうを そうにゅう」で 1まいずつ）"]); ch.setColumnWidth(1, 240); }
+  if (!ch) { ch = ss.insertSheet(CHANDU); ch.getRange(1, 1, 21, 3).setValues([["No", "キャラクター", "アイコン"]].concat(Array.from({ length: 20 }, (_, i) => [i + 1, "チャンドゥ", "🐯"]))); }
   out.chandu = readChandu(ch);
   return json(out);
 }
@@ -60,7 +60,7 @@ function cellImageUrl(x, fx) {
   return /^https?:\/\/\S+$/.test(String(x)) ? String(x) : "";
 }
 
-// Every picture on the チャンドゥ tab below the header row, in any column, top to bottom.
+// Every picture on the チャンドゥ tab below the header row (put in the アイコン column, like the キャラクター tab), top to bottom.
 function readChandu(sh) {
   const out = [];
   if (!sh || sh.getLastRow() < 2) return out;
