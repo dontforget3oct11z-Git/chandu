@@ -466,7 +466,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.18";
+  const VERSION = "1.19";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -2528,7 +2528,7 @@ body {
       S.items[here.item.key] = (S.items[here.item.key] || 0) + 1;
       if (dup) S.bananas = Math.min(99, S.bananas + 3);
       S.happy = clamp(S.happy + 10);
-      storyQueue.push({ item: here.item, dup });
+      storyQueue.push({ item: here.item, dup, c: here });
     }
     save(); render();
     if (storyQueue.length && $("story").hidden) showStory(storyQueue.shift(), true);
@@ -2558,6 +2558,7 @@ body {
   function renderStoryPage() {
     const { c, eyebrow, n, pages, part } = storyPages, last = storyPage === n - 1, card = $("storyCard");
     const pg = pages[storyPage], line = pg.line;
+    if (pg.item) return renderItem(pg.item, pg.dup, `${storyPage + 1}/${n}`);
     card.classList.toggle("talking", !!line);
     card.classList.toggle("me", !!line && line[0] === "チャンドゥ");
     $("storyEyebrow").textContent = eyebrow + ` · ${pg.tag}　${storyPage + 1}/${n}`;
@@ -2573,9 +2574,18 @@ body {
     $("storyNext").textContent = !last ? (storyPage === 0 ? "はなしかける ▶" : "つぎ ▶") : storyQueue.length ? "つぎ！" : "オッケー！";
     $("storyNext").focus();
   }
-  function showItemGet({ item, dup }) {
-    storyPages = null; $("storyCard").classList.remove("talking", "me"); $("storySay").hidden = false; setPortrait(null, item.icon);
-    $("storyEyebrow").textContent = "やったよ！ 8,000歩 たっせい！ · お宝";
+  // 8,000 steps: the area's お宝の会話 (from the sheet) plays first, then the treasure card.
+  function showItemGet({ item, dup, c }) {
+    const talk = (c && c.talkC) || [];
+    if (talk.length) {
+      storyPages = { c, part: "C", eyebrow: "やったよ！ 8,000歩 たっせい！", n: talk.length + 1, pages: talk.map((t) => ({ line: t, tag: "お宝" })).concat([{ item, dup }]) };
+      storyPage = 0; $("story").hidden = false; return renderStoryPage();
+    }
+    storyPages = null; renderItem(item, dup);
+  }
+  function renderItem(item, dup, step) {
+    $("storyCard").classList.remove("talking", "me"); $("storySay").hidden = false; setPortrait(null, item.icon);
+    $("storyEyebrow").textContent = "やったよ！ 8,000歩 たっせい！ · お宝" + (step ? "　" + step : "");
     $("storyScene").textContent = item.icon;
     $("storyTitle").textContent = item.name;
     $("storyText").textContent = "📍 " + item.place + "\n" + item.desc;
@@ -3218,6 +3228,7 @@ body {
       set("後編の文", (v) => (c.textB = v));
       set("前編の会話", (v) => (c.talkA = parseTalk(v, icons)));
       set("後編の会話", (v) => (c.talkB = parseTalk(v, icons)));
+      set("お宝の会話", (v) => (c.talkC = parseTalk(v, icons)));
     });
     (data.bgs || []).forEach((r) => {
       const c = CHAPTERS[Number(r["No"]) - 1]; if (!c) return;
