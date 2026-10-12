@@ -1,0 +1,2919 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>チャンドゥ はいけい テスト</title><link rel="icon" href="icon-180.png"><style>body{margin:0;-webkit-tap-highlight-color:transparent}img{max-width:100%}[hidden]{display:none!important}body{padding-top:44px!important}.test-banner{position:fixed;top:0;left:0;right:0;z-index:40;background:#3b4a2a;color:#fff8ef;font:700 13px/1.5 "Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;text-align:center;padding:8px 16px}</style><script>window.CHANDU_TEST=true;window.CHANDU_BGTEST=true</script></head><body><div class="test-banner">🧪 テスト画面: はいけいの いちらん（本番の アプリには ありません）</div>
+<title>チャンドゥ育成</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+/* Layout: one handheld "egg device" centered on the page; LCD screen on top, stat meters, then a row of round buttons. */
+:root {
+  --ground: #f3e9dc;      /* warm paper behind the device */
+  --shell: #ff9a76;       /* device shell, coral */
+  --shell-dark: #e2704c;
+  --lcd: #dfe8c6;         /* LCD screen, pale olive */
+  --lcd-ink: #3b4a2a;     /* LCD ink */
+  --ink: #3a2a22;         /* text on paper */
+  --cream: #fff8ef;
+  --meter-good: #6fae5c;
+  --meter-mid: #e6b34a;
+  --meter-low: #d9573f;
+  --font-display: "DotGothic16", "Hiragino Maru Gothic ProN", monospace;
+  --font-body: "Zen Maru Gothic", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --ground: #2a2230; --ink: #f1e6dc; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --ground: #2a2230; --ink: #f1e6dc; color-scheme: dark; }
+
+html, body { height: 100%; }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--font-body);
+  padding: 16px;
+  padding-block: 20px;
+  box-sizing: border-box;
+  display: flex; justify-content: center; align-items: flex-start;
+}
+* { box-sizing: border-box; }
+
+.device {
+  width: 100%; max-width: 420px;
+  background: radial-gradient(120% 90% at 30% 10%, #ffb898 0%, var(--shell) 45%, var(--shell-dark) 100%);
+  border-radius: 46% 46% 40% 40% / 30% 30% 22% 22%;
+  padding: 34px 28px 56px;
+  box-shadow: inset 0 -10px 0 rgba(0,0,0,.08), inset 0 6px 0 rgba(255,255,255,.35), 0 18px 40px rgba(80,30,10,.25);
+  display: flex; flex-direction: column; gap: 16px;
+}
+.brand {
+  text-align: center; color: var(--cream);
+  font-family: var(--font-display); letter-spacing: .2em; font-size: 15px;
+  text-shadow: 0 2px 0 rgba(0,0,0,.15);
+}
+.screen {
+  background: var(--lcd);
+  border-radius: 18px;
+  border: 6px solid #7b4a36;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,.08), inset 0 8px 18px rgba(0,0,0,.08);
+  color: var(--lcd-ink);
+  font-family: var(--font-display);
+  padding: 10px 12px 12px;
+  display: flex; flex-direction: column; gap: 6px;
+  position: relative; overflow: hidden;
+}
+.screen.dark { background: #5b6648; color: #cfd8b4; }
+.topline { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.stage-name { font-size: 15px; }
+.stage { position: relative; height: 236px; display: flex; align-items: flex-end; justify-content: center; }
+#petWrap { transition: transform .25s; line-height: 0; }
+#pet { width: 220px; height: 220px; max-width: 100%; }
+.bubble {
+  position: absolute; z-index: 3; top: 4px; left: 50%; transform: translateX(-50%);
+  background: var(--cream); color: var(--lcd-ink);
+  border: 2px solid var(--lcd-ink); border-radius: 12px;
+  padding: 4px 10px; font-size: 14px; width: max-content; max-width: 92%; text-align: center; z-index: 1;
+
+  transition: opacity .3s;
+}
+.bubble:empty { opacity: 0; }
+.poops { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 2px; }
+.poops svg { width: 28px; height: 24px; }
+.zzz { position: absolute; left: 62%; top: 30px; font-size: 22px; animation: zz 2s infinite; }
+@keyframes zz { 0% { transform: translate(0,0); opacity: 0 } 30% { opacity: 1 } 100% { transform: translate(18px,-26px); opacity: 0 } }
+
+.bounce { animation: bounce 1.6s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes bounce { 0%,100% { transform: translateY(0) scale(1,1) } 45% { transform: translateY(-6px) scale(.98,1.02) } 55% { transform: translateY(-6px) } 80% { transform: translateY(0) scale(1.03,.97) } }
+.wobble { animation: wobble 1.2s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes wobble { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-6deg) } 75% { transform: rotate(6deg) } }
+.joy { animation: joy .5s ease-in-out 3; transform-origin: 50% 100%; }
+@keyframes joy { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-22px) } }
+.breathe { animation: breathe 3s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes breathe { 0%,100% { transform: scale(1,1) } 50% { transform: scale(1.03,.97) } }
+@media (prefers-reduced-motion: reduce) { .bounce, .wobble, .joy, .breathe, .zzz { animation: none; } }
+
+.meters { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; color: var(--cream); }
+.meter { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.meter-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.bar { height: 10px; border-radius: 6px; background: rgba(60,20,10,.28); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 50%; border-radius: 6px; background: var(--meter-good); transition: width .5s, background .5s; }
+
+.buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.btn {
+  appearance: none; border: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; color: var(--cream); font-family: var(--font-body); font-weight: 700; font-size: 12px;
+  padding: 0;
+}
+.btn .cap {
+  width: 52px; height: 52px; max-width: 100%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fffaf2, #f2dcc6 70%);
+  box-shadow: 0 4px 0 #b6573a, 0 6px 10px rgba(0,0,0,.18);
+  display: grid; place-items: center; font-size: 24px;
+  transition: transform .08s, box-shadow .08s;
+}
+.btn:active .cap { transform: translateY(3px); box-shadow: 0 1px 0 #b6573a; }
+.btn:focus-visible { outline: none; }
+.btn:focus-visible .cap { outline: 3px solid var(--cream); outline-offset: 3px; }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+
+.game { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 14px; text-align: center; }
+.game[hidden] { display: none; }
+.game-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.game-row.menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
+.game-row.menu button { font-family: var(--font-body); font-weight: 700; font-size: 12px; padding: 6px 2px; line-height: 1.3; }
+.game-row.menu button small { display: block; font-weight: 400; font-size: 10px; opacity: .75; }
+.game-row button.quit { font-family: var(--font-body); font-size: 12px; padding: 4px 12px; opacity: .85; }
+.game-row button.big { font-size: 26px; padding: 4px 14px; }
+.game-row button.shake { animation: shake .45s ease-in-out 2; }
+@keyframes shake { 0%,100% { transform: translateX(0) } 25% { transform: translateX(-5px) rotate(-6deg) } 75% { transform: translateX(5px) rotate(6deg) } }
+.fx { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.fx button { position: absolute; top: -40px; pointer-events: auto; background: none; border: 0; padding: 4px; font-size: 32px; line-height: 1; cursor: pointer; animation: fall var(--dur, 2.4s) linear forwards; }
+@keyframes fall { to { transform: translateY(290px) rotate(200deg); } }
+.fx .pop { position: absolute; font-family: var(--font-display); font-size: 18px; color: #b6573a; animation: popup .7s ease-out forwards; }
+@keyframes popup { to { transform: translateY(-30px); opacity: 0; } }
+.fx .flash { position: absolute; inset: 0; display: grid; place-items: center; font-size: 64px; }
+.bg { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; z-index: 0; }
+.bg svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.bg svg.in { animation: bgIn .9s ease-out; }
+@keyframes bgIn { from { opacity: 0 } to { opacity: 1 } }
+.screen.dark .bg { filter: brightness(.45) saturate(.7); }
+#petWrap { position: relative; z-index: 1; }
+.poops, .zzz { z-index: 1; }
+.bg-name { position: absolute; left: 8px; bottom: 14px; z-index: 1; font-size: 10px; background: rgba(255,248,239,.8); color: var(--lcd-ink); border-radius: 999px; padding: 1px 8px; max-width: 46%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bg-name:empty, .bg-credit:empty { display: none; }
+.bgt { position: fixed; inset: 0; z-index: 30; overflow-y: auto; background: var(--ground); color: var(--ink); padding: 56px 16px 32px; font-family: var(--font-body); }
+.bgt h1 { font-family: var(--font-display); font-weight: 400; font-size: 22px; margin: 0 0 4px; }
+.bgt p { font-size: 13px; margin: 0 0 10px; }
+.bgt select { font: inherit; font-size: 15px; padding: 6px 10px; border-radius: 10px; max-width: 100%; margin-bottom: 14px; }
+.bgt-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.bgt-card { display: flex; flex-direction: column; gap: 3px; font-size: 13px; }
+.bgt-card small { font-size: 11px; opacity: .8; overflow-wrap: anywhere; }
+.bgt-pic { position: relative; aspect-ratio: 300 / 236; border-radius: 12px; overflow: hidden; border: 3px solid #7b4a36; background: #dfe8c6; }
+.bgt-pic svg, .bgt-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .9s; }
+.bg img.on { opacity: 1; }
+.bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,248,239,.25), rgba(255,248,239,0) 35%, rgba(0,0,0,0) 70%, rgba(0,0,0,.18)); pointer-events: none; }
+.bg-credit { position: absolute; left: 8px; bottom: 2px; z-index: 1; font-family: var(--font-body); font-size: 8px; line-height: 1.3; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.7); max-width: 70%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .9; }
+@media (prefers-reduced-motion: reduce) { .bg svg.in, .game-row button.shake { animation: none; } }
+.game-row button {
+  font-family: var(--font-display); font-size: 18px; padding: 6px 18px; border-radius: 10px;
+  border: 2px solid var(--lcd-ink); background: var(--cream); color: var(--lcd-ink); cursor: pointer;
+}
+
+.footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--cream); font-size: 12px; }
+.footer button { font-family: var(--font-body); font-size: 12px; background: rgba(60,20,10,.22); color: var(--cream); border: 0; border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+.confirm { display: flex; gap: 6px; align-items: center; }
+.confirm[hidden] { display: none; }
+.walk { background: rgba(60,20,10,.2); border-radius: 16px; padding: 12px 14px; color: var(--cream); display: flex; flex-direction: column; gap: 8px; }
+.walk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+.walk-stats b { display: block; font-family: var(--font-display); font-size: 20px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.walk-stats span { font-size: 11px; letter-spacing: .05em; }
+.walk-note { font-size: 12px; text-align: center; }
+.walk details { font-size: 12px; line-height: 1.7; }
+.walk summary { cursor: pointer; font-weight: 700; }
+.walk ol { margin: 6px 0; padding-left: 1.3em; }
+.walk code { font-family: var(--font-display); background: rgba(255,255,255,.18); padding: 1px 4px; border-radius: 4px; word-break: break-all; }
+.walk-form { display: flex; gap: 6px; margin-top: 6px; }
+.walk-form input { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 6px 10px; border-radius: 10px; border: 0; background: var(--cream); color: #3a2a22; }
+.walk-form button, .copy { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 10px; padding: 6px 12px; cursor: pointer; }
+.voyage { background: rgba(60,20,10,.2); border-radius: 16px; padding: 12px 14px; color: var(--cream); display: flex; flex-direction: column; gap: 10px; }
+.voyage-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 2px 8px; }
+.voyage-head h2, .voyage-head span { white-space: nowrap; }
+.voyage-head h2 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 16px; letter-spacing: .06em; }
+.voyage-head span { font-size: 12px; font-variant-numeric: tabular-nums; }
+.route { position: relative; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding-top: 4px; }
+.route::before { content: ""; position: absolute; left: var(--edge, 6%); right: var(--edge, 6%); top: 22px; border-top: 3px dashed rgba(255,248,239,.45); }
+.route-fill { position: absolute; left: var(--edge, 6%); top: 21px; height: 5px; border-radius: 3px; background: #ffd166; transition: width .6s; }
+.stop { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 0; color: var(--cream); font-family: var(--font-body); font-size: 9px; font-weight: 700; line-height: 1.2; text-align: center; cursor: pointer; min-width: 0; }
+.stop i { width: 36px; height: 36px; max-width: 100%; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 18px; background: rgba(60,20,10,.35); border: 2px solid rgba(255,248,239,.5); filter: grayscale(1); opacity: .55; }
+.stop.done i { background: var(--cream); border-color: #ffd166; filter: none; opacity: 1; }
+.stop.here i { box-shadow: 0 0 0 3px #ffd166; filter: none; opacity: 1; background: #fff3d6; }
+.stop[disabled] { cursor: default; }
+.stop:focus-visible i { outline: 3px solid var(--cream); outline-offset: 2px; }
+.voyage-next { font-size: 12px; text-align: center; }
+.voyage-place { font-size: 12px; margin-top: -4px; }
+.goal { height: 8px; border-radius: 5px; background: rgba(60,20,10,.28); overflow: hidden; }
+.goal > i { display: block; height: 100%; width: 0; background: #ffd166; border-radius: 5px; transition: width .6s; }
+.story-card p { white-space: pre-line; }
+.treasures { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; font-size: 12px; }
+.treasures span { background: rgba(255,248,239,.18); border-radius: 999px; padding: 2px 9px; }
+.story { position: fixed; inset: 0; background: rgba(40,20,10,.55); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.story-card { width: 100%; max-width: 360px; background: var(--cream); color: #3a2a22; border-radius: 20px; border: 5px solid #7b4a36; padding: 18px 18px 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 16px 40px rgba(0,0,0,.35); animation: pop .35s ease-out; }
+@keyframes pop { from { transform: scale(.9); opacity: 0 } to { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .story-card { animation: none; } }
+.story-card .eyebrow { font-size: 11px; letter-spacing: .12em; color: #b6573a; font-weight: 700; }
+.story-card h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 22px; text-wrap: balance; }
+.story-card .scene { font-size: 56px; text-align: center; line-height: 1.1; }
+.story-card p { margin: 0; font-size: 14px; line-height: 1.8; }
+.story-card .say { background: #fff3d6; border-radius: 12px; padding: 8px 12px; font-size: 13px; }
+.story-card.talking .scene { font-size: 64px; }
+.story-card.talking h3 { font-size: 18px; }
+.story-card.talking p { background: #fff3d6; border: 2px solid #f0d9a8; border-radius: 14px; padding: 10px 12px; min-height: 4.2em; }
+.story-card.talking.me p { background: #ffe3cf; border-color: #f5b98f; }
+.story-card .reward { font-size: 13px; font-weight: 700; color: #6b3a1e; }
+.story-card button { align-self: center; font-family: var(--font-body); font-weight: 700; font-size: 15px; background: var(--shell); color: var(--cream); border: 0; border-radius: 999px; padding: 9px 28px; cursor: pointer; box-shadow: 0 3px 0 var(--shell-dark); }
+.vbtns { display: flex; justify-content: center; gap: 8px; }
+.vbtns button, .footer .help-btn { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.voyage-item { font-size: 12px; text-align: center; opacity: .95; }
+.story-card.wide { max-width: 440px; max-height: calc(100dvh - 32px); }
+.story-card .scroll { overflow-y: auto; min-height: 0; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.story-card ul { margin: 0; padding-left: 1.2em; font-size: 13px; line-height: 1.8; }
+.zk-count { font-size: 13px; font-weight: 700; color: #6b3a1e; text-align: center; }
+.zk-region summary { cursor: pointer; font-size: 13px; font-weight: 700; padding: 6px 2px; color: #6b3a1e; }
+.zk-region summary small { font-weight: 400; opacity: .8; }
+.zk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; padding: 4px 0 8px; }
+.story-card .zk-item { align-self: stretch; box-shadow: none; display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff3d6; border: 2px solid #f0d9a8; border-radius: 12px; padding: 6px 2px; font-family: var(--font-body); font-size: 10px; line-height: 1.25; color: #3a2a22; cursor: pointer; min-width: 0; }
+.story-card .zk-item b { font-size: 26px; font-weight: 400; line-height: 1.1; }
+.story-card .zk-item span { overflow-wrap: anywhere; text-align: center; }
+.story-card .zk-item.locked { background: #efe6da; border-color: #e2d6c6; cursor: default; color: #9a8b7d; }
+.story-card .zk-item.locked b { filter: brightness(0); opacity: .28; }
+.zk-item:focus-visible { outline: 3px solid #b6573a; outline-offset: 2px; }
+#itemInfo { z-index: 12; }
+
+@media (max-width: 380px) {
+  .device { padding: 26px 16px 24px; }
+  .btn .cap { width: 44px; height: 44px; font-size: 20px; }
+  .btn { font-size: 11px; }
+}
+</style>
+
+<div class="device" role="application" aria-label="チャンドゥの大冒険">
+  <div class="brand">CHANDU · チャンドゥ</div>
+
+  <div class="screen" id="screen">
+    <div class="topline">
+      <span class="stage-name" id="stageName">たまご</span>
+    </div>
+    <div class="stage" id="stage">
+      <div class="bg" id="bg" aria-hidden="true"></div>
+      <div class="bg-name" id="bgName"></div>
+      <div class="bg-credit" id="bgCredit"></div>
+      <div class="fx" id="fx"></div>
+      <div class="bubble" id="bubble" aria-live="polite"></div>
+      <div id="petWrap"><svg id="pet" viewBox="0 0 200 200" aria-hidden="true"></svg></div>
+      <div class="zzz" id="zzz" hidden>Z<small>z</small></div>
+      <div class="poops" id="poops"></div>
+    </div>
+    <div class="game" id="game" hidden>
+      <div id="gameText" aria-live="polite"></div>
+      <div class="game-row" id="gameRow"></div>
+    </div>
+  </div>
+
+  <div class="meters">
+    <div class="meter"><div class="meter-label"><span>おなか</span><span id="vHunger">-</span></div><div class="bar"><i id="mHunger"></i></div></div>
+    <div class="meter"><div class="meter-label"><span>ごきげん</span><span id="vHappy">-</span></div><div class="bar"><i id="mHappy"></i></div></div>
+    <div class="meter"><div class="meter-label"><span>げんき</span><span id="vEnergy">-</span></div><div class="bar"><i id="mEnergy"></i></div></div>
+    <div class="meter"><div class="meter-label"><span>きれい</span><span id="vClean">-</span></div><div class="bar"><i id="mClean"></i></div></div>
+  </div>
+
+  <section class="walk" aria-label="おさんぽ">
+    <div class="walk-stats">
+      <div><b id="wSteps">0</b><span>きょうの歩数</span></div>
+      <div><b id="wBanana">0</b><span>バナナ</span></div>
+      <div><b id="wKm">0.0</b><span>ぼうけん km</span></div>
+    </div>
+    <div class="walk-note" id="wNote">500歩 あるくごとに バナナが 1ぽん とれるよ</div>
+    <details id="wLink">
+      <summary>iPhoneの歩数と ぼくを つなぐ</summary>
+      <p>iPhoneの「ショートカット」Appで、ヘルスケアの歩数を ぼくに おくれるんだよ。いちど つくれば、タップ1回で とどくんだよ！</p>
+      <ol>
+        <li>ショートカットAppで「＋」を押して 新しいショートカットを つくる</li>
+        <li>「ヘルスケアサンプルを検索」を追加し、種類を「歩数」、開始日を「今日」にする</li>
+        <li>「統計を計算」を追加し、「合計」にする</li>
+        <li>「数値を丸める」を追加する（小数点をなくすため）</li>
+        <li>「URL」を追加し、下のアドレスの うしろに「丸めた数値」を つなげる</li>
+        <li>「URLを開く」を追加して完成。名前は「チャンドゥさんぽ」など</li>
+      </ol>
+      <p>URL: <code id="wUrl">https://claude.ai/artifact/7CTwVXui6onSx7CDKFxnko#s</code> <button type="button" class="copy" id="wCopy">コピー</button></p>
+      <p>「オートメーション」で 毎日 きまった じかんに うごくように すれば、もっと らくちんだよ。Safariで claude.ai に ログインしておいてね！</p>
+      <label for="wInput">歩数を 手で おしえてくれても いいよ</label>
+      <div class="walk-form">
+        <input id="wInput" type="number" inputmode="numeric" min="0" step="1" placeholder="きょうの歩数（例: 6500）">
+        <button type="button" id="wApply">はんえい</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="voyage" aria-label="ぼうけんの地図">
+    <div class="voyage-head"><h2 id="vTitle">シンドバッドの ぼうけん</h2><span id="vLap"></span></div>
+    <div class="voyage-place" id="vPlace"></div>
+    <div class="route" id="route"><div class="route-fill" id="routeFill"></div></div>
+    <div class="goal" aria-hidden="true"><i id="goalFill"></i></div>
+    <div class="voyage-next" id="vNext"></div>
+    <div class="voyage-item" id="vItem"></div>
+    <div class="treasures" id="treasures"></div>
+    <div class="vbtns"><button type="button" id="bZukan">📖 ご当地ずかん</button></div>
+  </section>
+
+  <div class="story" id="zukan" hidden role="dialog" aria-modal="true" aria-labelledby="zukanTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">ぼくの コレクション</div>
+      <h3 id="zukanTitle">ご当地ずかん</h3>
+      <div class="zk-count" id="zukanCount"></div>
+      <div class="scroll" id="zukanBody"></div>
+      <button type="button" id="zukanClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="itemInfo" hidden role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <div class="story-card">
+      <div class="eyebrow" id="infoEyebrow"></div>
+      <div class="scene" id="infoScene" aria-hidden="true"></div>
+      <h3 id="infoTitle"></h3>
+      <p id="infoText"></p>
+      <button type="button" id="infoClose">オッケー！</button>
+    </div>
+  </div>
+
+  <div class="story" id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">チャンドゥが おしえるね</div>
+      <h3 id="helpTitle">ぼくとの あそびかた</h3>
+      <div class="scroll">
+        <p>やっほー！ ぼく、チャンドゥ。シンドバッドの あいぼうだよ。ぼくを りっぱな おとなに そだててね！</p>
+        <ul>
+          <li>🍌 バナナは まいにち 3ぼん もらえるよ。500歩 あるくごとに 1ぽん ふえるんだ。ぼくの だいこうぶつで、たべると おなかも げんきも もどるんだ。つかれたら ちょうだいね！</li>
+          <li>📖 1日 5,000歩 あるくと、ぼうけんが 1わ すすむよ。シンドバッドの ものがたり → にっぽん一周 → せかいりょこうの じゅんばんだ！</li>
+          <li>🎁 1日 8,000歩 あるくと、そのとき いる とちの ご当地アイテムが もらえるよ！ にっぽん一周と せかいりょこうの あいだだけだから、ずかんを うめてね。</li>
+          <li>📊 おなか・ごきげん・げんき・きれいの 4つを たもってね。あそぶ・ねる・おそうじ・くすりで ぼくの おせわを してくれると うれしいな。</li>
+          <li>⏰ アプリを とじてても じかんは すすむよ。たまに ぼくの ようすを みにきてね！</li>
+          <li>📱 iPhoneアプリなら、あるいた 歩数が そのまま ぼくに とどくんだよ。</li>
+        </ul>
+        <p>よーし、いっしょに あるこうね！</p>
+      </div>
+      <button type="button" id="helpClose">わかった！</button>
+    </div>
+  </div>
+
+  <div class="story" id="story" hidden role="dialog" aria-modal="true" aria-labelledby="storyTitle">
+    <div class="story-card" id="storyCard">
+      <div class="eyebrow" id="storyEyebrow"></div>
+      <div class="scene" id="storyScene" aria-hidden="true"></div>
+      <h3 id="storyTitle"></h3>
+      <p id="storyText"></p>
+      <div class="say" id="storySay"></div>
+      <div class="reward" id="storyReward"></div>
+      <button type="button" id="storyNext">オッケー！</button>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button class="btn" id="bFeed" type="button"><span class="cap">🍌</span>バナナ</button>
+    <button class="btn" id="bPlay" type="button"><span class="cap">🎾</span>あそぶ</button>
+    <button class="btn" id="bSleep" type="button"><span class="cap" id="sleepIcon">🌙</span><span id="sleepLabel">ねる</span></button>
+    <button class="btn" id="bClean" type="button"><span class="cap">🧹</span>おそうじ</button>
+    <button class="btn" id="bMed" type="button"><span class="cap">💊</span>くすり</button>
+  </div>
+
+  <div class="footer">
+    <span><span id="form">ぼくの きもち: -</span> <small id="ver" style="opacity:.7"></small></span>
+    <span>
+      <button type="button" class="help-btn" id="bHelp">❓ あそびかた</button>
+    </span>
+  </div>
+</div>
+
+<script>
+(() => {
+  const VERSION = "1.6";
+  // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
+  const TEST = !!window.CHANDU_TEST;
+  const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
+  const MAX_OFFLINE_MIN = 12 * 60;
+  // Stage thresholds in minutes of age
+  const STAGES = [
+    { id: "egg",   name: "たまご",   until: 0.5 },
+    { id: "baby",  name: "ベビー",   until: 15 },
+    { id: "child", name: "こども",   until: 90 },
+    { id: "adult", name: "おとな",   until: Infinity },
+  ];
+
+  const clamp = (v) => Math.max(0, Math.min(100, v));
+  const $ = (id) => document.getElementById(id);
+
+  function today() { const d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
+  function fresh() {
+    const now = Date.now();
+    return { born: now, last: now, age: 0, hunger: 80, happy: 80, energy: 90, clean: 100,
+             poops: 0, sleeping: false, sick: false, careSum: 0, careTime: 0, lowTime: 0,
+             bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, chapter: 0, goalDays: 0, goalDay: "", treasures: {}, items: {}, itemDay: "" };
+  }
+  function load() {
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.age === "number") return Object.assign({ bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, chapter: 0, goalDays: 0, goalDay: "", treasures: {}, items: {}, itemDay: "" }, s); } catch (e) {}
+    return fresh();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  let S = (window.claude?.hot?.data && window.claude.hot.data.S) || load();
+  window.claude?.hot?.snapshot?.(() => ({ S }));
+
+  const stageOf = () => STAGES.find((st) => S.age < st.until);
+  const careAvg = () => (S.careTime > 0 ? S.careSum / S.careTime : 80);
+  function adultForm() {
+    const a = careAvg();
+    if (a >= 70) return { name: "キラキラ チャンドゥ", color: "#ffd166", crown: true };
+    if (a >= 45) return { name: "げんき チャンドゥ", color: "#ffb38a", crown: false };
+    return { name: "のんびり チャンドゥ", color: "#b9c7e8", crown: false, pale: true };
+  }
+
+  // ---- simulation: dt in minutes ----
+  function step(dt) {
+    const st = stageOf().id;
+    S.age += dt;
+    if (st === "egg") return;
+    const speed = st === "baby" ? 1.3 : 1;
+    if (S.sleeping) {
+      S.hunger -= 0.4 * dt * speed;
+      S.happy -= 0.2 * dt;
+      S.energy += 3 * dt;
+      if (S.energy >= 100) { S.energy = 100; S.sleeping = false; say("ふぁ〜 よくねた！ げんき いっぱいだよ！"); }
+    } else {
+      S.hunger -= 1.2 * dt * speed;
+      S.happy -= 0.9 * dt;
+      S.energy -= 0.7 * dt;
+      if (S.hunger > 30 && Math.random() < 0.06 * dt) { S.poops = Math.min(4, S.poops + 1); }
+    }
+    S.clean -= (0.15 + S.poops * 0.8) * dt;
+    if (S.poops > 0) S.happy -= 0.3 * S.poops * dt;
+    if (S.sick) { S.happy -= 0.6 * dt; S.energy -= 0.4 * dt; }
+    ["hunger", "happy", "energy", "clean"].forEach((k) => (S[k] = clamp(S[k])));
+
+    const low = S.hunger < 15 || S.clean < 20 || S.energy < 10;
+    S.lowTime = low ? S.lowTime + dt : Math.max(0, S.lowTime - dt);
+    if (!S.sick && S.lowTime > 3) { S.sick = true; say("うう… ぼく、ぐあい わるい… くすり ほしい…"); }
+
+    const avg = (S.hunger + S.happy + S.energy + S.clean) / 4 - (S.sick ? 15 : 0);
+    S.careSum += avg * dt; S.careTime += dt;
+  }
+
+  function catchUp() {
+    const now = Date.now();
+    let mins = Math.min(MAX_OFFLINE_MIN, (now - S.last) / 60000);
+    const away = mins;
+    while (mins > 0) { const d = Math.min(1, mins); step(d); mins -= d; }
+    S.last = now;
+    if (away > 5 && stageOf().id !== "egg") say(["おかえり！ まってたんだよ！", "シンドバッドかと おもった！ おかえり！"][Math.floor(Math.random() * 2)]);
+  }
+
+  // ---- speech ----
+  let sayTimer = 0;
+  function say(t, ms = 3200) {
+    $("bubble").textContent = t;
+    clearTimeout(sayTimer);
+    sayTimer = setTimeout(() => ($("bubble").textContent = ""), ms);
+  }
+
+  // ---- drawing ----
+  function mood() {
+    if (S.sleeping) return "sleep";
+    if (S.sick) return "sick";
+    const m = Math.min(S.hunger, S.happy, S.clean);
+    if (m < 25) return "sad";
+    if (S.happy > 70 && S.hunger > 50) return "happy";
+    return "ok";
+  }
+  function drawPet() {
+    const st = stageOf().id;
+    const svg = $("pet");
+    const ink = "#3b4a2a";
+    const setCls = (c) => { if (!cheering) svg.setAttribute("class", c); };
+    const setHTML = (h) => { if (svg._h !== h) { svg.innerHTML = h; svg._h = h; } };
+    if (st === "egg") {
+      setCls("wobble");
+      setHTML(`
+        <ellipse cx="100" cy="190" rx="50" ry="7" fill="rgba(59,74,42,.18)"/>
+        <path d="M100 40 C140 40 158 110 152 140 C146 175 124 188 100 188 C76 188 54 175 48 140 C42 110 60 40 100 40 Z" fill="#fff8ef" stroke="${ink}" stroke-width="4"/>
+        <circle cx="80" cy="110" r="9" fill="#ff9a76"/><circle cx="120" cy="140" r="12" fill="#ff9a76"/><circle cx="112" cy="82" r="6" fill="#ff9a76"/>
+        <path d="M66 150 l10 -8 l8 8 l10 -9 l9 9" fill="none" stroke="${ink}" stroke-width="3" stroke-linecap="round"/>`);
+      return;
+    }
+    const size = st === "baby" ? 0.62 : st === "child" ? 0.82 : 1;
+    const adult = st === "adult" ? adultForm() : null;
+    const md = mood();
+    const sc = size;
+    const K = "#2b1d14";           // outline / stripes
+    const OR = adult && adult.pale ? "#f6a95c" : "#f4891f"; // tiger orange
+    const W = "#fffdf8";           // white fur
+    const RED = "#d3123f";         // turban red
+    const GOLD = "#e3b23c";
+    // eyes: big white eyes with dark irises, like the reference
+    let eyes;
+    if (md === "sleep") eyes = `<path d="M70 104 q10 8 20 0 M110 104 q10 8 20 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    else if (md === "happy") eyes = `<path d="M70 106 q10 -13 20 0 M110 106 q10 -13 20 0" stroke="${K}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+    else if (md === "sick") eyes = `<path d="M72 96 l14 14 M86 96 l-14 14 M114 96 l14 14 M128 96 l-14 14" stroke="${K}" stroke-width="4" stroke-linecap="round"/>`;
+    else {
+      const look = md === "sad" ? 3 : 0;
+      eyes = `<ellipse cx="80" cy="102" rx="13" ry="15" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="120" cy="102" rx="13" ry="15" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="82" cy="${104 + look}" rx="8" ry="10" fill="#3a2316"/><ellipse cx="118" cy="${104 + look}" rx="8" ry="10" fill="#3a2316"/>
+        <circle cx="85" cy="${100 + look}" r="3" fill="#fff"/><circle cx="121" cy="${100 + look}" r="3" fill="#fff"/>
+        ${md === "sad" ? `<path d="M68 86 l18 4 M132 86 l-18 4" stroke="${K}" stroke-width="3" stroke-linecap="round"/>` : `<path d="M68 86 q12 -6 22 0 M110 86 q12 -6 22 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`}`;
+    }
+    let mouth;
+    if (md === "happy") mouth = `<path d="M90 130 q10 14 20 0 z" fill="#e0576a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    else if (md === "sad" || md === "sick") mouth = `<path d="M91 136 q9 -7 18 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    else if (md === "sleep") mouth = `<ellipse cx="100" cy="133" rx="3.5" ry="2.5" fill="${K}"/>`;
+    else mouth = `<path d="M100 125 v4 M90 129 q5 5 10 0 q5 5 10 0" stroke="${K}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    const sweat = md === "sick" || md === "sad" ? `<path d="M148 80 q6 10 0 14 q-6 -4 0 -14z" fill="#7fb6e8" stroke="${K}" stroke-width="2"/>` : "";
+    const sparkle = adult && adult.crown ? `<g fill="${GOLD}" stroke="${K}" stroke-width="1.5"><path d="M32 60 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 z"/><path d="M172 44 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 z"/></g>` : "";
+    const tail = st !== "baby" ? `
+        <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${K}" stroke-width="16" stroke-linecap="round"/>
+        <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${OR}" stroke-width="10" stroke-linecap="round"/>
+        <path d="M161 166 l8 -6 M171 148 l8 -2 M174 128 l7 2 M170 112 l6 4" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="168" cy="100" r="5" fill="${K}"/>` : "";
+    const whiskers = `<path d="M70 124 l-36 -8 M70 130 l-38 2 M130 124 l36 -8 M130 130 l38 2" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>`;
+    const gem = adult && adult.crown ? 11 : 9;
+    const turban = `
+        <circle cx="114" cy="54" r="28" fill="${RED}" stroke="${K}" stroke-width="3"/>
+        <path d="M88 48 q26 -14 52 0 M87 60 q27 -12 54 0 M92 70 q22 -8 44 0 M114 26 q-10 28 0 56" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="116" cy="58" rx="${gem + 3}" ry="${gem + 5}" fill="${GOLD}" stroke="${K}" stroke-width="2"/>
+        <ellipse cx="116" cy="58" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
+        <path d="M112 53 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/>`;
+    setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
+    setHTML(`
+      <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
+      <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
+        ${sparkle}${tail}
+        <ellipse cx="100" cy="162" rx="40" ry="30" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
+        <path d="M66 152 l10 4 M64 166 l11 2 M134 152 l-10 4 M136 166 l-11 2" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="100" cy="166" rx="20" ry="22" fill="${W}"/>
+        <ellipse cx="82" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="118" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <path d="M78 183 v6 M86 183 v6 M114 183 v6 M122 183 v6" stroke="${K}" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="58" cy="66" r="17" fill="${K}"/><circle cx="58" cy="66" r="12" fill="${W}"/>
+        <circle cx="142" cy="66" r="17" fill="${K}"/><circle cx="142" cy="66" r="12" fill="${W}"/>
+        <path d="M100 58 C146 58 158 88 156 112 C154 138 130 148 100 148 C70 148 46 138 44 112 C42 88 54 58 100 58 Z" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
+        <path d="M46 112 q4 30 30 34 q-8 -10 -6 -22 z M154 112 q-4 30 -30 34 q8 -10 6 -22 z" fill="${W}"/>
+        <path d="M94 64 l2 12 M106 64 l-2 12 M100 62 v10 M48 96 l12 2 M47 108 l12 -1 M152 96 l-12 2 M153 108 l-12 -1" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="89" cy="128" rx="14" ry="11" fill="${W}"/><ellipse cx="111" cy="128" rx="14" ry="11" fill="${W}"/>
+        <path d="M92 116 q8 -4 16 0 q-2 8 -8 10 q-6 -2 -8 -10 z" fill="#e88a9c" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>
+        ${whiskers}${eyes}${mouth}
+        <path d="M74 146 q26 10 52 0" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="100" cy="158" r="10" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
+        <path d="M91 157 h18 M100 160 v7" stroke="${K}" stroke-width="2"/><circle cx="96" cy="153" r="2.5" fill="#fff6c8"/>
+        ${turban}${sweat}
+      </g>`);
+  }
+  const POOP = `<svg viewBox="0 0 28 24"><path d="M4 22 q-3 -6 4 -8 q-2 -6 6 -7 q0 -6 4 -6 q2 4 6 6 q4 2 0 7 q6 2 2 8 z" fill="#8a5a3a" stroke="#3b4a2a" stroke-width="1.5"/></svg>`;
+
+  function meter(id, v) {
+    const bar = $("m" + id); bar.style.width = v + "%";
+    bar.style.background = v > 55 ? "var(--meter-good)" : v > 25 ? "var(--meter-mid)" : "var(--meter-low)";
+    $("v" + id).textContent = Math.round(v);
+  }
+
+  let lastStage = stageOf().id;
+  // ---- Sindbad's voyage: every day you walk DAILY_GOAL steps, the story moves on one chapter ----
+  const DAILY_GOAL = 5000;
+  const GROUPS = [
+    { name: "シンドバッドの ぼうけん", chapters: [
+      { icon: "⛵", short: "みなと", place: "シンドバッドの みなと", title: "シンドバッドの みなと",
+        text: "ここが ぼくと シンドバッドの みなとだよ！ はたや のぼりが ゆれて、みんなが みおくってくれるんだ。3にんの けんじゃの じいちゃんたちが「あらしに きをつけろ」って さけんでた。えへへ、ぼくたちなら だいじょうぶ！",
+        say: "いってきまーす！ シンドバッド、いこうね！" },
+      { icon: "🧜", short: "マーメイド", place: "マーメイドの いわば", title: "マーメイドの いわば",
+        text: "うわっ、あらしで ふねが いわに ドカーン！ もう ダメかと おもったら、マーメイドたちが うたって たすけてくれたんだ。あたらしい ふねも もらって、ぼうけん つづけるよ！",
+        say: "マーメイドの おねえさん、ありがとう！", reward: { bananas: 2, item: "しんじゅ" } },
+      { icon: "🪶", short: "ルフ鳥", place: "ルフ鳥の しま", title: "ルフ鳥の しま",
+        text: "でっかい ルフ鳥の たまごから、かいぞくが はねを ぬすもうと してたんだ！ ぼくと シンドバッドで とめに はいったら、ルフ鳥が かいぞくを つかんで ビューン！ やったね！",
+        say: "たまごに さわるなー！ がおー！", reward: { bananas: 2, item: "ルフの はね" } },
+      { icon: "🎻", short: "巨人", place: "巨人の どうくつ", title: "巨人の どうくつ",
+        text: "ルフの はねで ろうやの かぎを あけて、つかまってた 巨人を たすけたよ。ぼくも かいぞくを おいはらったんだよ！ 巨人は おれいに 楽器を ひいて、きんかを くれたんだよ。",
+        say: "巨人の うた、おなかに ひびくぅ〜！", reward: { bananas: 3, item: "きんか" } },
+      { icon: "🐘", short: "宮殿", place: "サルタンの 宮殿", title: "サルタンの 宮殿",
+        text: "ぞうさんが はこぶ こしの よこを とおって、サルタンの 宮殿へ。サルタンが、あばれる サルたちを しずめる まほうの 楽器を くれたんだ。ぼくは おっきな たいこで ぴょんぴょん！",
+        say: "ぼよーん ぼよーん！ たのしー！", reward: { bananas: 3, item: "まほうの 楽器" } },
+      { icon: "🐒", short: "サルの国", place: "サルの 国", title: "サルの 国",
+        text: "まほうの 楽器を ならしたら、サルたちも いっしょに えんそう！ サルの 王さまとも ともだちに なったよ。おれいに バナナが どっさり！ ぼく、しあわせすぎる…。",
+        say: "バナナの やま！ ぼく、ここに すみたい…！", reward: { bananas: 10, item: "サルの 王さまの かんむり" } },
+      { icon: "🐋", short: "クジラ", place: "クジラの かいきょう", title: "クジラの かいきょう",
+        text: "月あかりの なか、でっかい クジラが あらわれたんだ。やさしい クジラは ぼくたちを せなかに のせて、あらなみを ザブーンと こえていったよ！",
+        say: "せなか ひろーい！ しおが ぷしゅー！", reward: { bananas: 3, item: "クジラの しお" } },
+      { icon: "🎆", short: "ただいま", place: "シンドバッドの みなと", title: "おかえり、シンドバッド！",
+        text: "みなとに かえったら「おかえり シンドバッド」の のぼりと はなび！ いちばんの たからものは、たびで できた ともだち なんだって。…そしたら シンドバッドが にやっと わらった。「つぎは でんせつの 7つの こうかいだ！」",
+        say: "でんせつの こうかい!? いくいく！", reward: { bananas: 5, item: "ともだちの きずな" } },
+    ] },
+    { name: "1かいめの こうかい", chapters: [
+      { icon: "🏙️", short: "バスラ", place: "バグダッド → バスラ（イラク）", title: "バスラの みなと",
+        text: "まずは バグダッドから かわを くだって、うみの みなと バスラへ！ しょうにんたちと にもつを つみこんで、インドの ほうへ しゅっぱつだよ！",
+        say: "スパイスの いい におい！ くんくん", reward: { bananas: 2, item: "コショウの ふくろ" } },
+      { icon: "🐋", short: "クジラ島", place: "インド洋", title: "うごく しま",
+        text: "みどりの しまに あがって ひを たいたら… しまが ぐらっ！ なんと ねてた おおクジラの せなか だったんだ！ ぼくと シンドバッドは きの おけに つかまって ぷかぷか…。",
+        say: "しまじゃ なかったの!? びしょびしょだよ〜", reward: { bananas: 2, item: "きの おけ" } },
+      { icon: "🐎", short: "王さま", place: "インドの 西の 海岸", title: "マフラジャーン王の くに",
+        text: "ながれついた くにで、やさしい マフラジャーン王に あったんだ。みなとの しごとを てつだってたら、はぐれた ふねが にもつごと やってきた！ ぶじに バグダッドに かえれたよ。",
+        say: "王さま、ありがとう！ にもつも もどってきたよ", reward: { bananas: 3, item: "王さまの おくりもの" } },
+    ] },
+    { name: "2かいめの こうかい", chapters: [
+      { icon: "🌴", short: "むじん島", place: "インド洋の むじんとう", title: "おきざりの しま",
+        text: "しまで ひるねして おきたら、ふねが いない！ たかい きに のぼったら、まっしろで まるい やねが 見えたんだ。ちかよってみたら… ルフ鳥の でっかい たまご だった！",
+        say: "これ、なんにんぶんの オムレツだ…？", reward: { bananas: 2, item: "たまごの から" } },
+      { icon: "🪶", short: "ルフ鳥", place: "インド洋の そら", title: "ルフ鳥と そらの たび",
+        text: "シンドバッドが ターバンで じぶんと ぼくを ルフ鳥の あしに むすびつけたんだ。ルフ鳥が とびたつと、くもの うえを びゅーん！ ふかい たにに おろされたよ。",
+        say: "たかーい！ ぼくの ターバン とばないでくれー！", reward: { bananas: 2, item: "おおきな はね" } },
+      { icon: "💎", short: "ダイヤの谷", place: "セレンディブ（スリランカ）ちかく", title: "ダイヤモンドの たに",
+        text: "たには ダイヤモンドで きらっきら！ でも でっかい ヘビも いるんだ…。シンドバッドは にくの かたまりに つかまって、ワシに はこんでもらって だっしゅつ！ もちろん ダイヤも いっしょだよ。",
+        say: "きらきら… でも ヘビは にがて！", reward: { bananas: 3, item: "ダイヤモンド" } },
+    ] },
+    { name: "3かいめの こうかい", chapters: [
+      { icon: "🐒", short: "サルの島", place: "アンダマン海", title: "ふしぎな サルの しま",
+        text: "ふねが けむくじゃらの サルたちに かこまれて、しまに おいてかれちゃった。ぼくが「がおー」って ほえても、サルたち へっちゃら なんだもん…。",
+        say: "がおー！ …あれ、こわくないの？", reward: { bananas: 4, item: "サルの しっぽの け" } },
+      { icon: "🏰", short: "巨人", place: "なぞの しま", title: "巨人の やかた",
+        text: "でっかい やかたの 巨人から にげるため、みんなで いかだを つくったんだ。よるの うちに こっそり うみへ こぎだして、なんとか にげきったよ！",
+        say: "しーっ… ねてる ねてる… いまだ！", reward: { bananas: 2, item: "いかだの ロープ" } },
+      { icon: "🐍", short: "大ヘビ", place: "ベンガル湾の しま", title: "大ヘビの しま",
+        text: "こんどは 大ヘビの しま！ きの いたで まわりを かこんで よるを すごして、あさ とおりかかった ふねに たすけてもらった。その ふねに シンドバッドの なくした にもつが のってたんだよ！",
+        say: "ねむれなかった… でも にもつ あったね！", reward: { bananas: 3, item: "白檀（びゃくだん）" } },
+    ] },
+    { name: "4かいめの こうかい", chapters: [
+      { icon: "🌊", short: "あらし", place: "インド洋", title: "あらしの うみ",
+        text: "おおあらしで ふねが こわれて、いたに つかまって なみに ゆられたんだ。ながーい よるの あと、しらない しまの はまに ついたよ。",
+        say: "シンドバッド、だいじょうぶ？ ぼくが あっためて あげるね！", reward: { bananas: 2, item: "ながれぎ" } },
+      { icon: "🐴", short: "くら", place: "スマトラ（インドネシア）", title: "くらを つくった シンドバッド",
+        text: "その くにの ひとたち、うまに のるのに「くら」を つかってなかったんだ。シンドバッドが くらを つくって みせたら、王さまは おおよろこび！ くにじゅうで ひっぱりだこだよ。",
+        say: "シンドバッド すごーい！ ぼくのも つくってほしいな！", reward: { bananas: 3, item: "かわの くら" } },
+      { icon: "🕯️", short: "どうくつ", place: "スマトラの 山", title: "ちかの どうくつ",
+        text: "まいごに なって、まっくらな ちかの どうくつに とじこめられちゃった…。でも どうぶつの あとを ついていったら、ひかりの すきまを 見つけたんだ！ うみべに でて、ふねに たすけてもらったよ。",
+        say: "ぼくの はなが ひかりを みつけたんだよ！", reward: { bananas: 3, item: "ふしぎな ほうせき" } },
+    ] },
+    { name: "5かいめの こうかい", chapters: [
+      { icon: "🥚", short: "ルフの卵", place: "インド洋の しま", title: "ルフ鳥の いかり",
+        text: "なかまの しょうにんが ルフ鳥の たまごを わっちゃった！ おこった ルフ鳥が そらから でっかい いわを おとしてきて、ふねは まっぷたつ…！",
+        say: "ごめんなさーい！ ぼくじゃ ないってばー！", reward: { bananas: 2, item: "いわの かけら" } },
+      { icon: "👴", short: "海の老人", place: "なぞの しま", title: "うみの ろうじん",
+        text: "かわを わたりたいって いう おじいさんを おんぶしたら、ぜんぜん おりてくれないんだ！ シンドバッドが ぶどうの ジュースを のませて、うとうと した すきに そーっと おろしたよ。",
+        say: "おもかった〜… つぎは ぼくを おんぶしてね！", reward: { bananas: 2, item: "ぶどうの つる" } },
+      { icon: "🥥", short: "ヤシの森", place: "マレー半島", title: "ヤシの みの もり",
+        text: "きの うえの サルに こいしを なげたら、サルたちが ヤシの みを なげかえしてきた！ あつめた ヤシの みを うって、コショウや しんじゅに かえたんだよ。",
+        say: "ヤシの み あまーい！ バナナの つぎに すき！", reward: { bananas: 4, item: "ヤシの み" } },
+    ] },
+    { name: "6かいめの こうかい", chapters: [
+      { icon: "💠", short: "宝石の浜", place: "インド洋の はて", title: "ほうせきの はま",
+        text: "ふねが ながされて ついた はまは、ほうせきや こはくで いっぱい！ でも まちは なさそう…。どうやって かえろう？",
+        say: "きれいだけど… はら へったな", reward: { bananas: 2, item: "こはく" } },
+      { icon: "🛶", short: "地下の川", place: "やまの した", title: "ちかを ながれる かわ",
+        text: "シンドバッドが いかだを つくって、やまの したを ながれる くらい かわへ。いかだに ほうせきを つんで、まっくらな なかを どこまでも ながれていったんだ。",
+        say: "まっくら… シンドバッド、て にぎっててね", reward: { bananas: 2, item: "いかだの かい" } },
+      { icon: "🏝️", short: "セレンディブ", place: "セレンディブ（スリランカ）", title: "セレンディブの 王さま",
+        text: "めを さましたら、そこは セレンディブ！ やさしい 王さまが むかえてくれて、バグダッドの カリフへの てがみと おくりものを たのまれたよ。",
+        say: "おちゃの いい かおり！", reward: { bananas: 3, item: "セイロンの おちゃ" } },
+    ] },
+    { name: "7かいめの こうかい", chapters: [
+      { icon: "🎁", short: "カリフ", place: "バグダッド（イラク）", title: "カリフの つかい",
+        text: "バグダッドの カリフ、ハールーン・アッ＝ラシードに「セレンディブの 王さまに おくりものを とどけてくれ」って たのまれたんだ。さいごの こうかいの はじまりだよ！",
+        say: "おつかいだね！ ぼくに まかせて！", reward: { bananas: 2, item: "カリフの てがみ" } },
+      { icon: "🐘", short: "ぞうの森", place: "インドの もり", title: "ぞうの はかば",
+        text: "かえりみちで かいぞくに つかまって、ぞうの もりで はたらく ことに…。ある日、ぞうたちが シンドバッドを ぞうげの ねむる ひみつの ばしょへ つれてったんだ。「もう ぞうを おわないで」って おねがい だったんだよ。",
+        say: "ぞうさん、ぼくたち ともだちだよ！", reward: { bananas: 3, item: "ぞうの ともだちの しるし" } },
+      { icon: "🏠", short: "ただいま", place: "バグダッド（イラク）", title: "ただいま、バグダッド",
+        text: "ながーい たびが おわって、バグダッドの いえに かえってきた。うみ、しま、どうぶつ、ひとびと… せかいじゅうに ともだちが できたよ。でも ぼく、もう つぎの たびが したくて うずうず してるんだ！",
+        say: "シンドバッド、つぎは どこ いく？ ぼく、日本に いってみたい！", reward: { bananas: 5, item: "せかいの ちず" } },
+    ] },
+  ];
+  // After the legend: a trip around Japan (islands included), then around the world, one place per chapter.
+  // "#region" starts a region, "@parent|icon" sets the country or prefecture for the "place|sight|food" lines
+  // below it, and "icon|place|sight|food" is a place with no parent.
+  const JAPAN = `
+#沖縄の 島々
+@沖縄|🏝️
+与那国島|日本の いちばん 西の はしの 碑を 見た|カジキ
+石垣島|川平湾の エメラルドの 海を 見た|八重山そば
+西表島|マングローブの 川を カヌーで すすんだ|パイナップル
+竹富島|水牛車で 赤瓦の 村を めぐった|ちんすこう
+宮古島|宮古ブルーの 海と 伊良部大橋を 見た|宮古そば
+久米島|白い 砂だけの 島 はての浜を 歩いた|車えび
+座間味島|ザトウクジラの ジャンプを 見た|もずく
+沖縄本島|首里城と 美ら海水族館の ジンベエザメを 見た|ゴーヤーチャンプルー
+#鹿児島の 島々
+@鹿児島|🏝️
+与論島|潮が ひくと あらわれる 百合ヶ浜を 歩いた|パパイヤ漬け
+沖永良部島|鍾乳洞 昇竜洞を 探検した|黒糖
+徳之島|力強い 闘牛を 見た|タンカン
+奄美大島|アマミノクロウサギの すむ 森を 歩いた|鶏飯
+喜界島|大きな ガジュマルの 木を 見た|白ごま
+屋久島|樹齢 数千年の 縄文杉に 会いに いった|トビウオ
+種子島|ロケットの 発射場を 見学した|安納いも
+#九州
+🗾|鹿児島|けむりを あげる 桜島を 見た|黒豚の とんかつ
+🗾|宮崎|高千穂峡を ボートで すすんだ|チキン南蛮
+🗾|熊本|熊本城と 阿蘇山を 見た|からしれんこん
+@熊本|🏝️
+天草|海で 野生の イルカを 見た|うに丼
+🗾|長崎|夜景と 軍艦島を 見た|ちゃんぽん
+@長崎|🏝️
+五島列島|海辺の 教会を めぐった|五島うどん
+壱岐|サルの 形を した 猿岩を 見た|壱岐牛
+対馬|晴れた 日には 韓国が 見える 展望台に のぼった|対馬の アナゴ
+🗾|佐賀|焼き物の まち 有田を 歩いた|呼子の イカ
+🗾|福岡|太宰府天満宮を おまいりした|とんこつラーメン
+🗾|大分|地獄めぐりの 温泉を 見た|とり天
+#四国
+🗾|愛媛|古い 温泉 道後温泉に 入った|みかん
+@愛媛|🏝️
+大三島|しまなみ海道を 自転車で わたった|レモンケーキ
+🗾|高知|桂浜の 坂本龍馬の 像を 見た|かつおのたたき
+🗾|徳島|鳴門の うずしおを 船から 見た|徳島ラーメン
+🗾|香川|こんぴらさんの 785段の 石段を のぼった|讃岐うどん
+@香川|🏝️
+小豆島|オリーブ公園と 海の 道 エンジェルロードを 歩いた|小豆島そうめん
+直島|海辺の 水玉の かぼちゃの アートを 見た|ハマチ
+#中国地方
+🗾|岡山|後楽園と 倉敷の まち並みを 歩いた|きびだんご
+🗾|広島|平和記念公園で 平和を いのった|お好み焼き
+@広島|🏝️
+宮島|海に 立つ 大鳥居を 見た|もみじまんじゅう
+🗾|山口|木の アーチの 錦帯橋を わたった|ふぐ
+@山口|🏝️
+角島|エメラルドの 海の 上の 角島大橋を わたった|瓦そば
+🗾|島根|出雲大社で 縁むすびを おねがいした|出雲そば
+@島根|🏝️
+隠岐|ろうそくのような 形の ローソク島の 夕日を 見た|岩ガキ
+🗾|鳥取|鳥取砂丘で ラクダに のった|二十世紀梨
+#近畿
+🗾|兵庫|白くて うつくしい 姫路城を 見た|明石焼き
+@兵庫|🏝️
+淡路島|花いっぱいの 公園を 歩いた|淡路島たまねぎ
+🗾|大阪|大阪城と 道頓堀を 歩いた|たこ焼き
+🗾|和歌山|那智の滝と パンダの いる 白浜を たずねた|梅干し
+🗾|奈良|奈良公園で シカに せんべいを あげた|柿の葉ずし
+🗾|京都|伏見稲荷の 千本鳥居を くぐった|抹茶パフェ
+🗾|滋賀|日本一 大きな 琵琶湖を ながめた|近江牛
+🗾|三重|伊勢神宮を おまいりした|伊勢うどん
+@三重|🏝️
+答志島|海女さんの いる 島を 歩いた|伊勢えび
+#中部
+🗾|愛知|名古屋城の 金の しゃちほこを 見た|みそかつ
+@愛知|🏝️
+日間賀島|タコの 島で 港を 歩いた|タコ
+🗾|岐阜|白川郷の 合掌造りの 家を 見た|飛騨牛
+🗾|福井|恐竜博物館で 化石を 見た|越前がに
+🗾|石川|金沢の 兼六園を 歩いた|のどぐろ
+🗾|富山|立山黒部の 雪の 大谷を 歩いた|白えび
+🗾|新潟|日本一 長い 信濃川の 河口を 見た|コシヒカリの おにぎり
+@新潟|🏝️
+佐渡島|たらい舟に のった|南蛮えび
+🗾|長野|地獄谷で 温泉に 入る サルを 見た|信州そば
+🗾|山梨|湖に うつる 逆さ富士を 見た|ほうとう
+🗾|静岡|富士山を 見上げた|お茶
+#関東と 伊豆・小笠原
+🗾|神奈川|横浜の 中華街と 鎌倉の 大仏を 見た|シューマイ
+@神奈川|🏝️
+江の島|島の 灯台に のぼった|しらす丼
+🗾|東京|東京タワーと スカイツリーに のぼった|もんじゃ焼き
+@東京|🏝️
+伊豆大島|三原山の 火山の 砂漠を 歩いた|あしたばの 天ぷら
+八丈島|島の 森で 光る キノコを 見た|島ずし
+小笠原諸島|イルカや ウミガメと 泳いだ|島の パッションフルーツ
+🗾|千葉|房総の 海と 成田山を たずねた|落花生
+🗾|埼玉|小江戸 川越の 時の鐘を 見た|草加せんべい
+🗾|茨城|ネモフィラの 青い 丘を 見た|納豆
+🗾|栃木|日光東照宮の「見ざる 言わざる 聞かざる」の サルを 見た|ぎょうざ
+🗾|群馬|草津温泉の 湯畑を 見た|焼きまんじゅう
+#東北
+🗾|福島|会津の 鶴ヶ城を 見た|喜多方ラーメン
+🗾|宮城|日本三景 松島を 船で めぐった|牛タン
+🗾|山形|山寺の 1000段の 石段を のぼった|さくらんぼ
+@山形|🏝️
+飛島|ウミネコの 島を 歩いた|岩のり
+🗾|秋田|なまはげに 会った|きりたんぽ
+🗾|岩手|平泉の 中尊寺金色堂を 見た|わんこそば
+🗾|青森|ねぶた祭を 見た|リンゴ
+#北海道
+@北海道|🗾
+函館|函館山から 夜景を 見た|イカそうめん
+@北海道|🏝️
+奥尻島|なべの つるのような 形の 鍋釣岩を 見た|アワビ
+@北海道|🗾
+小樽|運河と ガラスの まちを 歩いた|おすし
+札幌|さっぽろ雪まつりを 見た|みそラーメン
+富良野・美瑛|ラベンダー畑と 青い池を 見た|メロン
+旭川|旭山動物園で ペンギンの おさんぽを 見た|しょうゆラーメン
+帯広|広い 十勝の 畑を 見た|豚丼
+釧路|釧路湿原で タンチョウを 見た|炉端焼き
+知床|流氷と ヒグマを 見た|サケ
+稚内|日本の いちばん 北の はし 宗谷岬に 立った|タコしゃぶ
+@北海道|🏝️
+利尻島|海に うかぶ 利尻富士を 見上げた|ウニ
+礼文島|花の 浮島で 高山植物を 見た|ホッケ
+`;
+  // Wikipedia article (or search words) for a real photo of each tour stop, in tour order
+  const PHOTO_Q = `
+与那国島 西崎
+川平湾
+西表島 マングローブ
+竹富島
+伊良部大橋
+はての浜
+座間味島
+首里城
+百合ヶ浜
+昇竜洞
+徳之島
+奄美大島
+喜界島
+縄文杉
+種子島宇宙センター
+桜島
+高千穂峡
+熊本城
+天草諸島
+端島 (長崎県)
+五島列島 教会
+猿岩
+対馬
+有田町
+太宰府天満宮
+別府地獄めぐり
+道後温泉
+しまなみ海道
+桂浜
+鳴門の渦潮
+金刀比羅宮
+エンジェルロード
+直島
+倉敷美観地区
+原爆ドーム
+厳島神社
+錦帯橋
+角島大橋
+出雲大社
+ローソク島
+鳥取砂丘
+姫路城
+淡路島
+大阪城
+那智滝
+奈良公園
+伏見稲荷大社
+琵琶湖
+伊勢神宮
+答志島
+名古屋城
+日間賀島
+白川郷
+福井県立恐竜博物館
+兼六園
+雪の大谷
+信濃川
+たらい舟
+地獄谷野猿公苑
+逆さ富士
+富士山
+鎌倉大仏
+江の島
+東京スカイツリー
+三原山
+八丈島
+小笠原諸島
+成田山新勝寺
+時の鐘 (川越市)
+国営ひたち海浜公園
+日光東照宮
+草津温泉 湯畑
+鶴ヶ城
+松島
+立石寺
+飛島
+なまはげ
+中尊寺金色堂
+青森ねぶた
+函館山
+鍋釣岩
+小樽運河
+さっぽろ雪まつり
+青い池
+旭山動物園
+十勝平野
+釧路湿原
+知床五湖
+宗谷岬
+利尻山
+礼文島
+バグダード
+イマーム広場
+クウェート・タワー
+生命の木 (バーレーン)
+ドーハ
+ブルジュ・ハリファ
+ソハール
+シバーム
+アル・ウラー
+ペトラ
+ダマスカス
+カッパドキア
+ペトラ・トゥ・ロミウ
+ジェイタ洞窟
+死海
+ベツレヘム
+ギザの大ピラミッド
+メロエ
+スッド
+アスマラ
+アッサル湖
+ラリベラ
+モガディシュ
+マサイマラ国立保護区
+ビクトリア湖
+ヴォルカン国立公園
+タンガニーカ湖
+キリマンジャロ
+ココ・デ・メール
+コモロ
+バオバブ街道
+ル・モーン・ブラバン
+モザンビーク島
+マラウイ湖
+ヴィクトリアの滝
+グレート・ジンバブエ遺跡
+オカバンゴ・デルタ
+ソススフレイ
+テーブルマウンテン
+レソト
+エスワティニ
+カランドゥーラの滝
+コンゴ川
+オザラ国立公園
+ロアンゴ国立公園
+ビオコ島
+サントメ島
+カメルーン山
+ザンガ・サンガ
+ウニアンガ湖群
+ズマ・ロック
+アガデス
+ガンビエ
+ロメ
+ケープコースト城
+ノートルダム・ド・ラ・ペ大聖堂
+シンドゥの岩峰群
+ジェンネの泥のモスク
+モンロビア
+タクガマ・チンパンジー保護区
+フータ・ジャロン
+ビジャゴ諸島
+ガンビア川
+レトバ湖
+カーボベルデ
+リシャット構造
+シャウエン
+タッシリ・ナジェール
+シディ・ブ・サイド
+レプティス・マグナ
+バレッタ
+エトナ火山
+ポンペイ
+コロッセオ
+サン・ピエトロ大聖堂
+サンタ・マリア・デル・フィオーレ大聖堂
+サンマリノ
+ヴェネツィア
+ミラノ大聖堂
+モナコ
+コート・ダジュール
+ヴァランソル
+アンドラ
+サグラダ・ファミリア
+プラド美術館
+アルハンブラ宮殿
+セビリア
+リスボン市電
+ドン・ルイス1世橋
+ブルス広場
+モン・サン=ミシェル
+エッフェル塔
+タワーブリッジ
+コンウィ城
+モハーの断崖
+ジャイアンツ・コーズウェイ
+エディンバラ城
+ゲイシール
+キンデルダイク
+グラン・プラス
+ルクセンブルク市
+マッターホルン
+ファドゥーツ城
+シェーンブルン宮殿
+ブレッド湖
+ドゥブロヴニク
+スタリ・モスト
+コトル湾
+ベラト
+パルテノン神殿
+イア (サントリーニ島)
+オフリド湖
+プリズレン
+ベオグラード要塞
+リラ修道院
+ブラン城
+オルヘイ・ヴェキ
+リヴィウ
+ブダペスト
+スピシュ城
+カレル橋
+ノイシュヴァンシュタイン城
+ケルン大聖堂
+ブランデンブルク門
+シュパイヒャーシュタット
+ニューハウン
+ガイランゲルフィヨルド
+ガムラスタン
+サンタクロース村
+タリン歴史地区
+リガ歴史地区
+夜明けの門
+クラクフ歴史地区
+ベロヴェーシの森
+エルミタージュ美術館
+聖ワシリイ大聖堂
+カザン・クレムリン
+ソチ
+ゲルゲティ三位一体教会
+アララト山
+フレイム・タワーズ
+ダルヴァザ
+レギスタン広場
+バイテレク
+イシク・クル湖
+パミール高原
+ブルーモスク (マザーリシャリーフ)
+フンザ
+黄金寺院
+パンゴン湖
+カールカー・シムラー鉄道
+クルクシェートラ
+レッド・フォート
+リシケーシュ
+タージ・マハル
+ジャイプル
+統一の像
+インド門 (ムンバイ)
+ボム・ジェズ教会
+ハンピ
+ケーララ州 バックウォーター
+ミーナークシ寺院
+シーギリヤ
+モルディブ
+ティルマラ・ヴェンカテーシュワラ寺院
+チャールミナール
+カジュラーホーの建造物群
+チトラコート滝
+コナーラクのスーリヤ寺院
+フンドル滝
+マハーボーディー寺院
+ハウラー橋
+カンチェンジュンガ
+カジランガ国立公園
+生きた根の橋
+タワン僧院
+ホーンビル・フェスティバル
+ロクタク湖
+チェロー・ダンス
+ニールマハル
+シュンドルボン
+タクツァン僧院
+エベレスト
+ポタラ宮
+石林
+成都ジャイアントパンダ繁育研究基地
+洪崖洞
+黄果樹瀑布
+桂林
+三亜
+広州塔
+ヴィクトリア・ピーク
+聖ポール天主堂跡
+福建土楼
+景徳鎮
+武陵源
+三峡
+黄山
+西湖
+外灘
+拙政園
+曲阜
+少林寺
+兵馬俑
+平遥古城
+山海関
+天津之眼
+紫禁城
+瀋陽故宮
+天池 (白頭山)
+ハルビン氷祭り
+フルンボイル
+沙坡頭
+莫高窟
+茶卡塩湖
+カシュガル
+ゲル
+バイカル湖
+オイミャコン
+クリュチェフスカヤ山
+ウラジオストク駅
+景福宮
+甘川文化村
+城山日出峰
+台北101
+九份
+バナウエの棚田
+チョコレート・ヒルズ
+ダバオ
+ハロン湾
+ホイアン
+メコンデルタ
+ルアンパバーン
+アンコール・ワット
+ワット・アルン
+チェンマイ
+バガン
+ジョージタウン (ペナン州)
+ペトロナスツインタワー
+マリーナベイ・サンズ
+グヌン・レウセル国立公園
+ボロブドゥール
+ジャティルウィ
+コモドドラゴン
+アタウロ島
+トラジャ
+テングザル
+カンポン・アイール
+ラジャ・アンパット諸島
+ゴクラクチョウ
+グレート・バリア・リーフ
+ウルル
+ロットネスト島
+カンガルー島
+十二使徒 (オーストラリア)
+タスマニアデビル
+オーストラリア国会議事堂
+シドニー・オペラハウス
+ロトルア
+ミルフォード・サウンド
+ハート・オブ・ヴォー
+ヤスール山
+ソロモン諸島
+ジェリーフィッシュレイク
+ナン・マトール
+ナウル
+マジュロ
+キリバス
+フナフティ
+フィジー
+トンガ
+トスア・オーシャン・トレンチ
+モアイ
+サンティアゴ (チリ)
+月の谷 (チリ)
+トーレス・デル・パイネ国立公園
+レ・ゼクレルール灯台
+ペリト・モレノ氷河
+アコンカグア
+タンゴ
+コロニア・デル・サクラメント
+ガウチョ
+ブルメナウ
+イグアスの滝
+サンパウロ
+コルコバードのキリスト像
+オウロ・プレット
+ペドラ・アズール
+ペロウリーニョ
+サン・フランシスコ川
+マラゴジ
+フェルナンド・デ・ノローニャ
+ポンタ・ド・セイシャス
+ジェニパブ
+ジェリコアコアラ
+セッチ・シダージス国立公園
+レンソイス・マラニャンセス国立公園
+ジャラパオ
+カルダス・ノヴァス
+ブラジリア
+ボニート
+パンタナール
+マデイラ・マモレ鉄道
+パラゴムノキ
+ネグロ川とソリモンエス川の合流点
+ロライマ山
+ヴェール・オ・ペーゾ
+マルコ・ゼロ
+ギアナ宇宙センター
+パラマリボ
+カイエトゥールの滝
+エンジェルフォール
+カルタヘナ (コロンビア)
+ガラパゴス諸島
+マチュ・ピチュ
+ウユニ塩湖
+ラ・サンティシマ・トリニダー・デ・パラナ
+スチールパン
+グレナダ
+バルバドス
+ベキア島
+ピトン
+ボイリング・レイク
+アンティグア島
+ブリムストーン・ヒル要塞国立公園
+カスティーヨ・サン・フェリペ・デル・モロ
+サント・ドミンゴ
+シタデル・ラフェリエール
+ビッグ・メジャー・ケイ
+ハバナ旧市街
+ダンズ・リバー・フォールズ
+パナマ運河
+モンテベルデ
+マサヤ火山
+コパン遺跡
+コアテペケ湖
+ティカル
+グレート・ブルー・ホール
+セノーテ
+チチェン・イッツァ
+スミデロ渓谷
+死者の日
+テオティワカン
+マリアッチ
+コッパー・キャニオン
+コククジラ
+ゴールデンゲートブリッジ
+キラウエア
+ハバード氷河
+スペースニードル
+クレーターレイク国立公園
+ラスベガス・ストリップ
+グランド・キャニオン
+ホワイトサンズ国立公園
+アラモ砦
+国立カウボーイ&ウェスタン・ヘリテージ博物館
+カンザス州 ヒマワリ
+ロッキー山脈国立公園
+デリケート・アーチ
+クレーターズ・オブ・ザ・ムーン国定公園
+グレイシャー国立公園
+オールド・フェイスフル・ガイザー
+ラシュモア山
+セオドア・ルーズベルト国立公園
+カーヘンジ
+フィールド・オブ・ドリームス
+バウンダリー・ウォーターズ
+ウィスコンシン州
+スプリット・ロック灯台
+クラウド・ゲート
+インディアナポリス・モーター・スピードウェイ
+ゲートウェイ・アーチ
+クレーター・オブ・ダイヤモンド州立公園
+フレンチ・クオーター
+ミシシッピ川 蒸気船
+アメリカ宇宙ロケットセンター
+エバーグレーズ国立公園
+サバンナ (ジョージア州)
+レインボー・ロウ
+ライト兄弟国立記念碑
+ナッシュビル
+チャーチルダウンズ競馬場
+ニューリバー渓谷橋
+ロックの殿堂
+自由の鐘
+コロニアル・ウィリアムズバーグ
+リンカーン記念堂
+インナー・ハーバー
+ニューキャッスル (デラウェア州)
+アトランティックシティ
+自由の女神像 (ニューヨーク)
+ミスティック・シーポート
+ブレーカーズ
+フリーダム・トレイル
+バーモント州 紅葉
+ワシントン山 (ニューハンプシャー州)
+ポートランド・ヘッド灯台
+ファンディ湾
+ペギーズ・コーブ
+グリーン・ゲイブルズ
+アイスバーグ・アレイ
+ケベック旧市街
+ナイアガラの滝
+チャーチル (マニトバ州)
+サスカチュワン州
+モレーン湖
+スタンレー・パーク
+ドーソン・シティ
+オーロラ
+イグルー
+イルリサット・アイスフィヨルド
+`.trim().split("\n");
+  const WORLD = `
+#中東
+🗺️|バグダッド（イラク）|せかいちずを ひろげて、せかいりょこうの けいかくを たてた|ナツメヤシ
+🇮🇷|イラン|青い タイルが かがやく イスファハーンの 広場を たずねた|チェロウ・ケバブ
+🇰🇼|クウェート|青い タマネギのような クウェート・タワーを 見上げた|マチブース
+🇧🇭|バーレーン|砂漠に 1本だけ 立つ「いのちの 木」に 会いに いった|ムハンマル
+🇶🇦|カタール|ドーハの 海辺の まち並みを ダウ船から ながめた|マクブース
+🇦🇪|アラブ首長国連邦|せかいいち 高い ビル ブルジュ・ハリファに のぼった|ルカイマート
+🇴🇲|オマーン|シンドバッドの ふるさとと いわれる 港町 ソハールを たずねた|シュワ
+🇾🇪|イエメン|土で できた 高い ビルが ならぶ まち シバームを ながめた|サルタ
+🇸🇦|サウジアラビア|砂漠の 古代遺跡 アル・ウラーの 岩山を 探検した|カブサ
+🇯🇴|ヨルダン|岩を ほって つくられた 都市 ペトラを 歩いた|マンサフ
+🇸🇾|シリア|せかいで もっとも 古い まちの ひとつ ダマスカスの 市場を 見た|ファッテ
+🇹🇷|トルコ|カッパドキアの 空に うかぶ 気球に のった|ケバブ
+🇨🇾|キプロス|女神アフロディーテが 生まれたという 海岸を 歩いた|ハルミチーズ
+🇱🇧|レバノン|ジェイタ洞窟の 地底湖を ボートで すすんだ|タッブーレ
+🇮🇱|イスラエル|しょっぱい 湖 死海に ぷかぷか うかんだ|ファラフェル
+🇵🇸|パレスチナ|古い まち ベツレヘムの 石だたみを 歩いた|ムサッハン
+#アフリカ
+🇪🇬|エジプト|ギザの ピラミッドと スフィンクスに あいさつした|コシャリ
+🇸🇩|スーダン|砂漠に ならぶ メロエの 小さな ピラミッドを 見た|フール
+🇸🇸|南スーダン|ナイル川の 大きな 湿地で 鳥たちを ながめた|キスラ
+🇪🇷|エリトリア|イタリア風の たてものが ならぶ 首都アスマラを 歩いた|ツェビ
+🇩🇯|ジブチ|塩の 湖 アッサル湖の まっしろな 岸を 歩いた|スクデカリス
+🇪🇹|エチオピア|岩を ほって つくった ラリベラの 教会を たずねた|インジェラ
+🇸🇴|ソマリア|インド洋に めんした 白い 海岸を 見た|カンジェロ
+🇰🇪|ケニア|マサイマラで ライオンや キリンに 会った|ウガリ
+🇺🇬|ウガンダ|ナイル川の みなもと ビクトリア湖を たずねた|マトケ
+🇷🇼|ルワンダ|森の 奥で マウンテンゴリラの 家族を 見守った|ブロシェット
+🇧🇮|ブルンジ|タンガニーカ湖の 夕日を ながめた|ンダガラ
+🇹🇿|タンザニア|アフリカで いちばん 高い キリマンジャロを 見上げた|ニャマチョマ
+🇸🇨|セーシェル|ハートの 形の 実 ココ・デ・メールを 見つけた|タコの カレー
+🇰🇲|コモロ|イランイランの 花の 香りに つつまれた|ロブスターの バニラソース
+🇲🇬|マダガスカル|バオバブの 並木道で キツネザルに 会った|ロマザバ
+🇲🇺|モーリシャス|海の 中に 滝が あるように 見える ふしぎな 景色を 見た|ドルプリ
+🇲🇿|モザンビーク|サンゴ礁の 海で ジンベエザメと 泳いだ|ピリピリチキン
+🇲🇼|マラウイ|カラフルな 魚が すむ マラウイ湖で 泳いだ|チャンボ
+🇿🇲|ザンビア|大きな ビクトリアの 滝の しぶきを あびた|シマ
+🇿🇼|ジンバブエ|石の 遺跡 グレート・ジンバブエを 見学した|サザ
+🇧🇼|ボツワナ|オカバンゴ湿地を 丸木舟で すすんだ|セスワ
+🇳🇦|ナミビア|赤い 砂丘 ソススフレイに のぼった|カパナ
+🇿🇦|南アフリカ|テーブルマウンテンと ペンギンの 浜辺を 見た|ボボティー
+🇱🇸|レソト|山の 王国で ポニーに のった|パパ
+🇸🇿|エスワティニ|山あいの 自然保護区で シマウマを 見た|トウモロコシの おかゆ
+🇦🇴|アンゴラ|カランドゥーラの 大きな 滝を 見た|ムアンバ
+🇨🇩|コンゴ民主共和国|大きな コンゴ川を 船で 下った|フフ
+🇨🇬|コンゴ共和国|森で ニシローランドゴリラを さがした|サカサカ
+🇬🇦|ガボン|海辺を 歩く ゾウや カバを 見た|ニエンブエ・チキン
+🇬🇶|赤道ギニア|火山の 島 ビオコ島の 森を 歩いた|シーフードの スープ
+🇸🇹|サントメ・プリンシペ|チョコレートの 島で カカオ畑を 見た|カカオ
+🇨🇲|カメルーン|西アフリカで いちばん 高い カメルーン山を 見上げた|ンドレ
+🇨🇫|中央アフリカ|ジャングルで マルミミゾウに 会った|キャッサバ料理
+🇹🇩|チャド|砂漠の 中の オアシス ウニアンガ湖を たずねた|キビの ボール
+🇳🇬|ナイジェリア|首都アブジャの 大きな 岩 ズマロックを 見た|ジョロフライス
+🇳🇪|ニジェール|土の 塔が そびえる アガデスの まちを 歩いた|キビの おかゆ
+🇧🇯|ベナン|水の 上の 村 ガンビエを 舟で めぐった|ピーナッツシチュー
+🇹🇬|トーゴ|ロメの 大きな 市場を 見て回った|フフ
+🇬🇭|ガーナ|海辺の ケープコースト城を たずねた|ワチェ
+🇨🇮|コートジボワール|大きな 教会 ノートルダム・ド・ラ・ペ大聖堂を 見上げた|アチェケ
+🇧🇫|ブルキナファソ|ふしぎな 形の シンドゥの 岩山を 歩いた|トー
+🇲🇱|マリ|土で できた 大きな ジェンネの モスクを 見た|ティガデゲナ
+🇱🇷|リベリア|首都モンロビアの 海辺で 波を ながめた|ジョロフライス
+🇸🇱|シエラレオネ|島の 保護区で チンパンジーに 会った|キャッサバの 葉の シチュー
+🇬🇳|ギニア|フータ・ジャロン高地の 滝を 見た|フフ
+🇬🇼|ギニアビサウ|たくさんの 島が ならぶ ビジャゴ諸島を 船で めぐった|カシューナッツ
+🇬🇲|ガンビア|ガンビア川を 船で すすんだ|ドモダ
+🇸🇳|セネガル|ピンクの 湖 ラック・ローズを 見た|チェブジェン
+🇨🇻|カーボベルデ|大西洋の 火山島で 音楽 モルナを きいた|カチューパ
+🇲🇷|モーリタニア|砂漠の 巨大な 円 リシャット構造を 空から 見た|ミントティー
+🇲🇦|モロッコ|青い まち シャウエンを 歩いた|タジン
+🇩🇿|アルジェリア|サハラの 岩絵が のこる タッシリ・ナジェールを 見た|クスクス
+🇹🇳|チュニジア|白と 青の まち シディ・ブ・サイドを 歩いた|ブリック
+🇱🇾|リビア|古代ローマの 都市 レプティス・マグナを 歩いた|バジーン
+#ヨーロッパ
+🇲🇹|マルタ|石の 城壁に かこまれた 首都 バレッタを 歩いた|パスティッツィ
+@イタリア|🇮🇹
+シチリア|けむりを あげる エトナ火山を 見上げた|アランチーニ
+ナポリ|ポンペイの 遺跡を 歩いた|ピッツァ・マルゲリータ
+ローマ|コロッセオと トレビの 泉を 見た|カルボナーラ
+🇻🇦|バチカン|世界で いちばん 小さな 国の サン・ピエトロ大聖堂を 見た|ローマの ジェラート
+@イタリア|🇮🇹
+フィレンツェ|ドゥオーモの 丸屋根に のぼった|ビステッカ
+🇸🇲|サンマリノ|山の 上の 3つの 塔から 景色を ながめた|ピアディーナ
+@イタリア|🇮🇹
+ベネチア|ゴンドラで 運河を すすんだ|イカスミパスタ
+ミラノ|大聖堂の 屋根の 上を 歩いた|リゾット・アッラ・ミラネーゼ
+🇲🇨|モナコ|F1レースの コースに なる まちを 歩いた|バルバジュアン
+@フランス|🇫🇷
+ニース|青い 海の コート・ダジュールを 歩いた|サラダ・ニソワーズ
+プロヴァンス|むらさきの ラベンダー畑を 見た|ブイヤベース
+🇦🇩|アンドラ|ピレネー山脈の 小さな 国で 山歩きを した|エスクデージャ
+@スペイン|🇪🇸
+バルセロナ|サグラダ・ファミリアを 見上げた|パエリア
+マドリード|プラド美術館を 見学した|チュロス
+グラナダ|アルハンブラ宮殿を 歩いた|タパス
+セビリア|フラメンコを 見た|ガスパチョ
+@ポルトガル|🇵🇹
+リスボン|黄色い 路面電車に のった|パステル・デ・ナタ
+ポルト|ドウロ川の 橋と カラフルな 家々を 見た|フランセジーニャ
+@フランス|🇫🇷
+ボルドー|水かがみの 広場を 歩いた|カヌレ
+モン・サン=ミシェル|海に うかぶ 修道院を 見た|ふわふわオムレツ
+パリ|エッフェル塔に のぼった|クロワッサン
+@イギリス|🇬🇧
+ロンドン|ビッグベンと タワーブリッジを 見た|フィッシュ・アンド・チップス
+ウェールズ|海辺の お城 コンウィ城を 見た|ウェルシュケーキ
+🇮🇪|アイルランド|大西洋の がけ モハーの断崖を 見た|アイリッシュシチュー
+@イギリス|🇬🇧
+北アイルランド|六角形の 石の 道 ジャイアンツ・コーズウェイを 歩いた|アルスター・フライ
+スコットランド|エディンバラ城と ネス湖を 見た|ショートブレッド
+🇮🇸|アイスランド|オーロラと 間欠泉 ゲイシールを 見た|スキール
+🇳🇱|オランダ|風車と チューリップ畑を 見た|ストロープワッフル
+🇧🇪|ベルギー|ブリュッセルの グラン・プラスを 見た|ワッフル
+🇱🇺|ルクセンブルク|がけの 上の 古い まちを 歩いた|豆と ベーコンの 煮込み
+🇨🇭|スイス|マッターホルンを 見上げた|チーズフォンデュ
+🇱🇮|リヒテンシュタイン|山の 上の ファドゥーツ城を 見た|ケーゼクネップフレ
+🇦🇹|オーストリア|ウィーンの シェーンブルン宮殿を 見た|ザッハトルテ
+🇸🇮|スロベニア|湖に うかぶ 島の 教会 ブレッド湖を 見た|クリームケーキ
+🇭🇷|クロアチア|城壁の まち ドゥブロヴニクを 歩いた|ペカ
+🇧🇦|ボスニア・ヘルツェゴビナ|モスタルの 古い 石の 橋を 見た|チェヴァピ
+🇲🇪|モンテネグロ|フィヨルドのような コトル湾を 見た|ブラック・リゾット
+🇦🇱|アルバニア|千の 窓の まち ベラトを 歩いた|タヴェ・コシ
+@ギリシャ|🇬🇷
+アテネ|パルテノン神殿を 見た|ムサカ
+サントリーニ島|白い 家と 青い 屋根の 村を 歩いた|スブラキ
+🇲🇰|北マケドニア|オフリド湖の ほとりの 小さな 教会を 見た|タフチェ・グラフチェ
+🇽🇰|コソボ|古い まち プリズレンの 石の 橋を わたった|フリア
+🇷🇸|セルビア|ベオグラードの 要塞から 2つの 川を 見た|プリェスカヴィツァ
+🇧🇬|ブルガリア|山の 中の リラ修道院を 見た|ヨーグルト
+🇷🇴|ルーマニア|ドラキュラ城と よばれる ブラン城を 見た|サルマーレ
+🇲🇩|モルドバ|岩を ほった 修道院 オルヘイ・ヴェキを 見た|ママリガ
+🇺🇦|ウクライナ|カラフルな まち リヴィウを 歩いた|ヴァレーニキ
+🇭🇺|ハンガリー|ブダペストの ドナウ川の 夜景を 見た|グヤーシュ
+🇸🇰|スロバキア|丘の 上の スピシュ城を 見た|ブリンゾベー・ハルシュキ
+🇨🇿|チェコ|プラハの カレル橋と 天文時計を 見た|トルデルニーク
+@ドイツ|🇩🇪
+ノイシュヴァンシュタイン|白鳥の 城 ノイシュヴァンシュタイン城を 見た|ブレッツェル
+ケルン|大きな ケルン大聖堂を 見上げた|ライベクーヘン
+ベルリン|ブランデンブルク門を 見た|カリーヴルスト
+ハンブルク|港の 赤レンガの 倉庫街を 歩いた|フィッシュブロートヒェン
+🇩🇰|デンマーク|人魚姫の 像と カラフルな ニューハウンを 見た|スモーブロー
+🇳🇴|ノルウェー|フィヨルドを 船で すすんだ|サーモン
+🇸🇪|スウェーデン|ストックホルムの 古い まち ガムラスタンを 歩いた|ミートボール
+🇫🇮|フィンランド|サンタクロース村を たずねた|シナモンロール
+🇪🇪|エストニア|中世の まち タリンを 歩いた|黒パン
+🇱🇻|ラトビア|リガの おしゃれな 建物を 見た|ライ麦パンの デザート
+🇱🇹|リトアニア|ヴィリニュスの 夜明けの門を 見た|ツェペリナイ
+🇵🇱|ポーランド|クラクフの 中央広場を 歩いた|ピエロギ
+🇧🇾|ベラルーシ|森の 中で ヨーロッパバイソンに 会った|ドラニキ
+#ロシアと コーカサス
+@ロシア|🇷🇺
+サンクトペテルブルク|エルミタージュ美術館を 見た|ブリヌイ
+モスクワ|赤の広場と 玉ねぎ屋根の 聖ワシリイ大聖堂を 見た|ピロシキ
+カザン|白い クレムリンを 見た|チャクチャク
+ソチ|黒海の 海辺を 歩いた|シャシリク
+🇬🇪|ジョージア|山の 上の ゲルゲティ三位一体教会を 見た|ハチャプリ
+🇦🇲|アルメニア|雪を かぶった アララト山を 見上げた|ラヴァシュ
+🇦🇿|アゼルバイジャン|炎の 形の ビル フレームタワーを 見た|ドゥシュバラ
+#中央アジア
+🇹🇲|トルクメニスタン|もえつづける「地獄の門」を 見た|ドグラマ
+🇺🇿|ウズベキスタン|青い タイルの まち サマルカンドを 歩いた|プロフ
+🇰🇿|カザフスタン|未来的な 首都 アスタナの タワーに のぼった|ベシュバルマク
+🇰🇬|キルギス|天山山脈の イシク・クル湖で 泳いだ|ラグマン
+🇹🇯|タジキスタン|世界の 屋根 パミール高原の 道を すすんだ|クルトッブ
+🇦🇫|アフガニスタン|青い モスクの まち マザーリシャリーフを 見た|カブリ・パラオ
+🇵🇰|パキスタン|フンザの 谷と 高い 山々を 見た|ニハリ
+#インド
+@インド|🇮🇳
+パンジャーブ|アムリトサルの 黄金寺院を たずねた|バターチキン
+ラダック|天空の 湖 パンゴン湖を 見た|アプリコット
+ヒマーチャル・プラデーシュ|山の まち シムラーで 小さな 汽車に のった|シッドゥ
+ハリヤーナー|古い 物語の 舞台 クルクシェートラを たずねた|ラッシー
+デリー|赤い 城 レッド・フォートを 見た|チョーレー・バトゥーレー
+ウッタラーカンド|ガンジス川の まち リシケシで ヨガを した|ジャガイモの スパイス炒め
+ウッタル・プラデーシュ|白く かがやく タージ・マハルを 見た|ペータ
+ラージャスターン|ピンクの まち ジャイプルで ゾウに 会った|ダール・バーティー
+グジャラート|世界一 高い 像「統一の像」を 見上げた|ドークラ
+マハーラーシュトラ|ムンバイの インド門を 見た|ワダパオ
+ゴア|白い 教会と 海辺を たのしんだ|フィッシュカレー
+カルナータカ|ハンピの 石の 遺跡を 歩いた|マサラドーサ
+ケーララ|ヤシの 林の 水路を ハウスボートで すすんだ|アッパム
+タミル・ナードゥ|カラフルな 塔の ミーナークシ寺院を 見た|イドゥリ
+🇱🇰|スリランカ|大きな 岩の 上の 遺跡 シーギリヤ・ロックに のぼった|ライス・アンド・カリー
+🇲🇻|モルディブ|水上コテージから すきとおった 海を 見た|マスフニ
+@インド|🇮🇳
+アーンドラ・プラデーシュ|山の 上の ティルパティの 寺院を たずねた|タマリンドごはん
+テランガーナ|ハイデラバードの チャールミナールを 見た|ハイデラバード・ビリヤニ
+マディヤ・プラデーシュ|カジュラーホーの 寺院を 見た|ポハ
+チャッティースガル|インドの ナイアガラ チトラコート滝を 見た|米の パンケーキ
+オディシャ|太陽寺院 コナーラクを 見た|ダルマ
+ジャールカンド|フンドルの 滝を 見た|ドゥスカ
+ビハール|ブッダが さとりを ひらいた ブッダガヤを たずねた|リッティ・チョカ
+西ベンガル|コルカタの ハウラー橋を 見た|ロショゴッラ
+シッキム|ヒマラヤの カンチェンジュンガを ながめた|モモ
+アッサム|紅茶畑と サイの いる 国立公園を たずねた|アッサムティー
+メガラヤ|木の 根で できた 橋を わたった|ジャドー
+アルナーチャル・プラデーシュ|山の 上の タワン僧院を たずねた|トゥクパ
+ナガランド|鳥の 名前の おまつり ホーンビル・フェスティバルを 見た|スモークポーク
+マニプル|うかぶ 島の ある ロクタク湖を 見た|黒米の プディング
+ミゾラム|竹の おどり チェローを 見た|野菜の スープ バイ
+トリプラ|湖に うかぶ 宮殿 ニールマハルを 見た|たけのこ料理
+#ヒマラヤ
+🇧🇩|バングラデシュ|マングローブの 森 シュンドルボンを 舟で すすんだ|ヒルシャの カレー
+🇧🇹|ブータン|がけの 上の タクツァン僧院に のぼった|エマ・ダツィ
+🇳🇵|ネパール|世界一 高い エベレストを ながめた|ダルバート
+#中国
+@中国|🇨🇳
+チベット|ポタラ宮を 見上げた|バター茶
+雲南|棚田と 石の 森 石林を 見た|過橋米線
+四川|パンダの 赤ちゃんに 会った|麻婆豆腐
+重慶|山に そって 建つ まち並みの 夜景を 見た|重慶火鍋
+貴州|黄果樹の 大きな 滝を 見た|酸湯魚
+広西|桂林の ふしぎな 形の 山々を 船で めぐった|桂林米粉
+海南|ヤシの 木が ならぶ 三亜の 海辺で あそんだ|海南鶏飯
+広東|広州タワーを 見上げた|飲茶
+香港|ビクトリア・ピークから 夜景を 見た|ワンタン麺
+マカオ|聖ポール天主堂跡を 見た|エッグタルト
+福建|丸い 土の 家 土楼を たずねた|仏跳牆
+江西|焼き物の まち 景徳鎮を 見学した|瓦罐湯
+湖南|張家界の 柱のような 山々を 見た|剁椒魚頭
+湖北|長江の 三峡を 船で 下った|熱乾麺
+安徽|黄山の 雲海を ながめた|黄山焼餅
+浙江|杭州の 西湖を 船で めぐった|東坡肉
+上海|外灘から 高層ビルの 夜景を 見た|小籠包
+江蘇|蘇州の 庭園と 運河を 歩いた|松鼠桂魚
+山東|孔子の ふるさと 曲阜を たずねた|煎餅
+河南|少林寺で カンフーを 見学した|燴麺
+陝西|西安で 兵馬俑を 見た|ビャンビャン麺
+山西|古い まち 平遥を 歩いた|刀削麺
+河北|万里の長城の 東の はし 山海関を 見た|驢肉火焼
+天津|天津の 観覧車に のった|狗不理包子
+北京|万里の長城と 紫禁城を たずねた|北京ダック
+遼寧|瀋陽の 故宮を 見た|大連の 海鮮
+吉林|長白山の 天池を 見た|冷麺
+黒竜江|ハルビンの 氷祭りを 見た|ハルビン・ソーセージ
+内モンゴル|大草原で 馬に のった|手把肉
+寧夏|砂の 坂 沙坡頭を すべりおりた|手抓羊肉
+甘粛|敦煌の 莫高窟を 見た|蘭州牛肉麺
+青海|空を うつす 茶卡塩湖を 見た|ヤクの ヨーグルト
+新疆|シルクロードの まち カシュガルの 市場を 歩いた|羊肉串
+#北アジア
+🇲🇳|モンゴル|ゲルに とまって 満天の 星空を 見た|ボーズ
+@ロシア|🇷🇺
+イルクーツク|世界一 深い バイカル湖を 見た|オームリ
+サハ共和国|世界で いちばん 寒い 村 オイミャコンを たずねた|ストロガニーナ
+カムチャツカ|火山と ヒグマを 見た|イクラ
+ウラジオストク|シベリア鉄道の 終点の 駅を 見た|ペリメニ
+#東アジア
+@韓国|🇰🇷
+ソウル|景福宮を たずねた|トッポッキ
+釜山|カラフルな 甘川文化村を 歩いた|テジクッパ
+済州島|城山日出峰で 日の出を 見た|アワビの おかゆ
+@台湾|🇹🇼
+台北|台北101に のぼった|魯肉飯
+九份|ちょうちんの まち 九份を 歩いた|タピオカミルクティー
+#東南アジア
+@フィリピン|🇵🇭
+ルソン島|山の 棚田 バナウエを 見た|アドボ
+ビサヤ諸島|ボホール島の チョコレート・ヒルズを 見た|レチョン
+ミンダナオ島|ドリアンの まち ダバオを たずねた|ドリアン
+@ベトナム|🇻🇳
+ハロン湾|奇岩が ならぶ ハロン湾を 船で めぐった|フォー
+ホイアン|ちょうちんの 古い まち ホイアンを 歩いた|カオラウ
+ホーチミン|メコン川の 水上マーケットを 見た|バインミー
+🇱🇦|ラオス|ルアンパバーンの 朝の 托鉢を 見た|ラープ
+🇰🇭|カンボジア|アンコール・ワットの 朝日を 見た|アモック
+@タイ|🇹🇭
+バンコク|川べりの ワット・アルンを 見た|トムヤムクン
+チェンマイ|ゾウの 保護区を たずねた|カオソーイ
+🇲🇲|ミャンマー|バガンの たくさんの 仏塔を 見た|モヒンガー
+@マレーシア|🇲🇾
+ペナン|壁画の まち ジョージタウンを 歩いた|アッサム・ラクサ
+クアラルンプール|ペトロナス・ツインタワーを 見た|ナシレマ
+🇸🇬|シンガポール|マーライオンと 空中庭園の ホテルを 見た|チリクラブ
+@インドネシア|🇮🇩
+スマトラ島|森で オランウータンに 会った|ルンダン
+ジャワ島|ボロブドゥール遺跡を 見た|ナシゴレン
+バリ島|棚田と 寺院を めぐった|バビグリン
+コモド島|コモドドラゴンを 見た|イカン・バカール
+🇹🇱|東ティモール|すきとおった 海の アタウロ島で もぐった|トウモロコシと 豆の 煮込み
+@インドネシア|🇮🇩
+スラウェシ島|舟の 形の 屋根の トラジャの 家を 見た|チョト・マカッサル
+カリマンタン|はなの 大きな テングザルを 見た|ソト・バンジャル
+🇧🇳|ブルネイ|水上村 カンポン・アイールを 舟で めぐった|アンブヤット
+@インドネシア|🇮🇩
+パプア|ラジャ・アンパットの 海で もぐった|パペダ
+#オセアニア
+🇵🇬|パプアニューギニア|カラフルな 鳥 ゴクラクチョウを 見た|ムームー
+@オーストラリア|🇦🇺
+クイーンズランド|グレートバリアリーフで もぐった|ラミントン
+北部準州|ウルル（エアーズロック）の 夕日を 見た|バラマンディ
+西オーストラリア|クオッカが すむ ロットネスト島を たずねた|ロックロブスター
+南オーストラリア|カンガルー島で カンガルーに 会った|パイ・フローター
+ビクトリア|海に 立つ 岩 十二使徒を 見た|ミートパイ
+タスマニア|タスマニアデビルに 会った|タスマニアの リンゴ
+首都特別地域|首都キャンベラの 国会議事堂を 見た|アンザック・ビスケット
+ニューサウスウェールズ|シドニーの オペラハウスを 見た|ベジマイト・トースト
+@ニュージーランド|🇳🇿
+北島|ホビット村と 温泉の まち ロトルアを たずねた|ハンギ
+南島|ミルフォード・サウンドの フィヨルドを 船で すすんだ|ホーキーポーキー・アイス
+#南太平洋
+🇳🇨|ニューカレドニア|ハートの 形の サンゴ礁を 空から 見た|ブーニャ
+🇻🇺|バヌアツ|火山 ヤスール山の 火口を のぞいた|ラップラップ
+🇸🇧|ソロモン諸島|サンゴの 海で カラフルな 魚と 泳いだ|サゴヤシの おもち
+🇵🇼|パラオ|クラゲの 湖で 泳いだ|タロイモ
+🇫🇲|ミクロネシア|海の 上の 遺跡 ナン・マトールを 見た|パンの実
+🇳🇷|ナウル|世界で 3番目に 小さな 国を 1周 歩いた|ココナッツ
+🇲🇭|マーシャル諸島|青い ラグーンで カヌーに のった|パンダナス
+🇰🇮|キリバス|世界で いちばん 早く 朝が くる 島を たずねた|ヤシガニ
+🇹🇻|ツバル|海に しずみそうな 小さな 島々を 見た|プラカ
+🇫🇯|フィジー|白い 砂浜の 島で のんびり すごした|ココダ
+🇹🇴|トンガ|ザトウクジラと いっしょに 泳いだ|オタ・イカ
+🇼🇸|サモア|海の 穴 トスア・オーシャン・トレンチで 泳いだ|パルサミ
+#南アメリカ
+@チリ|🇨🇱
+イースター島|モアイ像に あいさつした|ポエ
+サンティアゴ|アンデスの 山々に かこまれた まちを 見た|エンパナーダ
+アタカマ砂漠|月の 谷で 星空を 見た|キヌア
+パタゴニア|トーレス・デル・パイネの 3本の 岩の 塔を 見た|クラント
+@アルゼンチン|🇦🇷
+ウシュアイア|世界の 果ての 灯台を 見た|セントージャ
+ペリト・モレノ氷河|氷河が くずれる 音を きいた|カラファテの アイス
+メンドーサ|南米で いちばん 高い アコンカグアを 見上げた|アサード
+ブエノスアイレス|タンゴを 見た|ドゥルセ・デ・レチェ
+🇺🇾|ウルグアイ|古い まち コロニア・デル・サクラメントを 歩いた|チビート
+#ブラジル
+@ブラジル|🇧🇷
+リオグランデ・ド・スル|牧場で カウボーイ ガウチョに 会った|シュラスコ
+サンタカタリーナ|ドイツ風の まち ブルメナウを 歩いた|生ガキ
+パラナ|大きな イグアスの 滝を 見た|バヘアード
+サンパウロ|南米 いちばんの 大都会を 見た|パステル
+リオデジャネイロ|コルコバードの キリスト像と コパカバーナ海岸を 見た|フェイジョアーダ
+ミナスジェライス|古い 金の まち オウロ・プレットを 歩いた|ポンデケージョ
+エスピリトサント|青い 岩山 ペドラ・アズールを 見た|モケッカ・カピシャバ
+バイーア|カラフルな サルヴァドールの 旧市街を 歩いた|アカラジェ
+セルジッペ|サン・フランシスコ川の 渓谷を 船で すすんだ|カニ料理
+アラゴアス|天然の プール マラゴジの 海で 泳いだ|タピオカ
+ペルナンブコ|フェルナンド・デ・ノローニャの 海で イルカを 見た|ボロ・ジ・ホロ
+パライバ|アメリカ大陸の いちばん 東の はしに 立った|カルネ・ジ・ソル
+リオグランデ・ド・ノルテ|砂丘を バギーで かけた|カシューナッツ
+セアラ|ジェリコアコアラの 砂丘で 夕日を 見た|バイアォン・ジ・ドイス
+ピアウイ|ふしぎな 岩の 公園 セッチ・シダージスを 歩いた|カジュイーナ
+マラニョン|白い 砂丘と 青い 湖 レンソイスを 見た|アホス・ジ・クシャ
+トカンチンス|ジャラパオの 金色の 草原を 見た|ピラルクーの フライ
+ゴイアス|温泉の まち カルダス・ノヴァスで あそんだ|ペキーの ごはん
+連邦直轄区|未来の 首都 ブラジリアの 建物を 見た|ピカーニャ
+マットグロッソ・ド・スル|すみきった 川の まち ボニートで 魚と 泳いだ|ソッパ・パラグアイア
+マットグロッソ|パンタナール湿地で ジャガーを さがした|ピラニアの スープ
+ロンドニア|マデイラ川の 古い 鉄道を 見た|タンバキ
+アクレ|アマゾンの 森の ゴムの 木を 見た|バナナダ
+アマゾナス|アマゾン川の 黒い 川と 茶色の 川が 出会う ところを 見た|タカカ
+ロライマ|テーブルのような 山 ロライマ山を 見上げた|マニオクの パン
+パラ|大きな 市場 ヴェール・オ・ペーゾを 歩いた|アサイー
+アマパ|赤道の 上に 立つ マルコ・ゼロを 見た|エビ料理
+#南アメリカ 北部
+🇬🇫|フランス領ギアナ|ロケットの 発射場を 見学した|ココナッツの お菓子
+🇸🇷|スリナム|木で できた 大きな 教会を 見た|ロティ
+🇬🇾|ガイアナ|大きな カイエトゥールの 滝を 見た|ペッパーポット
+🇻🇪|ベネズエラ|世界一 落差の 大きな エンジェルフォールを 見た|アレパ
+🇨🇴|コロンビア|カリブ海の 城壁の まち カルタヘナを 歩いた|バンデハ・パイサ
+🇪🇨|エクアドル|ガラパゴス諸島で ゾウガメに 会った|ロクロ・デ・パパ
+🇵🇪|ペルー|天空の 都市 マチュ・ピチュを 見た|セビーチェ
+🇧🇴|ボリビア|空を うつす ウユニ塩湖を 歩いた|サルテーニャ
+🇵🇾|パラグアイ|古い 教会の 遺跡 イエズス会伝道所を たずねた|チパ
+#カリブ海
+🇹🇹|トリニダード・トバゴ|スチールパンの 音楽を きいた|ダブルス
+🇬🇩|グレナダ|スパイスの 島で ナツメグを 見た|オイルダウン
+🇧🇧|バルバドス|ピンク色に 見える 砂浜を 歩いた|フライング・フィッシュ
+🇻🇨|セントビンセント・グレナディーン|映画の ロケ地に なった 海辺を 歩いた|パンの実と 魚
+🇱🇨|セントルシア|2つの とがった 山 ピトンを 見た|グリーンバナナと 塩だら
+🇩🇲|ドミニカ国|ぐつぐつ わきたつ 湖 ボイリング・レイクを 見た|カラルー
+🇦🇬|アンティグア・バーブーダ|たくさんの 浜辺の ひとつで 泳いだ|フンジ
+🇰🇳|セントクリストファー・ネイビス|ブリムストーン・ヒル要塞を 見た|ゴートウォーター
+🇵🇷|プエルトリコ|古い 要塞 エル・モロを 見た|モフォンゴ
+🇩🇴|ドミニカ共和国|アメリカ大陸で いちばん 古い まち サントドミンゴを 歩いた|マング
+🇭🇹|ハイチ|山の 上の シタデル要塞を 見た|グリオ
+🇧🇸|バハマ|ブタが 泳ぐ ビーチを 見た|コンク・フリッター
+🇨🇺|キューバ|クラシックカーが 走る ハバナを 見た|キューバサンド
+🇯🇲|ジャマイカ|ダンズ・リバーの 滝を のぼった|ジャークチキン
+#中央アメリカ
+🇵🇦|パナマ|パナマ運河で 大きな 船が 通るのを 見た|サンコーチョ
+🇨🇷|コスタリカ|雲の 森で ナマケモノに 会った|ガジョピント
+🇳🇮|ニカラグア|マサヤ火山の 赤い マグマを のぞいた|ナカタマル
+🇭🇳|ホンジュラス|マヤの 遺跡 コパンを 見た|バレアダ
+🇸🇻|エルサルバドル|火山に かこまれた 湖を 見た|ププサ
+🇬🇹|グアテマラ|ジャングルの 中の ティカル遺跡に のぼった|ペピアン
+🇧🇿|ベリーズ|海の 青い 穴 ブルーホールを 見た|ライス・アンド・ビーンズ
+#メキシコ
+@メキシコ|🇲🇽
+キンタナ・ロー|カンクンの 海と 泉 セノーテで 泳いだ|トロピカルフルーツ
+ユカタン|チチェン・イッツァの ピラミッドを 見た|コチニータ・ピビル
+チアパス|スミデロ渓谷を 船で すすんだ|タマル
+オアハカ|死者の日の おまつりを 見た|モレ
+メキシコシティ|テオティワカンの 太陽のピラミッドに のぼった|タコス・アル・パストール
+ハリスコ|マリアッチの 音楽を きいた|トルタ・アオガダ
+チワワ|銅の 峡谷を 列車で 走った|ブリトー
+バハ・カリフォルニア|クジラの 赤ちゃんを 見た|フィッシュタコス
+#アメリカ合衆国
+@アメリカ|🇺🇸
+カリフォルニア|ゴールデンゲートブリッジと ハリウッドを 見た|サワードウブレッド
+ハワイ|キラウエア火山と ワイキキの 海を 見た|ロコモコ
+アラスカ|オーロラと 氷河を 見た|キングクラブ
+ワシントン州|シアトルの スペースニードルに のぼった|リンゴ
+オレゴン|深い 青色の クレーターレイクを 見た|マリオンベリーパイ
+ネバダ|ラスベガスの 光の まちを 見た|シュリンプ・カクテル
+アリゾナ|グランドキャニオンを 見下ろした|チミチャンガ
+ニューメキシコ|白い 砂の 砂漠 ホワイトサンズで そりすべりを した|グリーンチリ
+テキサス|サンアントニオの アラモ砦を 見た|ブリスケット
+オクラホマ|カウボーイ博物館を 見学した|チキンフライドステーキ
+カンザス|地平線まで つづく ひまわり畑を 見た|ビエロック
+コロラド|ロッキー山脈の 山々を 見た|デンバー・オムレツ
+ユタ|アーチズ国立公園の 岩の アーチを 見た|フライソースと ポテト
+アイダホ|月面のような 溶岩の 原を 歩いた|ポテト
+モンタナ|グレイシャー国立公園の 山道を 走った|ハックルベリーの アイス
+ワイオミング|イエローストーンの 間欠泉 オールド・フェイスフルを 見た|バイソン・バーガー
+サウスダコタ|大統領の 顔が ほられた ラシュモア山を 見た|チスリック
+ノースダコタ|セオドア・ルーズベルト国立公園で バイソンを 見た|クヌーフラ
+ネブラスカ|車で つくった ストーンヘンジ カーヘンジを 見た|ルーベンサンド
+アイオワ|トウモロコシ畑の 中の 野球場を 見た|スイートコーン
+ミネソタ|1万の 湖が ある 州で カヌーに のった|ジューシー・ルーシー
+ウィスコンシン|酪農の 州で 牛に 会った|チーズカード
+ミシガン|五大湖の 灯台を 見た|コニードッグ
+イリノイ|シカゴの ビル群と 銀色の 豆の アートを 見た|ディープディッシュ・ピザ
+インディアナ|インディ500の サーキットを 見た|ポークテンダーロイン・サンド
+ミズーリ|セントルイスの ゲートウェイ・アーチを 見た|カンザスシティ・バーベキュー
+アーカンソー|ダイヤモンドが ひろえる 公園を たずねた|チーズディップ
+ルイジアナ|ニューオーリンズで ジャズを きいた|ガンボ
+ミシシッピ|ミシシッピ川の 蒸気船を 見た|ミシシッピ・マッドパイ
+アラバマ|ロケットセンターで 宇宙ロケットを 見た|ホワイト・バーベキューソース
+フロリダ|ケネディ宇宙センターと エバーグレーズの ワニを 見た|キーライムパイ
+ジョージア州|サバンナの 並木道を 歩いた|ピーチコブラー
+サウスカロライナ|チャールストンの カラフルな 家並みを 見た|シュリンプ・アンド・グリッツ
+ノースカロライナ|ライト兄弟が はじめて 空を とんだ 丘を 見た|ハッシュパピー
+テネシー|ナッシュビルで カントリー音楽を きいた|ホットチキン
+ケンタッキー|競馬の まち ルイビルで 馬を 見た|フライドチキン
+ウェストバージニア|ニューリバー渓谷の 大きな 橋を 見た|ペパロニロール
+オハイオ|ロックの 殿堂を 見学した|シンシナティ・チリ
+ペンシルベニア|自由の鐘 リバティ・ベルを 見た|フィリー・チーズステーキ
+バージニア|古い まち ウィリアムズバーグを 歩いた|ピーナッツスープ
+ワシントンD.C.|ホワイトハウスと リンカーン記念堂を 見た|ハーフスモーク
+メリーランド|港の まち ボルチモアを 歩いた|ブルークラブ
+デラウェア|アメリカで 最初に できた 州の 古い まちを 歩いた|スクラップル
+ニュージャージー|海辺の ボードウォークを 歩いた|ソルトウォーター・タフィー
+ニューヨーク|自由の女神と タイムズスクエアを 見た|ベーグル
+コネチカット|港町 ミスティックの 古い 帆船を 見た|ホワイトクラム・ピザ
+ロードアイランド|ニューポートの 大きな お屋敷を 見た|コーヒーミルク
+マサチューセッツ|ボストンの フリーダム・トレイルを 歩いた|クラムチャウダー
+バーモント|紅葉の 森と メープルの 林を 見た|メープルシロップ
+ニューハンプシャー|ホワイト山脈の ワシントン山に のぼった|アップルサイダー・ドーナツ
+メイン|灯台と 岩の 海岸を 見た|ロブスターロール
+#カナダ
+@カナダ|🇨🇦
+ニューブランズウィック|ファンディ湾の 大きな 潮の 満ち引きを 見た|フィドルヘッド
+ノバスコシア|ペギーズ・コーブの 灯台を 見た|ロブスター
+プリンスエドワード島|赤毛のアンの 家を たずねた|ムール貝
+ニューファンドランド・ラブラドール|氷山が ながれる 海を 見た|ジグスディナー
+ケベック|ケベック・シティの 古い まち並みを 歩いた|プーティン
+オンタリオ|ナイアガラの 滝と CNタワーを 見た|バタータルト
+マニトバ|ホッキョクグマの まち チャーチルを たずねた|ワイルドライス
+サスカチュワン|地平線まで つづく 麦畑を 見た|サスカトゥーンベリー・パイ
+アルバータ|バンフの エメラルド色の モレーン湖を 見た|アルバータ牛
+ブリティッシュコロンビア|バンクーバーの 森と 海を 見た|ナナイモバー
+ユーコン|金鉱の まち ドーソン・シティを 歩いた|サワードウ・パンケーキ
+ノースウエスト準州|オーロラの 空の 下で キャンプした|バノック
+ヌナブト|イヌイットの 人たちに イグルーの つくり方を 教わった|ホッキョクイワナ
+🇬🇱|グリーンランド|巨大な 氷山が うかぶ イルリサットを 見た|スアーサット
+`;
+  const tourTexts = [
+    (w) => `${w.place}に とうちゃく！ ぼく、${w.sight}んだよ！ めいぶつの「${w.food}」も たべたよ！`,
+    (w) => `つぎは ${w.place}！ ${w.sight}んだ。おなかが すいたら「${w.food}」で きまりだね！`,
+    (w) => `${w.place}に やってきたよ！ ${w.sight}んだ。「${w.food}」、おいしかった〜！`,
+  ];
+  const tourSays = [
+    (w) => `${w.food}、もう ひとくち ちょうだい〜！`,
+    (w) => `${w.name}、また こようね！`,
+    () => "シンドバッド、みてみて！ すごーい！",
+    (w) => `${w.food}も いいけど… やっぱり バナナが いちばん！`,
+    () => "スタンプ ゲット！ つぎは どこかな？",
+    () => "たびって さいこーだよ！",
+    () => "あしたも いっぱい あるこうね！",
+  ];
+
+  // ---- talk: RPG-style conversations shown after each chapter's story ----
+  // STORY_TALK: "=chapter title" then "speaker|icon|line" rows. JP_TALK: one Japan stop per row,
+  // "place|character|icon|first line|second line". WORLD_CAST: one character key per world stop.
+  const STORY_TALK = `
+=シンドバッドの みなと
+けんじゃの じいちゃん|👴|シンドバッドよ、うみは あれておるぞ。あらしに きをつけるのじゃ！
+シンドバッド|🧔|へいきさ、じいちゃん！ ぼうけんが ぼくらを よんでるんだ。なあ、チャンドゥ？
+チャンドゥ|🐯|うん！ ぼくたち ふたりなら、どんな あらしも へっちゃらだよ！
+けんじゃの じいちゃん|👴|ほっほっ。ならば いっておいで。おみやげばなしを たのしみに しておるぞ。
+=マーメイドの いわば
+マーメイド|🧜‍♀️|まあ、かわいい トラの ぼうや！ あらしの なか よく がんばったわね。
+チャンドゥ|🐯|おねえさんたちの うた、すっごく きれいだった！ たすけてくれて ありがとう！
+マーメイド|🧜‍♀️|うみは こわいだけじゃ ないの。やさしい こころを もつ ものには、ちゃんと こたえてくれるのよ。
+シンドバッド|🧔|あたらしい ふねまで ありがとう！ さあ チャンドゥ、たびの つづきだ！
+=ルフ鳥の しま
+かいぞく|🏴‍☠️|へっへっへ、この でっかい たまごの はねは いただきだ！
+チャンドゥ|🐯|だめー！ それは ルフ鳥の たいせつな たまごだよ！ がおー！
+ルフ鳥|🦅|キュオオーーン！！
+シンドバッド|🧔|ルフ鳥が おこったぞ！ かいぞくたち、つかまって とんでいった〜！
+ルフ鳥|🦅|（やさしい めで ぼくたちを みつめて、はねを 1まい おとしてくれた）
+=巨人の どうくつ
+巨人|🧌|ぐすん… かいぞくに とじこめられて、ずっと ひとりぼっち だったんだ…。
+チャンドゥ|🐯|もう だいじょうぶ！ ルフの はねで かぎを あけたよ！
+巨人|🧌|ありがとう、ちいさな トラくん！ おれいに ぼくの えんそうを きいておくれ。
+チャンドゥ|🐯|わあ… おっきな 楽器の おと、おなかまで ひびくよ〜！
+=サルタンの 宮殿
+サルタン|👳|ようこそ、シンドバッドどの！ じつは サルたちが あばれて こまっておるのだ。
+シンドバッド|🧔|ぼくたちに まかせてください！
+サルタン|👳|では、この まほうの 楽器を もっていくが よい。おとで こころを やわらげるのじゃ。
+チャンドゥ|🐯|ぼく、たいこ たたきたい！ ぼよーん ぼよーん！
+=サルの 国
+サルの 王さま|🐒|キッキー！ なんだ この たのしい おとは！ からだが かってに おどりだすぞ！
+チャンドゥ|🐯|いっしょに えんそう しようよ！ ぼく、チャンドゥ！
+サルの 王さま|🐒|きにいった！ きょうから おまえは ともだちだ。バナナを もってこーい！
+チャンドゥ|🐯|バナナの やまだ〜！ 王さま、だいすき！
+=クジラの かいきょう
+クジラ|🐋|ぶおぉ〜ん… ちいさな ふねの みなさん、こんばんは。
+チャンドゥ|🐯|わあ、おっきい！ ぼくたちを たべちゃう…？
+クジラ|🐋|ふふ、たべないよ。せなかに おのり。あらなみの むこうまで はこんであげよう。
+シンドバッド|🧔|ありがとう、うみの ともだち！ チャンドゥ、しっかり つかまってろよ！
+=おかえり、シンドバッド！
+みなとの みんな|🎉|おかえりー！ シンドバッド！ チャンドゥ！
+けんじゃの じいちゃん|👴|ほっほっ、ぶじで なにより。さて、いちばんの たからものは なんじゃったかな？
+シンドバッド|🧔|たびで であった ともだちさ。…でも まだまだ ぼうけんは おわらない。つぎは でんせつの 7つの こうかいだ！
+チャンドゥ|🐯|7つも!? いくいく！ ぼく、ずっと いっしょだよ！
+=バスラの みなと
+しょうにん|🧳|おお、シンドバッド！ インドへ いく ふねに いっしょに のらないか？
+シンドバッド|🧔|もちろんさ！ にもつを つみこもう！
+チャンドゥ|🐯|くんくん… コショウに シナモン！ スパイスの いい におい〜！
+しょうにん|🧳|はっはっは、その トラくん、はなが いいな！ たびの おともに ぴったりだ。
+=うごく しま
+しょうにん|🧳|みどりの しまだ！ ここで ひと休み しよう。ひを たいて ごはんだ！
+チャンドゥ|🐯|あれ…？ じめんが あったかい… しかも ゆれてる…？
+シンドバッド|🧔|これは しまじゃない！ ねている おおクジラの せなかだ！ みんな にげろー！
+チャンドゥ|🐯|わわわっ！ おけに つかまって… ぷかぷか〜…
+=マフラジャーン王の くに
+マフラジャーン王|🤴|ながれついた たびびとか。よくぞ いきのびた。わが くにで やすむが よい。
+シンドバッド|🧔|ありがとうございます、王さま！ おれいに みなとの しごとを てつだいます。
+チャンドゥ|🐯|あっ、みてみて！ あの ふね、シンドバッドの にもつを つんでる！
+マフラジャーン王|🤴|なんと ふしぎな めぐりあわせ。さあ、ぶじに ふるさとへ かえるが よい。
+=おきざりの しま
+チャンドゥ|🐯|ふぁ〜 よくねた… あれっ!? シンドバッド、ふねが いないよ！
+シンドバッド|🧔|おいてかれた…！ たかい きに のぼって まわりを みてみよう。
+チャンドゥ|🐯|あそこに まっしろで まるい やねが ある！ …ちがう、あれ たまごだ！
+シンドバッド|🧔|ルフ鳥の たまごだ…！ ということは、もうすぐ おやどりが かえってくるぞ。
+=ルフ鳥と そらの たび
+シンドバッド|🧔|チャンドゥ、ターバンで ルフ鳥の あしに つかまるぞ。しっかり だきついてろ！
+ルフ鳥|🦅|キュオーン！（ばさっ ばさっ）
+チャンドゥ|🐯|たかーい！ くもの うえだよ！ ぼくの ターバン、とばないで〜！
+シンドバッド|🧔|もうすぐ おりるぞ… ふかい たにだ！
+=ダイヤモンドの たに
+チャンドゥ|🐯|たにじゅう ダイヤモンドで きらっきら！ まぶしい〜！
+大ヘビ|🐍|シャーッ… ここは わしの たにだ…。
+シンドバッド|🧔|チャンドゥ、こっちだ！ ワシが にくを はこぶ ときに、いっしょに つかまって だっしゅつするぞ！
+チャンドゥ|🐯|ヘビさん、さよなら〜！ ダイヤも すこし もらっていくね！
+=ふしぎな サルの しま
+けむくじゃらの サル|🦍|ウキャキャ！ ウキャー！
+チャンドゥ|🐯|がおー！ …あれ？ ぜんぜん こわがって くれない…。
+シンドバッド|🧔|あいては かずが おおすぎる。いまは さからわずに ようすを みよう。
+チャンドゥ|🐯|しまに おいてかれちゃった… でも シンドバッドが いれば だいじょうぶだよね。
+=巨人の やかた
+巨人|👹|ぐおぉ〜… ちいさい ニンゲンが いっぱい いるな…。
+チャンドゥ|🐯|（しーっ… ねむってる いまの うちに…）
+シンドバッド|🧔|いかだは できた。よるの うみへ こぎだすぞ！ そーっと だ…！
+チャンドゥ|🐯|やった、にげきった！ もう でっかい やかたは こりごりだよ〜。
+=大ヘビの しま
+チャンドゥ|🐯|また ヘビ〜!? きの いたで しっかり かこもう！
+大ヘビ|🐍|シュルル… すきまは ないか…？
+シンドバッド|🧔|あさまで がまんだ！ …みろ、ふねが きたぞ！
+せんちょう|⚓|おや、その かお… シンドバッドさん!? なくした にもつ、ずっと あずかってましたよ！
+=あらしの うみ
+シンドバッド|🧔|いたに つかまれ、チャンドゥ！ はなすなよ！
+チャンドゥ|🐯|うん…！ シンドバッド、ぼくが あっためて あげるからね！
+シンドバッド|🧔|ありがとう… おまえが いてくれて よかった。
+チャンドゥ|🐯|みて、はまが みえる！ もうすこしだよ！
+=くらを つくった シンドバッド
+王さま|🤴|その「くら」とやら、なんと すわりごこちの よいことか！
+シンドバッド|🧔|うまに のるのが ぐっと らくに なりますよ、王さま。
+王さま|🤴|すばらしい！ くにじゅうの ものに つくってやってくれ！
+チャンドゥ|🐯|シンドバッド すごーい！ ぼく せんようの ちっちゃい くらも ほしいな！
+=ちかの どうくつ
+チャンドゥ|🐯|まっくらで なにも みえないよ… シンドバッド、そこに いる？
+シンドバッド|🧔|ここだ。…しっ、なにか うごいたぞ。どうぶつだ。
+チャンドゥ|🐯|くんくん… こっちから かぜが ふいてる！ ひかりの においが するよ！
+シンドバッド|🧔|おまえの はなは さいこうだ！ そとへ でられるぞ！
+=ルフ鳥の いかり
+しょうにん|🧳|おっきな たまご！ わってみようぜ！
+チャンドゥ|🐯|だめだよ！ それ ルフ鳥の たまご…あああ、わっちゃった！
+ルフ鳥|🦅|キュオオオーーン！！（でっかい いわを かかえて とんでくる）
+チャンドゥ|🐯|ごめんなさーい！ ぼくじゃ ないってば〜！
+=うみの ろうじん
+うみの ろうじん|👴|そこの わかもの… かわの むこうまで おぶっておくれ…。
+シンドバッド|🧔|いいですよ。…あれ？ おりてくれない…！？
+チャンドゥ|🐯|おじいさん、あしで しっかり しめつけてる！ シンドバッド、ぶどうジュースを のませてみて！
+うみの ろうじん|👴|ごくごく… むにゃ… すやぁ…。
+=ヤシの みの もり
+チャンドゥ|🐯|きの うえに サルが いっぱい！ やっほー！
+サルたち|🐒|キキッ！（ヤシの みを なげかえしてくる）
+シンドバッド|🧔|はっはっは！ これだ、チャンドゥ！ ヤシの みを あつめて うりにいこう！
+チャンドゥ|🐯|サルさんたち ありがとう！ あまくて おいしーい！
+=ほうせきの はま
+チャンドゥ|🐯|すなはまに ほうせきが ごろごろ！ でも だれも いないね…。
+シンドバッド|🧔|ふねは こわれた。まちも ない。…でも あきらめないぞ。
+チャンドゥ|🐯|あっちの やまの したから、みずが ながれていく おとが するよ！
+シンドバッド|🧔|かわだ！ いかだを つくって ながれに のろう！
+=ちかを ながれる かわ
+チャンドゥ|🐯|まっくら… なみの おとだけ きこえる…。
+シンドバッド|🧔|てを にぎってろ。どこまでも いっしょだ。
+チャンドゥ|🐯|うん…。シンドバッドの て、あったかい。
+シンドバッド|🧔|…ねむって いいぞ。めが さめたら きっと あかるい ところだ。
+=セレンディブの 王さま
+セレンディブの 王さま|🤴|ようこそ、わが しまへ。かわを ながれて きた たびびととは めずらしい。
+シンドバッド|🧔|王さま、たすけていただき ありがとうございます！
+セレンディブの 王さま|🤴|バグダッドの カリフどのに、この てがみと おくりものを とどけてくれぬか？
+チャンドゥ|🐯|まかせて！ おちゃの いい かおりも いっしょに とどけるね！
+=カリフの つかい
+カリフ ハールーン|👑|シンドバッドよ。セレンディブの 王に、わが へんじと おくりものを とどけてほしい。
+シンドバッド|🧔|これが さいごの こうかいに なりそうですね。おまかせください！
+チャンドゥ|🐯|おつかいだね！ ぼくも いく！ ぜったい とどけるよ！
+カリフ ハールーン|👑|ちいさな トラの ゆうしゃも いっしょなら あんしんだ。たのんだぞ。
+=ぞうの はかば
+ぞう|🐘|パオーン…（シンドバッドの そでを はなで ひっぱる）
+チャンドゥ|🐯|ついてきてって いってるよ！ …わあ、ここ、ぞうさんたちの ひみつの ばしょ…。
+シンドバッド|🧔|わかったよ。もう ぞうを おいかけない。みんなに そう つたえよう。
+ぞう|🐘|パオ〜ン！（うれしそうに はなを たかく あげた）
+=ただいま、バグダッド
+シンドバッド|🧔|ただいま、バグダッド！ …ながい たびだったな、チャンドゥ。
+チャンドゥ|🐯|うみも しまも どうぶつも、ぜんぶ ぼくの たからものだよ！
+シンドバッド|🧔|さて、つぎは どこへ いこうか。
+チャンドゥ|🐯|ぼく、ひがしの はての しまぐに… 日本に いってみたい！
+=日本へ しゅっぱつ！
+シンドバッド|🧔|日本か。ひがしの はての しまぐにだな。いこう、チャンドゥ！
+チャンドゥ|🐯|日本には「ゆるキャラ」って いう ご当地の ともだちが いっぱい いるんだって！
+シンドバッド|🧔|ははっ、ともだち づくりは おまえの とくいわざだな。
+チャンドゥ|🐯|ぜんぶの けんと しまを まわって、みんなに あいさつ するよ！
+=にっぽん一周 たっせい！
+チャンドゥ|🐯|やったー！ 日本の しま、ぜんぶ まわったよ！
+シンドバッド|🧔|ゆるキャラの ともだち、たくさん できたな。
+チャンドゥ|🐯|うん！ みんな やさしくて、おもしろくて、ごはんも おいしかった！
+シンドバッド|🧔|つぎは せかいだ。せかいにも、ふしぎな ともだちが まってるぞ！
+=ただいま、アラビアン・コースト
+シンドバッド|🧔|ついに せかいを ひとまわり。ここが ぼくらの はじまりの みなとだ。
+チャンドゥ|🐯|せかいじゅうの ともだちに あえたね！ ぼく、ぜーんぶ おぼえてるよ。
+シンドバッド|🧔|いっしょに あるいてくれた みんなにも、ありがとうを いわなくちゃな。
+チャンドゥ|🐯|いっしょに あるいてくれて ありがとう！ …また いっしょに たびに でようね！
+`;
+  const JP_TALK = `
+与那国島|ヨナグニウマ|🐴|ヒヒーン！ ぼくは 与那国島に むかしから すむ ちいさな 馬、ヨナグニウマだよ。|ここは 日本の いちばん 西の はし！ 晴れた ひには 台湾が みえることも あるんだ。
+石垣島|カンムリワシ|🦅|ピックィー！ 石垣島の 空を まもる カンムリワシさ。|川平湾の 海は 7つの 青に かわるんだ。八重山そばを たべていきな！
+西表島|イリオモテヤマネコ|🐈|にゃっ… ぼくは この 島にしか いない イリオモテヤマネコ。|マングローブの 森は ぼくらの いえ。そーっと とおってね。
+竹富島|水牛|🐃|モ〜… 竹富島の 水牛車を ひいてる 水牛だよ。|赤瓦の 村を のんびり まわろう。ぼくの あゆみは ゆっくりなんだ。
+宮古島|宮古馬|🐴|ヒヒン！ 宮古島の ちいさな 馬、宮古馬だよ。|伊良部大橋から みる 宮古ブルー、さいこうでしょ！
+久米島|クメジマボタル|✨|ぴかっ… 久米島の 川に すむ クメジマボタルだよ。|はての浜は まっしろな すなだけの 島。はだしで あるくと きもちいいよ！
+座間味島|ザトウクジラ|🐋|ぶおぉ〜ん！ ふゆに 座間味の 海へ あそびにくる ザトウクジラだよ。|ジャンプ みてた？ もずくも おいしいから たべていってね！
+沖縄本島|シーサー|🦁|はいさい！ 沖縄の いえを まもる シーサーさ。くちを あけてるのが ぼく！|首里城に 美ら海水族館… ジンベエザメ、おっきかったでしょ？
+与論島|ぐりぶー|🐷|よろしく ぶー！ 鹿児島県の PRキャラクター、くろぶたの ぐりぶーだよ。|与論島の 百合ヶ浜は、しおが ひいた ときだけ あらわれる まぼろしの はまなんだ ぶー！
+沖永良部島|さくらちゃん|🐷|ぐりぶーの いもうと、さくらちゃんよ！ 鹿児島を あんないするわ。|昇竜洞の なかは まるで おしろみたいでしょ？ 黒糖も たべてね！
+徳之島|闘牛|🐂|ブモーッ！ 徳之島の 力じまんの 闘牛だ！|この 島では 闘牛が だいにんき！ タンカンで ひとやすみ しよう。
+奄美大島|アマミノクロウサギ|🐇|ぴしっ… ぼくは 奄美の 森にしか いない アマミノクロウサギ。みみが みじかいでしょ？|鶏飯は スープを かけて たべるんだよ。
+喜界島|オオゴマダラ|🦋|ひらひら〜 喜界島に すむ おおきな チョウ、オオゴマダラよ。さなぎは きんいろなの！|大きな ガジュマルの きの したで、白ごまの はたけを ながめてね。
+屋久島|ヤクシカ|🦌|ぴゅい！ 屋久島の ちいさな シカ、ヤクシカだよ。|縄文杉は なんぜんねんも いきてる おじいちゃんの き。あいに きてくれて ありがとう！
+種子島|ちゃっぴー|🐷|ぐりぶーの おとうと、ちゃっぴーだよ！|種子島からは ロケットが そらへ とんでいくんだ！ 安納いもは やくと とろっとろ！
+鹿児島|ぐりぶー|🐷|ぶー！ また あったね、鹿児島県の くろぶた ぐりぶーだよ。|桜島は いまも けむりを あげてる げんきな 火山なんだ ぶー！ 黒豚の とんかつ、さいこう！
+宮崎|みやざき犬|🐕|わん！ ぼくたち 宮崎県の PRキャラクター、みやざき犬の ひぃくん・むぅちゃん・かぁくんだよ！|高千穂峡の 滝、ボートから みると はくりょく まんてん！ チキン南蛮も たべてね！
+熊本|くまモン|🐻|くまモンだモン！ 熊本県の 営業部長 兼 しあわせ部長だモン。|熊本城と 阿蘇山、どっちも 熊本の じまんだモン！ ほっぺが あかいのは 熊本の 「赤」なんだモン。
+天草|イルカ|🐬|キュイキュイ！ 天草の 海に すむ 野生の イルカだよ！|うに丼、おいしいよ〜！ また いっしょに およごうね！
+長崎|がんばくん・らんばちゃん|🎎|長崎県の がんばくんと らんばちゃんだよ！ ふたりで「がんばらんば」！|軍艦島と 長崎の 夜景、みてくれた？ ちゃんぽんも たべてってね！
+五島列島|がんばくん|🙌|がんばくんだよ！ 長崎の 島も あんないするよ！|五島には 海辺の きれいな 教会が たくさん あるんだ。五島うどんは つるつる！
+壱岐|らんばちゃん|🙌|らんばちゃんよ！ 壱岐にも ようこそ！|猿岩、ほんとうに サルの よこがおに みえるでしょ？ 壱岐牛も たべてね！
+対馬|ツシマヤマネコ|🐈|にゃう… 対馬だけに すむ ツシマヤマネコだよ。|晴れた ひには 展望台から 韓国が みえるんだ。ちかいでしょ？
+佐賀|壺侍|🏺|ござる！ 佐賀県の、壺を かぶった 壺侍で ござる。|有田は 焼き物の まち。呼子の イカは すきとおっていて きれいで ござる！
+福岡|うそ鳥|🐦|ピイ！ 太宰府天満宮の えんぎもの、うそ鳥だよ。わるいことを「うそ」に かえてくれるんだ。|天神さまに おまいりしたら、とんこつラーメンで あったまろう！
+大分|めじろん|🐦|ちゅぴ！ 大分県の とり メジロが モチーフの めじろんだよ！|地獄めぐりの 温泉、まっかな おゆも あったでしょ？ とり天も おいしいよ！
+愛媛|みきゃん|🍊|みきゃーん！ 愛媛県の みかんいぬ、みきゃんだよ！|道後温泉は とっても ふるい 温泉なんだよ。みかんも たべてね！
+大三島|バリィさん|🐔|バリィさんだよ〜！ 今治市の やきとりの とりで、はらまきは タオルなんよ。|しまなみ海道を 自転車で わたるの、きもちいいでしょ？ レモンケーキも あるよ！
+高知|しんじょう君|🦦|しんじょう君だよ！ 須崎市の ニホンカワウソで、あたまに 鍋焼きラーメンを のせてるんだ。|桂浜の 龍馬さんの 像、おおきかったね！ かつおのたたきも たべてね！
+徳島|すだちくん|🟢|すだちくんだよ！ 徳島県の すだちの キャラクター！|鳴門の うずしお、ぐるぐるで めが まわっちゃう！ 徳島ラーメンも あるよ！
+香川|うどん脳|🍜|うどん脳だよ！ うどん県 香川の、あたまが うどんで できてる キャラクター！|こんぴらさんの 石段は 785段！ のぼったら 讃岐うどんで ひとやすみ！
+小豆島|うどん脳|🍜|また あったね、うどん脳だよ！ 香川の 島も あんないするよ。|エンジェルロードは しおが ひくと あらわれる 道！ そうめんも つるつるだよ！
+直島|アートの 島の がくげいいんさん|🎨|ようこそ、アートの 島 直島へ！|海辺の 水玉の かぼちゃ、みた？ ハマチも おいしいですよ。
+岡山|ももっち・うらっち|🍑|岡山県の ももっちと うらっちだよ！ ももたろうと 鬼の 温羅が モチーフなんだ。|後楽園と 倉敷の まち並み、すてきでしょ？ きびだんごを どうぞ！
+広島|へいわの ハト|🕊️|ポッポー… 平和記念公園に すむ ハトだよ。|ここで みんな 平和を いのるんだ。お好み焼きも たべていってね。
+宮島|宮島の シカ|🦌|ぴゅい！ 宮島に すむ シカだよ。|しおが みちると 大鳥居が 海に うかぶんだ。もみじまんじゅう、ちょっと ちょうだい？
+山口|ちょるる|🐦|ちょるる〜！ 山口県の PR本部長、ちょるるだよ！|錦帯橋は 木で できた 5つの アーチの はし！ ふぐも たべてっちょ！
+角島|ちょるる|🐦|ちょるるだよ！ 角島にも きてくれて ありがとう！|エメラルドの 海の うえの 角島大橋、ドライブ さいこうでしょ！
+島根|しまねっこ|🐱|しまねっこだにゃ！ 島根県の ねこで、ぼうしは 出雲大社の やね なんだにゃ。|出雲大社は 縁むすびの かみさま。出雲そばも たべてにゃ！
+隠岐|隠岐の うし|🐂|モォー！ 隠岐の 島の 牛だよ。|ローソク島の さきに 夕日が のると、ろうそくに ひが ともるみたいなんだ！
+鳥取|トリピー|🎌|トリピーだよ！ 鳥取県の マスコットなんだ。|鳥取砂丘は とっても ひろいでしょ！ 二十世紀梨も みずみずしいよ！
+兵庫|はばタン|🐦|はばタンだよ！ 兵庫県の、ふしちょう フェニックスが モチーフの キャラクター！|白くて うつくしい 姫路城は「白鷺城」とも よばれるんだ。明石焼きは だしに つけてね！
+淡路島|はばタン|🐦|また あったね、はばタンだよ！ 淡路島も 兵庫県なんだ。|花いっぱいの 公園、いい かおり！ 淡路島たまねぎは あまいんだよ！
+大阪|もずやん|🐦|もずやんやで！ 大阪府の とり、モズの キャラクターや！|大阪城と 道頓堀、にぎやかやろ？ たこ焼き たべていき〜！
+和歌山|きいちゃん|🎌|きいちゃんだよ！ 和歌山県の キャラクター！|那智の滝と 白浜の パンダ、どっちも みた？ 梅干しは すっぱいけど げんきが でるよ！
+奈良|せんとくん|🦌|せんとくんです。あたまに シカの つのが ある 奈良県の マスコットです。|奈良公園の シカさんたちは ぼくの なかま。柿の葉ずしも どうぞ。
+京都|まゆまろ|🐛|まゆまろどす。京都府の、まゆ から うまれた キャラクターどす。|伏見稲荷の 千本鳥居、どこまでも つづいてますやろ？ 抹茶パフェも どうぞ。
+滋賀|ひこにゃん|🐱|ひこにゃんだにゃ。彦根の しろい ねこで、あかい かぶとが じまんにゃ。|琵琶湖は 日本で いちばん 大きな みずうみにゃ！ 近江牛も おいしいにゃ。
+三重|伊勢神宮の にわとり|🐓|コケコッコー！ 伊勢神宮で だいじに されている にわとりだよ。|伊勢神宮に おまいりしたら、伊勢うどんを たべようね！
+答志島|海女さん|🤿|あら いらっしゃい！ 答志島で 海に もぐってる 海女だよ。|伊勢えびも とれる ゆたかな 海なんだ。また おいでね！
+愛知|はち丸|🏯|はち丸だぎゃ！ 名古屋市の キャラクターで、かぶとに 金の しゃちほこが ついとるんだがや。|名古屋城の 金の しゃちほこ、ぴかぴかだったでしょ？ みそかつも たべてってちょ！
+日間賀島|日間賀島の タコ|🐙|にゅる〜ん！ タコの 島、日間賀島の タコだよ！|港を あるいたら、タコが いっぱい でしょ？ あっ、ぼくは たべないでね！
+岐阜|ミナモ|💧|ミナモだよ！ 岐阜県の キャラクター！|白川郷の 合掌造りの いえ、ゆきの きせつも きれいなんだ。飛騨牛も たべてね！
+福井|はぴりゅう|🦖|はぴりゅうだよ！ 福井県の きょうりゅうの キャラクター！|恐竜博物館の 化石、すごかったでしょ？ 越前がにも たべてね！
+石川|ひゃくまんさん|🎎|ひゃくまんさんやぞ！ 石川の 加賀八幡起上りが モチーフで、きんぱくで ぴかぴかなんや。|兼六園は 日本三名園の ひとつやよ。のどぐろも たべてってね！
+富山|ライチョウ|🐦|クゥ… 立山に すむ ライチョウだよ。富山県の とりなんだ。|雪の大谷は ゆきの かべが すっごく たかいでしょ！ 白えびも たべてね！
+新潟|レルヒさん|⛷️|レルヒさんだよ！ 日本に スキーを つたえた レルヒ少佐が モチーフなんだ。|信濃川は 日本で いちばん ながい 川！ コシヒカリの おにぎり、さいこう！
+佐渡島|トキ|🐦|クァー！ 佐渡島で だいじに まもられている トキだよ。|たらい舟、ゆらゆらして たのしかったでしょ？ 南蛮えびも あまいよ！
+長野|アルクマ|🐻|アルクマだよ！ 長野県の くまで、ぼうしは きせつごとに 信州の めいぶつに かわるんだ。|地獄谷の おんせんザル、きもちよさそうだったね！ 信州そばも どうぞ！
+山梨|ほうとう屋の おばあちゃん|👵|あら いらっしゃい！ ほうとうを にこむ においに つられて きたのかい？|みずうみに うつる 逆さ富士、きれいだったろう？ あったかい ほうとう、たべておいき。
+静岡|ふじっぴー|🗻|ふじっぴーだよ！ 静岡県の、富士山の かたちの キャラクター！|富士山を みあげて どうだった？ お茶で ひとやすみ しよう！
+神奈川|かながわキンタロウ|🪓|かながわキンタロウだよ！ 足柄山の 金太郎が モチーフなんだ！|横浜の 中華街と 鎌倉の 大仏、どっちも たのしかったね！ シューマイも どうぞ！
+江の島|江の島の ねこ|🐈|にゃ〜ん。江の島で のんびり くらしてる ねこだよ。|島の 灯台から の けしき、よかったでしょ？ しらす丼、ちょっとだけ ちょうだい…。
+東京|ソラカラちゃん|⭐|ソラカラちゃんだよ！ 東京スカイツリーの キャラクターで、かみがたは ほしの かたち！|スカイツリーと 東京タワー、どっちも たかかったね！ もんじゃ焼きも たべてね！
+伊豆大島|あんこさん|👘|いらっしゃい！ 大島の むかしからの きもの すがたの あんこさんだよ。|三原山の 火山の 砂漠、ほかでは みられない けしきでしょ？ あしたばの 天ぷらも どうぞ。
+八丈島|ひかる きのこ|🍄|ぽわ〜ん… 八丈島の 森で みどりに ひかる きのこだよ。|よるの 森は まほうの せかいみたいでしょ？ 島ずしも おいしいよ。
+小笠原諸島|アオウミガメ|🐢|のんびり〜 小笠原の 海を およぐ アオウミガメだよ。|イルカと いっしょに およいだね！ パッションフルーツも あまずっぱいよ。
+千葉|チーバくん|🐕|チーバくんだよ！ よこから みると 千葉県の かたちを してるんだ！|成田山と 房総の 海、たのしかった？ 落花生も たべてね！
+埼玉|コバトン|🕊️|コバトンだよ！ 埼玉県の とり、シラコバトの キャラクター！|川越の 時の鐘、いい おとだったね！ 草加せんべいも パリッと どうぞ！
+茨城|ねば〜る君|🫘|ねば〜る君だよ〜！ 茨城の なっとうの ようせいで、のびて ねばるのが とくいなんだ〜。|ネモフィラの 青い 丘、そらと つながってたでしょ〜？ 納豆も ねばって たべてね〜！
+栃木|とちまるくん|🎌|とちまるくんだよ！ 栃木県の キャラクター！|日光東照宮の「見ざる 言わざる 聞かざる」、みた？ ぎょうざも たべてね！
+群馬|ぐんまちゃん|🐴|ぐんまちゃんだよ！ 群馬県の ちいさな うまの キャラクター！|草津温泉の 湯畑、ゆげが もくもく！ 焼きまんじゅうも どうぞ！
+福島|キビタン|🐦|キビタンだよ！ 福島県の とり、キビタキの キャラクター！|会津の 鶴ヶ城は あかい かわらの おしろなんだ。喜多方ラーメンも たべてね！
+宮城|むすび丸|🍙|むすび丸だよ！ 宮城の おにぎりで、伊達政宗の かぶとを かぶってるんだ！|松島の 島々、船から みると きれいでしょ！ 牛タンも たべてね！
+山形|山寺の おぼうさん|🧘|ようこそ、山寺へ。1000段の 石段、よく のぼりましたね。|山の うえの けしきは こころを すっきり させてくれます。さくらんぼも どうぞ。
+飛島|ウミネコ|🐦|ミャオ〜！ 飛島に くる ウミネコだよ。ねこみたいに なくんだ！|この 島は ぼくらの ふるさと。岩のりも おいしいよ！
+秋田|スギッチ|🌲|スギッチだよ！ 秋田杉の ようせいなんだ！|なまはげ、こわかった？ でも わるい こを いましめる かみさまなんだよ。きりたんぽも どうぞ！
+岩手|わんこきょうだい|🥣|わんこきょうだいだよ！ わんこそばの おわんが モチーフの 岩手県の キャラクター！|平泉の 中尊寺金色堂、きんいろに かがやいてたね！ わんこそば、なんばい いける？
+青森|ねぶたの はねと|🏮|ラッセラー！ ねぶた祭で おどる はねとだよ！|おっきな ねぶたの あかり、すごい はくりょくだったでしょ！ リンゴも たべてね！
+函館|イカール星人|🦑|イカール星人だよ！ 函館に やってきた イカの うちゅうじんなんだ！|函館山の 夜景は 100万ドルの けしき！ イカそうめんは… ちょっと ふくざつ…。
+奥尻島|奥尻の アワビ|🐚|ぺたっ… 奥尻の 海の いわに くっついてる アワビだよ。|鍋釣岩、なべの とってみたいな かたちでしょ？
+小樽|カモメ|🐦|クワー！ 小樽運河の うえを とぶ カモメだよ。|ガラスの まち、きらきらしてたね！ おすしも ちょっと ちょうだい？
+札幌|キタキツネ|🦊|コンッ！ 北海道に すむ キタキツネだよ。|さっぽろ雪まつりの ゆきの ぞう、おおきかったね！ みそラーメンで あったまろう！
+富良野・美瑛|エゾリス|🐿️|きゅっ！ 北海道の 森に すむ エゾリスだよ。|ラベンダー畑と 青い池、ふしぎな いろだったでしょ？ メロンも あまいよ！
+旭川|旭山動物園の ペンギン|🐧|ペタペタ… 旭山動物園の ペンギンだよ。ふゆは みんなで おさんぽ するんだ！|しょうゆラーメン、あったかくて おいしいよ！
+帯広|ばんえい馬|🐎|ブルルッ！ 帯広の ばんえい競馬で そりを ひく ちからもちの 馬だよ。|十勝の 畑は どこまでも ひろいでしょ！ 豚丼も たべてね！
+釧路|タンチョウ|🦢|クルルー！ 釧路湿原に すむ タンチョウだよ。あたまが あかいのが じまん！|ふゆは ゆきの なかで おどるんだ。炉端焼きも おいしいよ！
+知床|ヒグマ|🐻|ガオ… 知床の 森に すむ ヒグマだよ。とおくから みてね。|ふゆには 流氷が やってくるんだ。サケは ぼくの だいこうぶつ！
+稚内|ゴマフアザラシ|🦭|きゅーん！ 稚内の 海に くる ゴマフアザラシだよ。|宗谷岬は 日本の いちばん 北の はし！ タコしゃぶも おいしいよ。
+利尻島|利尻の ウニ|🦔|ちくちく… 利尻の 海の ウニだよ。|海に うかぶ 利尻富士、きれいでしょ？
+礼文島|レブンアツモリソウ|🌼|ふわぁ… 礼文島だけに さく はな、レブンアツモリソウよ。|花の 浮島に ようこそ。ホッケの ひらき、おいしいわよ！
+`.trim().split("\n").map((l) => l.split("|"));
+  const WORLD_CAST = "genie abu iago carpet rajah genie abu iago carpet rajah genie abu iago carpet rajah genie abu iago simba timon pumbaa rafiki zazu simba timon terk pumbaa rafiki mickey minnie donald goofy zazu simba timon pumbaa tantor rafiki zazu simba timon pumbaa rafiki terk tantor terk zazu simba tantor timon pumbaa rafiki zazu simba timon pumbaa rafiki zazu simba terk timon pumbaa rafiki zazu pluto carpet rajah genie abu iago chipdale jiminy figaro jiminy figaro jiminy figaro jiminy figaro daisy lumiere cogsworth mickey minnie donald goofy pluto chipdale daisy lumiere cogsworth remy pongo gurgi mickey minnie merida donald goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy pegasus phil mickey minnie donald goofy pluto chipdale daisy mickey minnie donald dwarfs dwarfs dwarfs dwarfs flounder olaf goofy bruni pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey minnie baloo bagheera kaa hathi louie baloo bagheera kaa hathi louie baloo bagheera kaa hathi donald goofy louie baloo bagheera kaa hathi louie baloo bagheera kaa hathi louie baloo bagheera kaa hathi louie pluto chipdale daisy mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu crikee khan mushu mickey minnie donald goofy pluto chipdale daisy mickey minnie sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu tuktuk sisu donald nemo jake marahute jake marahute jake goofy dory pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey maui pua heihei maui pedro pedro gaucho gaucho gaucho pedro gaucho minnie jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose jose donald goofy pluto dug mirabel chipdale kuzco donald daisy mickey minnie donald goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy dante pepita panchito dante pepita panchito dante pepita baymax stitch koda mickey minnie donald mater mcqueen mater mcqueen mater goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey mcqueen minnie mater donald louis goofy pluto dumbo chipdale daisy mickey minnie donald goofy pluto chipdale meeko daisy mickey minnie donald dodger goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey minnie donald goofy pluto chipdale daisy mickey minnie".split(" ");
+  // h: greetings, b: goodbyes; mute characters do not speak, so their lines are written as actions
+  const CAST = {
+    genie: { n: "ジーニー", i: "🧞", h: ["ジャジャーン！ ランプの せい ジーニー さんじょう！ ねがいは 3つまで…って、きみは たびの とちゅうか！", "おおっと、トラの おきゃくさん！ ジーニーさまが おもてなし するよ！"], b: ["たびの ぶじを いのってるよ！ これは ねがいじゃなくて、ともだちからの プレゼントさ！", "また ランプを こすって よんでくれよな！ ポンッ！"] },
+    abu: { n: "アブー", i: "🐒", mute: 1, h: ["（サルの アブーが かたに とびのってきた！ キキッ！）"], b: ["（アブーは バナナを ひとつ かかえて、てを ふった）"] },
+    iago: { n: "イアーゴ", i: "🦜", h: ["おいおい、トラの ぼうず！ こんな ところで なにしてんだ？", "やれやれ、また たびびとか。オウムの イアーゴさまが あいてしてやるよ。"], b: ["まったく、たびびとは いそがしいねえ！ じゃあな！", "おみやげ わすれんなよ！ …オレの ぶんもな！"] },
+    carpet: { n: "まほうの じゅうたん", i: "🧶", mute: 1, h: ["（まほうの じゅうたんが ふわっと まいおりて、ふさで あいさつした）"], b: ["（じゅうたんは そらを ぐるっと まわって とんでいった）"] },
+    rajah: { n: "ラジャー", i: "🐅", mute: 1, h: ["（おおきな トラの ラジャーが、のどを ゴロゴロ ならした。トラどうし、なかよく なれそう！）"], b: ["（ラジャーは チャンドゥの あたまを やさしく なめた）"] },
+    simba: { n: "シンバ", i: "🦁", h: ["やあ！ ぼくは シンバ。この だいちに すむ ライオンさ。", "ようこそ、ちいさな トラくん！ ぼくは シンバ。"], b: ["いのちは みんな つながってる。また あおうな、チャンドゥ！", "たびの つづき、きを つけてね！"] },
+    timon: { n: "ティモン", i: "🐾", h: ["よっ！ ミーアキャットの ティモンさまだ！ そこの ちびトラ、なやみは あるか？", "おっ、みない かおだな！ ティモンだ、よろしく！"], b: ["なやみなんか ポイっと すてて、きらくに いこうぜ！", "じゃあな！ むしの ごちそうは またこんど！"] },
+    pumbaa: { n: "プンバァ", i: "🐗", h: ["やあやあ！ イボイノシシの プンバァだよ。きみ、むしは すき？ おいしいよ〜！", "こんにちは〜！ プンバァだよ。いっしょに ひなたぼっこ しない？"], b: ["ぼくは バナナより むしの ほうが すきかな！ じゃあね〜！", "また あそぼうね〜！"] },
+    rafiki: { n: "ラフィキ", i: "🐒", h: ["ほっほっほ！ わしは ラフィキ。おまえさんの こころに、つよい ひかりが みえるぞ。", "おや、ちいさな ぼうけんしゃ。わしは ラフィキじゃ。"], b: ["たびは おまえを おおきく する。わすれるでないぞ！", "かこから まなび、まえへ すすむのじゃ！"] },
+    zazu: { n: "ザズー", i: "🐦", h: ["コホン！ わたくし、王の そっきん ザズーで ございます。", "これは これは、とおくから ようこそ。サイチョウの ザズーで ございます。"], b: ["では、つぎの ほうこくが ありますので しつれい！", "おきを つけて！ くれぐれも あぶない ところへは いかないように！"] },
+    terk: { n: "ターク", i: "🦍", h: ["ヘイヘイ！ ゴリラの タークさまだよ！ ジャングルへ ようこそ！"], b: ["また あそびに きなよ！ こんどは きのぼり きょうそうね！"] },
+    tantor: { n: "タントー", i: "🐘", h: ["パオ… あ、あの… ぼく ゾウの タントー。ちょっと こわがりなんだけど、よろしく…。"], b: ["き、きみと いると こわくないや。ありがとう！"] },
+    mickey: { n: "ミッキー", i: "🐭", h: ["やあ、チャンドゥ！ ミッキーだよ。ハハッ！ たびの とちゅうかい？", "ハハッ！ こんな ところで あえるなんて！ ミッキーだよ！"], b: ["すてきな たびを！ また どこかで あおうね！", "ハハッ！ たのしかったよ。シンドバッドにも よろしくね！"] },
+    minnie: { n: "ミニー", i: "🎀", h: ["まあ、チャンドゥ！ ミニーよ。その ターバン、とっても すてき！", "こんにちは！ ミニーよ。わたしも この まちを たのしんでるの！"], b: ["たびの おもいで、いっぱい つくってね！", "また あいましょうね。バイバーイ！"] },
+    donald: { n: "ドナルド", i: "🦆", h: ["ハロー！ ドナルドだよ！ ぼくも たびの とちゅうなんだ！", "グワッ！ びっくりした！ なんだ、チャンドゥか！"], b: ["グワッ！ もう いくの？ じゃあ、きを つけてね！", "こんどは ぼくの ばんの ぼうけんだ！ じゃあね！"] },
+    goofy: { n: "グーフィー", i: "🐶", h: ["アッヒョ！ グーフィーだよ〜。あれれ、ぼく みちに まよっちゃったかな？", "やあ〜、チャンドゥ！ グーフィーだよ。きみも かんこう？"], b: ["アッヒョ！ たのしかったよ〜。またね〜！", "ぼくも つぎの まちへ… あれ、ちずが さかさまだ〜！"] },
+    pluto: { n: "プルート", i: "🐕", mute: 1, h: ["（プルートが しっぽを ふって とびついてきた！ ワンッ！）"], b: ["（プルートは うれしそうに ワンワン ほえて みおくってくれた）"] },
+    chipdale: { n: "チップと デール", i: "🐿️", h: ["チップと デールだよ！ ねえねえ、どんぐり もってない？", "やあ！ ぼくたち チップと デール！ この まちを たんけん ちゅうなんだ！"], b: ["バナナも おいしそう！ じゃあね〜！", "また いっしょに たんけん しようね！"] },
+    daisy: { n: "デイジー", i: "🦆", h: ["あら、チャンドゥ！ デイジーよ。たびの ファッション、すてきね！", "こんにちは、デイジーよ。いい まちでしょう？"], b: ["おみやげばなし、こんど きかせてね！", "うふふ、たのしい たびを！"] },
+    jiminy: { n: "ジミニー・クリケット", i: "🦗", h: ["やあ、こんにちは！ ぼくは コオロギの ジミニー・クリケット。", "おっと、ちいさな たびびとさん。ジミニー・クリケットだよ。"], b: ["こまったら、こころの こえを よく きくんだよ。じゃあね！", "いつでも ただしい ことを えらぶんだよ！"] },
+    figaro: { n: "フィガロ", i: "🐈", mute: 1, h: ["（こねこの フィガロが ニャッと ないて すりよってきた）"], b: ["（フィガロは ひなたで まるくなって、しっぽで バイバイした）"] },
+    lumiere: { n: "ルミエール", i: "🕯️", h: ["ボンジュール！ わたしは ルミエール。おきゃくさまは だいかんげいですぞ！"], b: ["メルシー！ すてきな たびを！"] },
+    cogsworth: { n: "コグスワース", i: "🕰️", h: ["コホン、わたくし コグスワース。じかんどおりに ごあんない いたしますぞ。"], b: ["おっと、もう こんな じかん！ ごきげんよう！"] },
+    remy: { n: "レミー", i: "🐀", h: ["やあ！ ぼくは レミー。りょうりが だいすきな ネズミさ。"], b: ["だれでも りょうりは できる。きみも ためしてみて！"] },
+    marie: { n: "マリー", i: "🐱", h: ["こんにちは！ わたし、マリー。レディは いつも エレガントで なくちゃ！"], b: ["オ・ルヴォワール！ またね！"] },
+    pongo: { n: "ポンゴ", i: "🐶", h: ["ワン！ ぼくは ダルメシアンの ポンゴ。かぞくが たくさん いるんだ。"], b: ["かぞくの もとへ かえらなくちゃ。たのしい たびを！"] },
+    gurgi: { n: "ガーギ", i: "🐾", h: ["ガーギ、おなか ぺこぺこ！ もぐもぐ たべもの もってる？"], b: ["ガーギ、ともだち できた！ うれしい うれしい！"] },
+    merida: { n: "メリダ", i: "🏹", h: ["やあ！ わたしは メリダ。うんめいは じぶんで きりひらくものよ！"], b: ["あなたも じぶんの みちを すすんでね！"] },
+    pegasus: { n: "ペガサス", i: "🐴", mute: 1, h: ["（はねの はえた うま、ペガサスが ヒヒーンと いなないた！）"], b: ["（ペガサスは そらたかく はばたいていった）"] },
+    phil: { n: "フィル", i: "🐐", h: ["おい、そこの ちびっこ！ わしは フィル。えいゆうの コーチを しとる。"], b: ["えいゆうへの みちは ながいぞ！ がんばれよ！"] },
+    dwarfs: { n: "七人のこびと", i: "⛏️", h: ["やあやあ！ わしら こうざんで はたらく 七人のこびとじゃ！", "おや、トラの おきゃくさんじゃ！ ハックション！ …しつれい、くしゃみの くせが あってのう。"], b: ["さあ、いえに かえって ごはんじゃ！", "きを つけて いくんじゃぞ！ ふわぁ… ねむくなってきた…。"] },
+    flounder: { n: "フランダー", i: "🐠", h: ["やあ！ ぼく フランダー！ 海の うえの せかいって どんな かんじ？"], b: ["また 海で あそぼうね！"] },
+    olaf: { n: "オラフ", i: "⛄", h: ["やあ！ ぼく オラフ。ぎゅーって して！"], b: ["あったかい ハグ、ありがとう！ …ちょっと とけちゃいそう！"] },
+    bruni: { n: "ブルーニ", i: "🦎", mute: 1, h: ["（火の せいれい ブルーニが ぽっと ほのおを ともして、くびを かしげた）"], b: ["（ブルーニは ゆきの うえを ちょろちょろ はしっていった）"] },
+    baloo: { n: "バルー", i: "🐻", h: ["よう、ちびトラ！ おいらは クマの バルー。のんびり いこうや〜。", "おっ、トラの こどもか！ バルーだよ。せなかが かゆくてさ〜。"], b: ["ひつようなものは ほんの ちょっと。それで しあわせさ！ じゃあな〜！", "また いっしょに ごろごろ しようや〜！"] },
+    bagheera: { n: "バギーラ", i: "🐆", h: ["わたしは くろヒョウの バギーラ。この ジャングルは あぶない。きを つけなさい。", "ちいさな トラよ、まいごでは あるまいな？ わたしは バギーラだ。"], b: ["ぶじに たびを つづけるのだぞ。", "ジャングルの おきてを わすれるな。さらばだ。"] },
+    kaa: { n: "カー", i: "🐍", h: ["シュルル… わたしの めを みてごらん…。", "シュルルル… おいしそうな… いや、かわいい トラだねぇ…。"], b: ["シュルル… ざんねん、にげられたか…。", "シュルル… また おいで…。"] },
+    hathi: { n: "ハティ大佐", i: "🐘", h: ["パオーン！ わしは ハティ大佐！ ぞうの たいれつ、ぜんたーい とまれ！", "ごくろう！ わしは ハティ大佐である！"], b: ["ぜんたーい、すすめ！ では しつれい！", "ひだり、みぎ、ひだり、みぎ！ さらばじゃ！"] },
+    louie: { n: "キング・ルーイ", i: "🦧", h: ["よう！ オイラは サルの 王さま キング・ルーイ！", "ようこそ、オイラの いせきへ！ キング・ルーイさまだ！"], b: ["また おどりに きなよ！", "バナナ、ありがとよ！ ごきげんで いこうぜ！"] },
+    mushu: { n: "ムーシュー", i: "🐉", h: ["おっと！ オレさまは まもりがみの ドラゴン、ムーシューだ！", "ジャーン！ ちいさくても いだいな ドラゴン、ムーシューさまだぜ！"], b: ["こまったら いつでも よびな！ ムーシューさまが かけつけるぜ！", "まもりがみは いそがしいんだ！ じゃあな！"] },
+    crikee: { n: "クリキー", i: "🦗", mute: 1, h: ["（しあわせを よぶ コオロギ、クリキーが チリリと ないた）"], b: ["（クリキーは ぴょんと はねて とんでいった）"] },
+    khan: { n: "カーン", i: "🐴", mute: 1, h: ["（くろい うまの カーンが ブルルと はなを ならした）"], b: ["（カーンは かぜの ように かけていった）"] },
+    sisu: { n: "シスー", i: "🐉", h: ["やっほー！ わたしは りゅうの シスー！ およぐのが とくいなの！", "あら、かわいい トラさん！ シスーよ、よろしくね！"], b: ["しんじる こころが いちばんの まほうよ！ じゃあね！", "また いっしょに およごうね！"] },
+    tuktuk: { n: "トゥクトゥク", i: "🐛", mute: 1, h: ["（まるまった トゥクトゥクが ころころ ころがってきた！）"], b: ["（トゥクトゥクは まるくなって、ころころ ころがっていった）"] },
+    nemo: { n: "ニモ", i: "🐠", h: ["やあ！ ぼく クマノミの ニモ！ ちいさい ひれだけど、およぐのは まけないよ！"], b: ["またね、チャンドゥ！ ぼくも がんばって およぐよ！"] },
+    dory: { n: "ドリー", i: "🐟", h: ["こんにちは！ わたし ドリー！ …あれ、なにを はなしてたっけ？"], b: ["およぎつづけよう！ …えっと、あなた だれだっけ？ うふふ、じょうだん！"] },
+    crush: { n: "クラッシュ", i: "🐢", h: ["よう、ちびっこ！ オレは ウミガメの クラッシュ。なみに のってるかい？"], b: ["いい なみ だったぜ！ またな！"] },
+    jake: { n: "ジェイク", i: "🐭", h: ["よう、あいぼう！ オレは カンガルーネズミの ジェイク。この あたりは オレの にわさ。"], b: ["オーストラリアの だいちを たのしんでくれよ！"] },
+    marahute: { n: "マラフーテ", i: "🦅", mute: 1, h: ["（きんいろの おおワシ、マラフーテが そらから まいおりてきた！）"], b: ["（マラフーテは おおきな はねを ひろげて、そらへ のぼっていった）"] },
+    maui: { n: "マウイ", i: "🪝", h: ["よう！ はんしん はんじんの マウイさまだ！ サインが ほしいか？"], b: ["海は ひろいぜ！ じゃあな、ちびトラ！"] },
+    pua: { n: "プア", i: "🐷", mute: 1, h: ["（こぶたの プアが ブヒッと ないて、すりよってきた）"], b: ["（プアは しっぽを ふりふり みおくってくれた）"] },
+    heihei: { n: "ヘイヘイ", i: "🐔", mute: 1, h: ["（ニワトリの ヘイヘイが コケッ…と ないて、なぜか いしを つついている）"], b: ["（ヘイヘイは ふらふら あるいて どこかへ いってしまった）"] },
+    pedro: { n: "ペドロ", i: "✈️", h: ["ブルルン！ ぼく ちいさな ゆうびんひこうきの ペドロ！ やまを こえて てがみを はこぶんだ！"], b: ["てがみを とどけに いかなくちゃ！ ブルルーン！"] },
+    gaucho: { n: "グーフィー（ガウチョ）", i: "🤠", h: ["アッヒョ！ きょうの ぼくは そうげんの カウボーイ、ガウチョだよ〜！"], b: ["ぼくの うま、どこ いったかな〜？ じゃあね〜！"] },
+    jose: { n: "ホセ・キャリオカ", i: "🦜", h: ["オラ！ ぼくは オウムの ホセ・キャリオカ。ブラジルへ ようこそ！", "やあ、アミーゴ！ ホセだよ。サンバの リズムで あんないするよ！", "ボンジーア！ また あったね、ホセ・キャリオカだよ！", "おや、チャンドゥ！ ブラジルは ひろいだろう？ ホセだよ！"], b: ["サンバの リズムで、また あおうね！", "アテ・ロゴ！ またね、アミーゴ！", "たびを たのしんで！ ブラジルは いつでも まってるよ！"] },
+    panchito: { n: "パンチート", i: "🐓", h: ["アミーゴ！ ニワトリの パンチートだよ！ メキシコへ ようこそ！"], b: ["アディオス、アミーゴ！"] },
+    kuzco: { n: "クスコ", i: "🦙", h: ["おい、そこの トラ！ わたしは こうてい クスコ…いまは リャマだけど！"], b: ["わたしが いちばん だいじ…だったけど、ともだちも わるくないな！"] },
+    kevin: { n: "ケヴィン", i: "🐦", mute: 1, h: ["（カラフルな おおきな とり ケヴィンが、チャンドゥの バナナを じーっと みている！）"], b: ["（ケヴィンは チョコレートの においの ほうへ かけていった）"] },
+    dug: { n: "ダグ", i: "🐕", h: ["ぼく ダグ！ きみに あえて うれしい！ …リス！？"], b: ["きみ、いい トラ！ ぼく、きみが すき！"] },
+    mirabel: { n: "ミラベル", i: "🦋", h: ["こんにちは！ わたしは ミラベル。かぞくは みんな ふしぎな ちからを もってるの。"], b: ["とくべつな ちからが なくても、あなたは とくべつよ！"] },
+    dante: { n: "ダンテ", i: "🐕", mute: 1, h: ["（いぬの ダンテが したを ぺろーんと だして かけよってきた！）"], b: ["（ダンテは マリーゴールドの はなびらの なかを はしっていった）"] },
+    pepita: { n: "ペピータ", i: "🐆", mute: 1, h: ["（カラフルな つばさの ある おおきな ネコ、ペピータが しずかに こちらを みつめている）"], b: ["（ペピータは つばさを ひろげて よぞらへ とんでいった）"] },
+    stitch: { n: "スティッチ", i: "👽", h: ["アロハ！ スティッチ！ おまえ、トラ？ おもしろい！"], b: ["オハナ！ チャンドゥも かぞく！"] },
+    koda: { n: "コーダ", i: "🐻", h: ["やあ！ ぼく コーダ！ クマだけど、きみと おなじ くらい ちびっこだよ！"], b: ["サーモン たべに いかなきゃ！ またね！"] },
+    mater: { n: "メーター", i: "🚚", h: ["よう、あいぼう！ オイラ メーター！ レッカー車だぜ！", "おっ、トラの おきゃくさんか！ メーターだ、よろしくな！"], b: ["うしろむき うんてんで おみおくり するぜ〜！", "ルート66の たび、たのしんでな！"] },
+    mcqueen: { n: "ライトニング・マックィーン", i: "🏎️", h: ["カチャウ！ ライトニング・マックィーンだ！", "やあ、チャンドゥ！ ぼくは レースカーの マックィーン！"], b: ["ゴールまで ぜんそくりょくで いこう！", "たびも レースも、ともだちが いちばん だいじさ！"] },
+    louis: { n: "ルイス", i: "🐊", h: ["やあ！ ぼく ワニの ルイス。トランペットが だいすきなんだ！"], b: ["パパラパー！ ジャズの まちで、また あおう！"] },
+    ray: { n: "レイ", i: "✨", h: ["ボンジュール！ ホタルの レイだよ。よるの みちあんないは まかせて！"], b: ["いちばん ひかる ほしを みあげてごらん！"] },
+    meeko: { n: "ミーコ", i: "🦝", mute: 1, h: ["（アライグマの ミーコが チャンドゥの ポケットを さぐってる！ たべもの さがしかな？）"], b: ["（ミーコは バナナを 1本 かかえて にげていった！）"] },
+    flit: { n: "フリット", i: "🐦", mute: 1, h: ["（ハチドリの フリットが ブーンと めの まえに とんできた）"], b: ["（フリットは すばやく はばたいて きえていった）"] },
+    dumbo: { n: "ダンボ", i: "🐘", mute: 1, h: ["（おおきな みみの こぞう ダンボが、みみを パタパタさせて ちゅうに うかんだ！）"], b: ["（ダンボは みみを ひろげて そらへ とんでいった）"] },
+    dodger: { n: "ドジャー", i: "🐕", h: ["よう、ちびすけ！ オレは ドジャー。この まちの ことなら なんでも しってるぜ。"], b: ["まちは オレたちの にわさ！ またな！"] },
+    baymax: { n: "ベイマックス", i: "🤖", h: ["こんにちは。わたしは ベイマックス。あなたの こころと からだの けんこうを まもります。"], b: ["あなたの けんこうは じゅんちょうです。たびを たのしんでください。"] },
+  };
+  const ME = (t) => ["チャンドゥ", "🐯", t];
+  const meHello = [
+    (n, w) => `わあ、${n}だ！ ぼく チャンドゥ！ シンドバッドと たびを してるんだよ！`,
+    (n, w) => `${n}！ あえて うれしいな！ ぼく、チャンドゥだよ！`,
+    (n, w) => `こんにちは、${n}！ ぼく、${w.name}に きたんだよ！`,
+  ];
+  const placeLines = [
+    (q, w) => `ここ ${w.name}の じまんは、なんと いっても ${q}なんだ。`,
+    (q, w) => `${q}は もう みたかい？ ${w.name}に きたなら ぜったい みなくちゃ！`,
+    (q, w) => `${w.name}は いい ところだろう？ とくに ${q}が すてきなんだよ。`,
+  ];
+  function makeTalk(n, w) {
+    if (n < JP_TALK.length) {
+      const [, who, icon, a, b] = JP_TALK[n];
+      return [[who, icon, a], ME(meHello[n % 3](who, w)), [who, icon, b], ME(`ありがとう、${who}！ ぼく、${w.sight}んだよ。また あいに くるね！`)];
+    }
+    const k = n - JP_TALK.length, c = CAST[WORLD_CAST[k]];
+    if (!c) return null;
+    const q = PHOTO_Q[n].replace(/\s*\(.*\)$/, "").replace(/ /g, "の ");
+    const pick = (a) => a[k % a.length];
+    return [[c.n, c.i, pick(c.h)], ME(meHello[k % 3](c.n, w)),
+      c.mute ? [c.n, c.i, `（${c.n}は ${q}の ほうを じっと みている…）`]
+        : w.name.includes(q) || q.includes(w.name) ? [c.n, c.i, `${q}の まちを ゆっくり あるいてみなよ。きっと すてきな はっけんが あるよ！`] : [c.n, c.i, placeLines[k % 3](q, w)],
+      ME(`ぼく、${w.sight}んだよ！ 「${w.food}」も たべてみるね！`), [c.n, c.i, pick(c.b)]];
+  }
+  let tourCount = 0;
+  const ITEM_GOAL = 8000;
+  const ITEMS = [];
+  const ITEM_ICONS = [
+    [/ラーメン|そば|うどん|そうめん|麺|米線|米粉|フォー|ラグマン|トゥクパ|ラクサ|パスタ|カルボナーラ|モヒンガー|カオソーイ|カオラウ|ほうとう/, "🍜"],
+    [/すし|ずし|寿司/, "🍣"], [/カレー|カリー|ダール|ビリヤニ|ルンダン|カオソーイ/, "🍛"],
+    [/おにぎり/, "🍙"], [/丼|ごはん|ライス|飯|パエリア|リゾット|プロフ|パラオ|ナシ|カブサ|マクブース|マチブース|チェブジェン|ジョロフ|ビリヤニ|ポハ/, "🍚"],
+    [/ぎょうざ|ギョウザ|ペリメニ|ヴァレーニキ|ピエロギ|モモ|小籠包|包子|シューマイ|飲茶|ワンタン|ボーズ|マンティ/, "🥟"],
+    [/たこ焼き|明石焼き|タコ|イカ/, "🐙"], [/えび|エビ|シュリンプ|ロブスター|伊勢えび/, "🦐"], [/かに|カニ|クラブ/, "🦀"],
+    [/ウニ|うに|カキ|ガキ|貝|クラム|ムール|コンク|アワビ/, "🦪"],
+    [/サケ|サーモン|魚|カジキ|トビウオ|アナゴ|ハマチ|ふぐ|のどぐろ|ホッケ|しらす|かつお|フィッシュ|バラマンディ|ピラルクー|タンバキ|ピラニア|オームリ|セビーチェ|ココダ|オタ・イカ|ストロガニーナ|ブイヤベース|炉端/, "🐟"],
+    [/ピッツァ|ピザ/, "🍕"], [/バーガー/, "🍔"], [/ホットドッグ|ドッグ|ソーセージ|ヴルスト/, "🌭"], [/タコス|ブリトー|チミチャンガ|タマル/, "🌮"],
+    [/サンド|バインミー|トルタ|ワダパオ|ロール$/, "🥪"], [/ステーキ|牛|ケバブ|シャシリク|串|アサード|シュラスコ|ピカーニャ|肉|バーベキュー|ブリスケット|チキン|とり天|豚|ポーク|とんかつ|みそかつ|ダック|ハンギ|ジャーク|カルネ|ニャマ|ブロシェット|手羽|ラム|羊|ベシュバルマク|ミートボール|ミートパイ|スクラップル/, "🍖"],
+    [/スープ|シチュー|鍋|火鍋|湯|チャウダー|ガンボ|チリ|煮込み|ボルシチ|サンコーチョ|ペッパーポット|カラルー|ロクロ|ゴートウォーター|ペピアン|モレ|ちゃんぽん|仏跳牆|アホス|ムアンバ|フール/, "🍲"],
+    [/アイス|ジェラート/, "🍨"], [/パフェ|プディング|ムース|マッドパイ/, "🍮"],
+    [/ケーキ|トルテ|タルト|パイ|カヌレ|ナタ|ラミントン|クーヘン|コブラー/, "🍰"],
+    [/ドーナツ|チュロス|ワッフル|クッキー|ビスケット|ショートブレッド|せんべい|ちんすこう|まんじゅう|だんご|ルカイマート|バクラヴァ|ロショゴッラ|チャクチャク|タフィー|お菓子|ブーニャ|ドゥルセ|ホーキー|トルデルニーク|バナナダ|もち|おもち|黒糖/, "🍪"],
+    [/パン|クロワッサン|ブレッツェル|ベーグル|ロティ|ナン|ピロシキ|ハチャプリ|エンパナーダ|パステル|チパ|ポンデケージョ|アレパ|ラヴァシュ|サルテーニャ|焼餅|煎餅|インジェラ|キスラ|ブリヌイ|ドラニキ|パンケーキ|ドーサ|ドーサ|アッパム|イドゥリ|ププサ|パペダ|フフ|ウガリ|シマ|サザ|パパ|ママリガ|アチェケ|トー/, "🍞"],
+    [/チーズ|フォンデュ|ヨーグルト|ラッシー|ハルミ/, "🧀"], [/オムレツ|たまご|エッグ/, "🍳"],
+    [/お茶|ティー|茶|コーヒー|ミルク|カジュイーナ|サイダー/, "🍵"], [/メープル|はちみつ|シロップ/, "🍯"],
+    [/リンゴ|アップル/, "🍎"], [/みかん|タンカン|オレンジ/, "🍊"], [/レモン|ライム/, "🍋"], [/パイナップル/, "🍍"], [/メロン/, "🍈"], [/さくらんぼ|チェリー/, "🍒"],
+    [/梨/, "🍐"], [/ぶどう|ベリー/, "🍇"], [/ココナッツ|ヤシ|パンダナス/, "🥥"], [/バナナ|マトケ|プラカ|プランテン/, "🍌"], [/桃|ピーチ/, "🍑"], [/マンゴー|パパイヤ|ドリアン|パッション|トロピカル|フルーツ|アサイー|ナツメヤシ|アプリコット|カラファテ|実/, "🥭"],
+    [/いも|イモ|ポテト|キャッサバ|マニオク|タロ|ジャガイモ/, "🥔"], [/トウモロコシ|コーン/, "🌽"], [/たまねぎ|れんこん|ゴーヤー|野菜|たけのこ|フィドルヘッド|あしたば|もずく|岩のり|梅干し|納豆|サラダ|タッブーレ/, "🥗"],
+    [/ナッツ|落花生|ピーナッツ|ごま|カカオ|キヌア|ワイルドライス/, "🥜"], [/ファラフェル|ボール/, "🧆"],
+  ]
+  const itemIcon = (food) => (ITEM_ICONS.find(([re]) => re.test(food)) || [0, "🎁"])[1];
+  const itemDescs = [
+    (w) => `${w.place}で ゲットした ご当地アイテムだよ！ ${w.sight}あとに、おみせの おじさんが「${w.food}」を くれたんだ。おいしくて しっぽが ぶんぶん ゆれちゃった！`,
+    (w) => `これが ${w.place}の めいぶつ「${w.food}」だ！ ${w.sight}ひに、8,000歩 がんばって てに いれたんだよ。ぼくの たからものの ひとつなんだ！`,
+    (w) => `${w.place}の「${w.food}」！ ${w.sight}んだ。じもとの みんなが だいすきな あじなんだって。ぼくも だいすきに なったよ！`,
+  ];
+  function addTour(data, prefix, stamp) {
+    const regions = [];
+    let region = null, parent = null;
+    data.trim().split("\n").forEach((line) => {
+      if (line.startsWith("#")) { region = { name: line.slice(1), items: [] }; regions.push(region); parent = null; return; }
+      if (line.startsWith("@")) { const [name, icon] = line.slice(1).split("|"); parent = { name, icon }; return; }
+      const f = line.split("|");
+      if (f.length === 4) { parent = null; region.items.push({ icon: f[0], name: f[1], place: f[1], sight: f[2], food: f[3] }); }
+      else region.items.push({ icon: parent.icon, name: f[0], place: `${f[0]}（${parent.name}）`, sight: f[1], food: f[2] });
+    });
+    regions.forEach((r) => {
+      const parts = Math.ceil(r.items.length / 8);
+      for (let i = 0; i < parts; i++) {
+        GROUPS.push({
+          name: prefix + " · " + r.name + (parts > 1 ? ` ${i + 1}/${parts}` : ""),
+          chapters: r.items.slice(i * 8, i * 8 + 8).map((w) => {
+            const n = tourCount++;
+            const item = { key: prefix + "|" + w.place, name: w.food, icon: itemIcon(w.food), place: w.place, region: prefix + " · " + r.name, desc: itemDescs[n % itemDescs.length](w) };
+            ITEMS.push(item);
+            return { item, talk: makeTalk(n, w), photoQ: PHOTO_Q[n], sight: w.sight, icon: w.icon, short: w.name.length > 7 ? w.name.slice(0, 6) + "…" : w.name, place: w.place, title: w.name,
+              text: tourTexts[n % tourTexts.length](w), say: tourSays[n % tourSays.length](w), reward: { bananas: 2, item: stamp } };
+          }),
+        });
+      }
+    });
+  }
+  const countChapters = () => GROUPS.reduce((n, g) => n + g.chapters.length, 0);
+  const JAPAN_START = countChapters();
+  GROUPS.push({ name: "にっぽん一周 · しゅっぱつ", chapters: [
+    { icon: "⛵", short: "日本へ", place: "インド洋 → 日本", title: "日本へ しゅっぱつ！",
+      text: "7つの こうかいを おえた ぼくと シンドバッド。つぎは うみの むこうの しまぐに、日本だ！ 南の しまから 北の しままで、ぜーんぶ まわっちゃうよ！",
+      say: "日本って どんな とこかな？ バナナ あるかな？", reward: { bananas: 3, item: "にっぽんの スタンプ" } },
+  ] });
+  addTour(JAPAN, "にっぽん一周", "にっぽんの スタンプ");
+  GROUPS.push({ name: "にっぽん一周 · ゴール", chapters: [
+    { icon: "🎌", short: "日本一周", place: "北海道 → せかいへ", title: "にっぽん一周 たっせい！",
+      text: "南の 与那国島から 北の 礼文島まで、日本の しまも ぜんぶ まわって にっぽん一周 たっせい！ つぎは いよいよ せかいりょこうだ。シンドバッドの ふるさと バグダッドへ ひとっとび！",
+      say: "日本、だいすきに なったよ！ せかい、まっててね〜！", reward: { bananas: 8, item: "にっぽん一周の おまもり" } },
+  ] });
+  const WORLD_FROM = countChapters();
+  addTour(WORLD, "せかいりょこう", "せかいの スタンプ");
+  GROUPS.push({ name: "せかいりょこう · ゴール", chapters: [
+    { icon: "🏰", short: "ただいま", place: "アラビアン・コースト", title: "ただいま、アラビアン・コースト",
+      text: "せかいを ぐるっと ひとまわり！ さいごに たどりついたのは、ぼくと シンドバッドの ぼうけんが はじまった みなとだった。あるいた ぶんだけ、せかいじゅうに ともだちが いるんだよ。いっしょに あるいてくれて、ありがとう！",
+      say: "せかい一周 できたね！ …また いこうね！", reward: { bananas: 10, item: "せかい一周の メダル" } },
+  ] });
+  const CHAPTERS = GROUPS.flatMap((g, gi) => g.chapters.map((c, ci) => Object.assign({ gi, ci }, c)));
+  STORY_TALK.trim().split(/^=/m).filter(Boolean).forEach((blk) => {
+    const [title, ...lines] = blk.trim().split("\n");
+    const c = CHAPTERS.find((ch) => ch.title === title.trim());
+    if (c) c.talk = lines.map((l) => l.split("|"));
+  });
+  const LOOP_FROM = JAPAN_START;   // after the world tour, Japan and the world start again
+  function chapterAt(k) {
+    if (k < CHAPTERS.length) return { c: CHAPTERS[k], lap: 1 };
+    const span = CHAPTERS.length - LOOP_FROM, r = k - CHAPTERS.length;
+    return { c: CHAPTERS[LOOP_FROM + (r % span)], lap: 2 + Math.floor(r / span) };
+  }
+
+  // ---- backgrounds: the scene behind Chandu follows the story / the place he is visiting ----
+  let skyN = 0;   // each sky gradient needs its own id when several scenes are on one page
+  const sky = (a, b) => { const id = "sk" + ++skyN; return `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="300" height="236" fill="url(#${id})"/>`; };
+  const deck = `<rect y="196" width="300" height="40" fill="#b9845a"/><path d="M0 206 H300 M0 218 H300 M0 230 H300" stroke="#9c6a44" stroke-width="2"/><rect y="192" width="300" height="6" fill="#8a5a3a"/>`;
+  const palm = (x, y, sc = 1) => `<g transform="translate(${x} ${y}) scale(${sc})"><path d="M0 0 q6 -40 -4 -80" stroke="#9b6b45" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M-4 -80 q-30 -6 -44 12 M-4 -80 q-26 -22 -48 -14 M-4 -80 q8 -28 34 -26 M-4 -80 q30 -6 42 16 M-4 -80 q-2 -26 -14 -36" stroke="#5aa25a" stroke-width="7" fill="none" stroke-linecap="round"/></g>`;
+  const cloud = (x, y, s = 1, c = "#fff") => `<g transform="translate(${x} ${y}) scale(${s})" fill="${c}" opacity=".9"><ellipse cx="0" cy="0" rx="22" ry="10"/><ellipse cx="14" cy="-7" rx="14" ry="10"/><ellipse cx="-12" cy="-4" rx="11" ry="8"/></g>`;
+  const waves = (y, c) => `<path d="M0 ${y} q12 -6 25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0" stroke="${c}" stroke-width="2.5" fill="none" opacity=".7"/>`;
+  const dhow = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-30 0 h60 l-10 12 h-42 z" fill="#8a5a3a"/><path d="M0 0 V-46" stroke="#6b4428" stroke-width="2.5"/><path d="M0 -46 L26 -6 H-4 Z" fill="#fff6e6"/><path d="M0 -40 L-20 -6 H-2 Z" fill="#f4dcb8"/></g>`;
+  const dome = (x, y, w, c) => `<path d="M${x - w} ${y} q0 ${-w * 1.3} ${w} ${-w * 1.6} q${w} ${w * .3} ${w} ${w * 1.6} z" fill="${c}"/><path d="M${x} ${y - w * 1.6} v-8" stroke="${c}" stroke-width="2"/>`;
+  const minaret = (x, y, h, c) => `<rect x="${x - 4}" y="${y - h}" width="8" height="${h}" fill="${c}"/><path d="M${x - 7} ${y - h} h14 l-7 -12 z" fill="${c}"/>`;
+  const BGS = {
+    harbor: { name: "アラビアン・コースト", svg: () => sky("#ffc89a", "#ffeccc") + `<circle cx="230" cy="70" r="26" fill="#ffe08a"/>` + dome(52, 150, 22, "#d9a476") + minaret(18, 150, 70, "#cf9a6c") + minaret(92, 150, 54, "#cf9a6c") + dome(250, 150, 16, "#d9a476") + minaret(284, 150, 60, "#cf9a6c") + `<rect y="148" width="300" height="50" fill="#79b9cc"/>` + waves(166, "#fff") + dhow(160, 160, .9) + `<rect y="194" width="300" height="42" fill="#e2c094"/><path d="M0 204 H300" stroke="#c9a273" stroke-width="2"/>` },
+    sea: { name: "うみの うえ", svg: () => sky("#a9dcf1", "#e6f6fb") + `<circle cx="60" cy="56" r="20" fill="#fff1a8"/>` + cloud(220, 50) + cloud(120, 34, .7) + `<rect y="120" width="300" height="80" fill="#5aa7c5"/>` + waves(140, "#d8f1fa") + waves(165, "#d8f1fa") + dhow(250, 128, .45) + deck },
+    storm: { name: "あらしの うみ", svg: () => sky("#5f6678", "#98a0ae") + cloud(70, 40, 1.6, "#4b5161") + cloud(220, 30, 1.8, "#4b5161") + `<path d="M150 40 l-14 34 h12 l-10 30 l26 -40 h-12 l10 -24 z" fill="#ffe066"/><path d="M0 130 q30 -30 60 0 t60 0 t60 0 t60 0 t60 0 V200 H0 z" fill="#3c6678"/>` + waves(150, "#cfe3ea") + `<path d="M0 222 l20 -8 M60 228 l20 -8 M120 222 l20 -8 M200 228 l20 -8" stroke="#cfe3ea" stroke-width="1.5"/>` + deck },
+    island: { name: "みなみの しま", svg: () => sky("#93d7ee", "#e3f6fb") + `<circle cx="70" cy="58" r="22" fill="#fff1a8"/>` + cloud(200, 46) + `<rect y="132" width="300" height="70" fill="#47b0c8"/>` + waves(150, "#e0f7fb") + `<ellipse cx="150" cy="214" rx="210" ry="34" fill="#f2dca5"/>` + palm(252, 200) + palm(40, 205, .75) + `<path d="M200 214 l4 -6 l4 6 z M90 222 l3 -5 l3 5 z" fill="#f08f6a"/>` },
+    cave: { name: "どうくつ", svg: () => `<rect width="300" height="236" fill="#4b3c36"/><path d="M0 0 H300 V60 q-30 40 -60 10 q-30 -30 -60 20 q-30 30 -60 -10 q-30 -30 -60 10 q-30 30 -60 -10 z" fill="#3a2e29"/><path d="M40 0 v30 l6 14 l6 -14 v-30 M200 0 v40 l7 16 l7 -16 v-40" fill="#5a4a42"/><path d="M0 196 q60 -14 150 -6 q90 8 150 -4 V236 H0 z" fill="#5d4a40"/>` + [[40, 180, "#7fe0d8"], [70, 188, "#f27fa0"], [240, 182, "#ffd166"], [266, 190, "#7fe0d8"], [220, 120, "#b48cf2"], [30, 110, "#ffd166"]].map(([x, y, c]) => `<path d="M${x} ${y} l7 -14 l7 14 l-7 6 z" fill="${c}"/><circle cx="${x + 7}" cy="${y - 4}" r="12" fill="${c}" opacity=".18"/>`).join("") },
+    palace: { name: "きゅうでん", svg: () => sky("#ffd7a3", "#fff1db") + `<rect x="40" y="96" width="220" height="100" fill="#f1cf9e"/>` + dome(150, 100, 34, "#e9b54f") + dome(70, 100, 16, "#e9b54f") + dome(230, 100, 16, "#e9b54f") + minaret(30, 196, 120, "#f1cf9e") + minaret(270, 196, 120, "#f1cf9e") + [80, 120, 160, 200].map((x) => `<path d="M${x} 196 v-40 q10 -18 20 0 v40 z" fill="#c98f5a" opacity=".7"/>`).join("") + `<rect y="194" width="300" height="42" fill="#e9d2ae"/><path d="M0 214 H300 M50 194 v42 M100 194 v42 M150 194 v42 M200 194 v42 M250 194 v42" stroke="#d8b98c" stroke-width="2"/>` },
+    jungle: { name: "ジャングル", svg: () => sky("#cdeec0", "#eefae6") + [[30, 90, 50, "#7fbf6a"], [110, 70, 60, "#6aae5a"], [210, 80, 56, "#7fbf6a"], [290, 96, 46, "#6aae5a"], [70, 130, 46, "#5a9e4e"], [250, 130, 48, "#5a9e4e"]].map(([x, y, r, c]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join("") + `<path d="M60 0 q-6 60 6 110 M240 0 q8 50 -4 90" stroke="#4e8a40" stroke-width="3" fill="none"/><rect y="190" width="300" height="46" fill="#8fc06a"/>` + palm(20, 200, .8) + `<path d="M120 196 q6 -14 12 0 M170 200 q6 -14 12 0 M260 198 q6 -14 12 0" stroke="#4e8a40" stroke-width="3" fill="none"/>` },
+    sky: { name: "そらの うえ", svg: () => sky("#9fd3f0", "#eaf7fd") + cloud(60, 60, 1.2) + cloud(230, 90, 1.1) + `<g transform="translate(190 52)" fill="#7b5a48"><path d="M0 0 q-30 -22 -64 -8 q30 2 40 16 q-36 4 -50 20 q40 -8 64 -4 z"/><path d="M0 0 q30 -22 64 -8 q-30 2 -40 16 q36 4 50 20 q-40 -8 -64 -4 z"/><circle cx="0" cy="0" r="8"/><path d="M6 -2 l10 4 l-10 2 z" fill="#e9b54f"/></g>` + `<g fill="#fff">${[0, 50, 100, 150, 200, 250, 300].map((x) => `<circle cx="${x}" cy="214" r="34"/>`).join("")}</g>` },
+    mountain: { name: "やまの みち", svg: () => sky("#b5daf0", "#eaf6fc") + cloud(250, 40, .8) + `<path d="M-20 180 L70 60 L160 180 Z" fill="#9db1c9"/><path d="M70 60 l-22 30 l12 -6 l10 10 l10 -10 l12 6 z" fill="#fff"/><path d="M110 180 L210 46 L320 180 Z" fill="#8aa1bd"/><path d="M210 46 l-26 34 l14 -6 l12 12 l12 -12 l14 6 z" fill="#fff"/><rect y="176" width="300" height="60" fill="#a6cc86"/>` + [30, 60, 250, 280].map((x) => `<path d="M${x} 200 l-12 0 l12 -30 l12 30 z" fill="#4f8a4a"/><rect x="${x - 2}" y="200" width="4" height="8" fill="#7b5a3a"/>`).join("") },
+    fest: { name: "おまつりの よる", svg: () => sky("#2b3256", "#5b4a7c") + [[70, 50, "#ffd166"], [210, 40, "#f27fa0"], [150, 80, "#7fe0d8"]].map(([x, y, c]) => `<g stroke="${c}" stroke-width="2.5" stroke-linecap="round">${Array.from({ length: 12 }, (_, i) => { const a = i * Math.PI / 6; return `<path d="M${x + Math.cos(a) * 8} ${y + Math.sin(a) * 8} L${x + Math.cos(a) * 26} ${y + Math.sin(a) * 26}"/>`; }).join("")}</g>`).join("") + dome(50, 150, 20, "#3d3352") + minaret(20, 150, 60, "#3d3352") + minaret(260, 150, 64, "#3d3352") + `<rect y="148" width="300" height="50" fill="#334a6a"/>` + waves(168, "#ffd166") + `<rect y="194" width="300" height="42" fill="#6b5a6e"/>` },
+    desert: { name: "さばく", svg: () => sky("#ffdca0", "#fff3d6") + `<circle cx="220" cy="62" r="30" fill="#fff0a0"/><path d="M40 160 L80 100 L120 160 Z" fill="#e6b773"/><path d="M80 100 L120 160 H96 Z" fill="#cf9c58"/><path d="M0 170 q70 -40 150 -6 q80 30 150 -14 V236 H0 z" fill="#f0c27a"/><path d="M0 206 q90 -30 180 -4 q70 20 120 -6 V236 H0 z" fill="#e5ad62"/><g transform="translate(220 176)" fill="#a86a3a"><path d="M-20 0 q4 -16 14 -10 q6 -14 14 -2 q10 -4 12 8 h4 v-10 l6 -4 v4 l-4 4 v12 h-46 z"/><path d="M-16 2 v12 M-8 2 v12 M6 2 v12 M14 2 v12" stroke="#a86a3a" stroke-width="3"/></g>` },
+    ice: { name: "こおりの せかい", svg: () => sky("#bfe1f3", "#f0f9ff") + `<path d="M0 50 q60 -30 120 0 t120 0 t120 0" stroke="#9fe8c8" stroke-width="10" fill="none" opacity=".5"/><path d="M0 70 q60 -30 120 0 t120 0 t120 0" stroke="#c6a8f0" stroke-width="7" fill="none" opacity=".4"/><rect y="140" width="300" height="60" fill="#86c0d8"/><path d="M20 150 l20 -40 l14 16 l12 -26 l20 50 z" fill="#f4fbff"/><path d="M200 152 l16 -30 l14 12 l20 -24 l18 42 z" fill="#f4fbff"/><path d="M54 126 l12 -26 l20 50 h-16 z M230 134 l20 -24 l18 42 h-16 z" fill="#c9e4f2"/><rect y="194" width="300" height="42" fill="#f4fbff"/><path d="M0 194 H300" stroke="#c9e4f2" stroke-width="3"/>` },
+    city: { name: "まちなか", svg: () => sky("#c9e1f5", "#f2f8fd") + cloud(60, 40, .8) + [[10, 100, 40, "#b6c6d9"], [52, 70, 34, "#9fb3ca"], [92, 110, 30, "#b6c6d9"], [196, 84, 36, "#9fb3ca"], [238, 60, 30, "#b6c6d9"], [272, 104, 32, "#9fb3ca"]].map(([x, y, w, c]) => `<rect x="${x}" y="${y}" width="${w}" height="${196 - y}" fill="${c}"/>` + Array.from({ length: Math.floor((196 - y) / 18) }, (_, r) => `<rect x="${x + 6}" y="${y + 8 + r * 18}" width="${w - 12}" height="6" fill="#eef4fa" opacity=".8"/>`).join("")).join("") + `<path d="M150 30 l-14 166 h28 z" fill="#e48a6a"/><path d="M141 90 h18 M138 130 h24" stroke="#c96a4a" stroke-width="4"/><rect y="194" width="300" height="42" fill="#c8c8cc"/><path d="M0 214 h30 M60 214 h30 M120 214 h30 M180 214 h30 M240 214 h30" stroke="#fff" stroke-width="3"/>` },
+    shrine: { name: "にっぽんの けしき", svg: () => sky("#ffe1e6", "#fff6f0") + `<path d="M40 160 L150 50 L260 160 Z" fill="#a9c0dc"/><path d="M150 50 l-30 30 l10 -2 l10 8 l10 -8 l10 8 l10 -8 l10 2 z" fill="#fff"/><rect y="156" width="300" height="80" fill="#d6e7b4"/><g fill="#e0564a"><rect x="98" y="104" width="10" height="96"/><rect x="192" y="104" width="10" height="96"/><path d="M80 96 q70 -10 140 0 v10 q-70 -8 -140 0 z"/><rect x="92" y="118" width="116" height="7"/></g>` + [[30, 60], [270, 80], [60, 120], [250, 40], [200, 130]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#f6a7b8"/>`).join("") + `<rect y="198" width="300" height="38" fill="#e8dcc0"/>` },
+    castle: { name: "おしろ", svg: () => sky("#cfe6f5", "#f3f9fd") + cloud(240, 40, .8) + `<g transform="translate(150 0)"><path d="M-90 196 l10 -46 h160 l10 46 z" fill="#9a9a96"/><rect x="-60" y="112" width="120" height="40" fill="#fafafa"/><path d="M-76 116 q76 -20 152 0 l-10 -12 q-66 -14 -132 0 z" fill="#4a5a6e"/><rect x="-42" y="76" width="84" height="32" fill="#fafafa"/><path d="M-58 80 q58 -18 116 0 l-10 -12 q-48 -12 -96 0 z" fill="#4a5a6e"/><rect x="-26" y="46" width="52" height="26" fill="#fafafa"/><path d="M-40 50 q40 -16 80 0 l-8 -12 q-32 -10 -64 0 z" fill="#4a5a6e"/><path d="M-30 36 l-6 -6 M30 36 l6 -6" stroke="#e9b54f" stroke-width="4"/></g><rect y="194" width="300" height="42" fill="#c9dca6"/>` + [20, 280].map((x) => `<circle cx="${x}" cy="160" r="24" fill="#f6b8c6"/><rect x="${x - 3}" y="170" width="6" height="26" fill="#8a6a50"/>`).join("") },
+    fields: { name: "のどかな みち", svg: () => sky("#c4e7f6", "#f0fafd") + `<circle cx="240" cy="54" r="20" fill="#fff1a8"/>` + cloud(80, 50) + cloud(170, 76, .6) + `<path d="M0 170 q80 -50 160 -10 q80 40 140 -20 V236 H0 z" fill="#a8d58a"/><path d="M0 200 q100 -40 200 -4 q60 20 100 -8 V236 H0 z" fill="#8cc46e"/>` + [[40, 214, "#f6a7b8"], [70, 222, "#ffd166"], [230, 214, "#fff"], [260, 222, "#f6a7b8"], [130, 226, "#ffd166"]].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="4" fill="${c}"/><circle cx="${x}" cy="${y}" r="1.5" fill="#e9a03a"/>`).join("") },
+  };
+  // attraction scenes and the legend voyages get hand-picked scenes; tour stops are matched by keywords
+  const STORY_BG = ["harbor", "island", "sky", "cave", "palace", "jungle", "sea", "fest",
+    "harbor", "sea", "palace", "island", "sky", "mountain", "jungle", "palace", "island", "storm", "jungle", "cave", "storm", "island", "jungle", "island", "cave", "palace", "palace", "jungle", "harbor", "sea"];
+  const BG_RULES = [
+    ["ice", /氷|流氷|オーロラ|南極|北極|フィヨルド|ペンギン|雪原|白夜/],
+    ["storm", /嵐|あらし/],
+    ["cave", /洞窟|どうくつ|鍾乳洞|洞|地下|ちか/],
+    ["desert", /砂漠|さばく|砂丘|ピラミッド|ラクダ|オアシス|スフィンクス/],
+    ["castle", /城/, true],
+    ["shrine", /神社|鳥居|大社|神宮|稲荷|天満宮|東照宮|寺|大仏|金色堂|富士|おまいり/, true],
+    ["mountain", /山|アルプス|ヒマラヤ|峰|火山|岳|エベレスト|キリマンジャロ|高原|渓谷|峡|キャニオン|ロッキー|桜島|阿蘇|雪/],
+    ["jungle", /森|ジャングル|熱帯|マングローブ|アマゾン|滝|サファリ|ゴリラ|ゾウ|ライオン|キリン|動物|カヌー/],
+    ["palace", /宮殿|城|モスク|神殿|大聖堂|タージ|教会|寺|遺跡|王宮|ドーム|アンコール|塔/],
+    ["city", /タワー|ビル|夜景|スカイツリー|ブロードウェイ|自由の女神|まち|街|市場|カジノ|都|博物館|中華街/],
+    ["island", /島|ビーチ|浜|サンゴ|ラグーン|海岸|岬|湾|ダイビング|泳/],
+    ["sea", /海|船|クジラ|イルカ|港|みなと|川|湖/],
+  ];
+  function bgOf(k) {
+    if (stageOf().id === "egg" || !S.chapter) return "harbor";
+    const { c } = chapterAt(k);
+    const idx = CHAPTERS.indexOf(c);
+    if (idx < STORY_BG.length) return STORY_BG[idx];
+    const jp = idx < WORLD_FROM;
+    const hit = BG_RULES.find(([, re, jpOnly]) => (!jpOnly || jp) && re.test(c.sight || c.title));
+    return hit ? hit[0] : /島|諸島/.test(c.title) ? "island" : jp ? "shrine" : "fields";
+  }
+  let bgKey = "";
+  // Japan and world stops show a real photo of the place from Wikipedia when the network allows;
+  // the drawn scene stays underneath as the fallback (offline, or no photo found).
+  const PHOTO_KEY = "chandu-photos-v1";
+  let photos = {};
+  try { photos = JSON.parse(localStorage.getItem(PHOTO_KEY)) || {}; } catch (e) {}
+  const photoPending = {};
+  const BAD_IMG = /\.svg|\.gif|map|flag|locat|位置|地図|旗|紋章|emblem|seal|coat.of.arms|logo|diagram|chart/i;
+  const stripHtml = (h) => { const d = document.createElement("div"); d.innerHTML = h || ""; return d.textContent.trim().replace(/\s+/g, " "); };
+  async function wikiPages(params) {
+    const u = "https://ja.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail|name&pithumbsize=960&" + params;
+    const j = await (await fetch(u)).json();
+    return Object.values((j.query && j.query.pages) || {}).sort((a, b) => (a.index || 0) - (b.index || 0));
+  }
+  const goodPage = (pages) => pages.find((p) => p.thumbnail && p.pageimage && !BAD_IMG.test(p.pageimage));
+  async function findPhoto(q) {
+    let p = goodPage(await wikiPages("titles=" + encodeURIComponent(q)));
+    if (!p) p = goodPage(await wikiPages("generator=search&gsrnamespace=0&gsrlimit=6&gsrsearch=" + encodeURIComponent(q)));
+    if (!p) return { none: 1, t: Date.now() };
+    let credit = "";
+    try {
+      const m = await (await fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=extmetadata&titles=" + encodeURIComponent("File:" + p.pageimage))).json();
+      const ii = Object.values(m.query.pages)[0].imageinfo, md = ii && ii[0].extmetadata;
+      if (md) credit = [stripHtml(md.Artist && md.Artist.value), md.LicenseShortName && md.LicenseShortName.value].filter(Boolean).join(" · ");
+    } catch (e) {}
+    return { url: p.thumbnail.source, title: p.title, credit: "📷 " + (credit ? credit + " / " : "") + "Wikimedia Commons" };
+  }
+  function photoFor(c, cb) {
+    const q = c.photoQ, hit = photos[q];
+    if (hit && (!hit.none || Date.now() - hit.t < 864e5)) return cb(hit.none ? null : hit);
+    if (photoPending[q]) return;
+    photoPending[q] = 1;
+    findPhoto(q).then((r) => {
+      photos[q] = r;
+      try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photos)); } catch (e) {}
+      cb(r.none ? null : r);
+    }).catch(() => {}).finally(() => { delete photoPending[q]; });   // offline: try again next time
+  }
+  function renderBg() {
+    const k = Math.max(S.chapter || 0, 1) - 1, id = bgOf(k);
+    const c = S.chapter && stageOf().id !== "egg" ? chapterAt(k).c : null;
+    const key = id + "|" + (c && c.photoQ ? c.photoQ : "");
+    if (key === bgKey) return;
+    const first = !bgKey; bgKey = key;
+    $("bg").innerHTML = `<svg viewBox="0 0 300 236" preserveAspectRatio="xMidYMax slice"${first ? "" : ' class="in"'}>${BGS[id].svg()}</svg>`;
+    $("bgName").textContent = c ? (c.photoQ ? c.title : BGS[id].name) : "";
+    $("bgCredit").textContent = "";
+    if (!c || !c.photoQ) return;
+    photoFor(c, (ph) => {
+      if (!ph || bgKey !== key) return;
+      const img = new Image();
+      img.alt = ""; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.onload = () => { if (bgKey !== key) return; $("bg").appendChild(img); requestAnimationFrame(() => img.classList.add("on")); $("bgName").textContent = "📍 " + c.title; $("bgCredit").textContent = ph.credit; };
+      img.src = ph.url;
+    });
+  }
+  const storyQueue = [];
+  function reach(k) {
+    S.chapter = k + 1;
+    const { c } = chapterAt(k);
+    if (c.reward) {
+      S.bananas = Math.min(99, S.bananas + c.reward.bananas);
+      S.treasures[c.reward.item] = (S.treasures[c.reward.item] || 0) + 1;
+      S.happy = clamp(S.happy + 15);
+    }
+    storyQueue.push(k);
+  }
+  function checkVoyage() {
+    if (stageOf().id === "egg") return;
+    rollDay();
+    if (!S.chapter) reach(0);                                // the voyage begins when the egg hatches
+    if (S.stepsToday >= DAILY_GOAL && S.goalDay !== S.stepDay) {
+      S.goalDay = S.stepDay; S.goalDays = (S.goalDays || 0) + 1;
+      reach(S.chapter);
+    }
+    const here = S.chapter ? chapterAt(S.chapter - 1).c : null;
+    if (here && here.item && S.stepsToday >= ITEM_GOAL && S.itemDay !== S.stepDay) {
+      S.itemDay = S.stepDay;
+      const dup = !!S.items[here.item.key];
+      S.items[here.item.key] = (S.items[here.item.key] || 0) + 1;
+      if (dup) S.bananas = Math.min(99, S.bananas + 3);
+      S.happy = clamp(S.happy + 10);
+      storyQueue.push({ item: here.item, dup });
+    }
+    save(); render();
+    if (storyQueue.length && $("story").hidden) showStory(storyQueue.shift(), true);
+  }
+  // A chapter is shown as pages: the story first, then one page per line of talk; the reward is on the last page.
+  let storyPages = null, storyPage = 0;
+  function showStory(k, isNew) {
+    if (typeof k === "object") return showItemGet(k);
+    const { c, lap } = chapterAt(k), g = GROUPS[c.gi];
+    storyPages = { c, eyebrow: (isNew && k > 0 ? "やったよ！ もくひょう たっせい！ · " : "") + (lap > 1 ? `${lap}しゅうめ · ` : "") + g.name, n: 1 + (c.talk ? c.talk.length : 0) };
+    storyPage = 0;
+    $("story").hidden = false;
+    renderStoryPage();
+  }
+  function renderStoryPage() {
+    const { c, eyebrow, n } = storyPages, last = storyPage === n - 1, card = $("storyCard");
+    const line = storyPage > 0 ? c.talk[storyPage - 1] : null;
+    card.classList.toggle("talking", !!line);
+    card.classList.toggle("me", !!line && line[0] === "チャンドゥ");
+    $("storyEyebrow").textContent = eyebrow + (n > 1 ? `　${storyPage + 1}/${n}` : "");
+    $("storyScene").textContent = line ? line[1] : c.icon;
+    $("storyTitle").textContent = line ? line[0] : c.title;
+    $("storyText").textContent = line ? line[2] : "📍 " + c.place + "\n" + c.text;
+    $("storySay").textContent = "💬 " + c.say;
+    $("storySay").hidden = !!c.talk || !last;
+    $("storyReward").textContent = c.reward ? `ゲットしたよ: バナナ ${c.reward.bananas}ぽん ・ ${c.reward.item}` : "";
+    $("storyReward").hidden = !c.reward || !last;
+    $("storyNext").textContent = !last ? (storyPage === 0 ? "はなしかける ▶" : "つぎ ▶") : storyQueue.length ? "つぎ！" : "オッケー！";
+    $("storyNext").focus();
+  }
+  function showItemGet({ item, dup }) {
+    storyPages = null; $("storyCard").classList.remove("talking", "me"); $("storySay").hidden = false;
+    $("storyEyebrow").textContent = "やったよ！ 8,000歩 たっせい！ · ご当地アイテム";
+    $("storyScene").textContent = item.icon;
+    $("storyTitle").textContent = item.name;
+    $("storyText").textContent = "📍 " + item.place + "\n" + item.desc;
+    $("storySay").textContent = dup ? "💬 これ、もう もってるよ！ かわりに バナナ もらっといた！" : "💬 ご当地ずかんに のせといたよ！ みにきてね！";
+    $("storyReward").textContent = dup ? "ゲットしたよ: バナナ 3ぼん" : "ゲットしたよ: " + item.icon + " " + item.name;
+    $("storyReward").hidden = false;
+    $("story").hidden = false;
+    $("storyNext").textContent = storyQueue.length ? "つぎ！" : "オッケー！";
+    $("storyNext").focus();
+  }
+  function openZukan() {
+    const body = $("zukanBody");
+    body.innerHTML = "";
+    const regions = [];
+    ITEMS.forEach((it) => { let r = regions[regions.length - 1]; if (!r || r.name !== it.region) regions.push(r = { name: it.region, items: [] }); r.items.push(it); });
+    let got = 0;
+    regions.forEach((r) => {
+      const have = r.items.filter((it) => S.items[it.key]).length; got += have;
+      const d = document.createElement("details"); d.className = "zk-region";
+      d.innerHTML = `<summary></summary><div class="zk-grid"></div>`;
+      d.querySelector("summary").innerHTML = `${r.name} <small>${have} / ${r.items.length}</small>`;
+      if (have) d.open = true;
+      const grid = d.querySelector(".zk-grid");
+      r.items.forEach((it) => {
+        const b = document.createElement("button"); b.type = "button";
+        const own = !!S.items[it.key];
+        b.className = "zk-item" + (own ? "" : " locked");
+        b.innerHTML = `<b aria-hidden="true"></b><span></span>`;
+        b.querySelector("b").textContent = it.icon;
+        b.querySelector("span").textContent = own ? it.name : "？？？";
+        if (own) { b.setAttribute("aria-label", it.name); b.onclick = () => showItemInfo(it); }
+        else { b.disabled = true; b.setAttribute("aria-label", "まだ みつけてない アイテム"); }
+        grid.appendChild(b);
+      });
+      body.appendChild(d);
+    });
+    $("zukanCount").textContent = `あつめた アイテム ${got} / ${ITEMS.length}` + (got ? "" : " · 8,000歩で ゲットしようね！");
+    $("zukan").hidden = false; body.scrollTop = 0; $("zukanClose").focus();
+  }
+  function showItemInfo(it) {
+    $("infoEyebrow").textContent = it.region + (S.items[it.key] > 1 ? ` · ${S.items[it.key]}かい ゲット` : "");
+    $("infoScene").textContent = it.icon;
+    $("infoTitle").textContent = it.name;
+    $("infoText").textContent = "📍 " + it.place + "\n" + it.desc;
+    $("itemInfo").hidden = false; $("infoClose").focus();
+  }
+  function renderVoyage() {
+    const k = Math.max(S.chapter || 0, 1) - 1;               // last reached chapter
+    const { c, lap } = chapterAt(k), g = GROUPS[c.gi];
+    const reachedAny = (S.chapter || 0) > 0;
+    $("vTitle").textContent = g.name;
+    $("vLap").textContent = (lap > 1 ? `${lap}しゅうめ · ` : "") + `${S.goalDays || 0}にち クリア`;
+    const route = $("route"), key = c.gi + ":" + lap;
+    if (route.dataset.key !== key) {
+      route.dataset.key = key;
+      route.querySelectorAll(".stop").forEach((b) => b.remove());
+      route.style.gridTemplateColumns = `repeat(${g.chapters.length}, 1fr)`;
+      route.style.setProperty("--edge", 50 / g.chapters.length + "%");   // centre of the first and last stop
+      g.chapters.forEach((ch, i) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "stop";
+        b.innerHTML = `<i>${ch.icon}</i><span>${ch.short}</span>`;
+        b.onclick = () => { const kk = Math.max(S.chapter, 1) - 1, cur = chapterAt(kk).c.ci; if (i <= cur) showStory(kk - (cur - i), false); };
+        route.appendChild(b);
+      });
+    }
+    route.querySelectorAll(".stop").forEach((b, i) => {
+      const reached = reachedAny && i <= c.ci;
+      b.classList.toggle("done", reached && i < c.ci);
+      b.classList.toggle("here", reached && i === c.ci);
+      b.disabled = !reached;
+      b.setAttribute("aria-label", g.chapters[i].title + (reached ? "（とうちゃく）" : "（まだ）"));
+    });
+    const doneToday = S.goalDay === S.stepDay;
+    const frac = doneToday ? 0 : Math.min(1, S.stepsToday / DAILY_GOAL);
+    const last = c.ci === g.chapters.length - 1;
+    const n = g.chapters.length;
+    $("routeFill").style.width = (n > 1 ? ((last ? c.ci : c.ci + frac) / (n - 1)) * (100 - 100 / n) : 0) + "%";
+    $("goalFill").style.width = (doneToday ? 100 : frac * 100) + "%";
+    const next = chapterAt(k + 1).c;
+    $("vNext").textContent = stageOf().id === "egg" ? "ぼくが たまごから でたら、しゅっこうだよ！"
+      : doneToday ? `きょうは もくひょう たっせいだよ！ あしたは「${next.title}」に いこうね！`
+      : `きょう ${S.stepsToday.toLocaleString()} / ${DAILY_GOAL.toLocaleString()}歩！ あと ${(DAILY_GOAL - S.stepsToday).toLocaleString()}歩で「${next.title}」に いけるよ！`;
+    const itemHere = reachedAny && c.item, gotToday = S.itemDay === S.stepDay;
+    $("vItem").hidden = !itemHere;
+    if (itemHere) $("vItem").textContent = gotToday ? "🎁 きょうの ご当地アイテムは ゲットずみだよ！"
+      : S.stepsToday >= DAILY_GOAL && !doneToday ? ""
+      : `🎁 8,000歩で ${c.place.replace(/（.*）/, "")}の ご当地アイテムが もらえるよ！（あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}歩）`;
+    $("vPlace").textContent = reachedAny ? "📍 ぼく いま: " + c.place : "";
+    $("treasures").innerHTML = "";
+    Object.entries(S.treasures).forEach(([name, cnt]) => { const sp = document.createElement("span"); sp.textContent = name + (cnt > 1 ? " ×" + cnt : ""); $("treasures").appendChild(sp); });
+  }
+
+  function render() {
+    const st = stageOf();
+    if (st.id !== lastStage) {
+      const msg = { baby: "うまれたよ！ ぼく、チャンドゥ！ よろしくね！", child: "ぼく、おおきく なったよ！ ぼうけん いこうね！", adult: `おとなに なったよ！ ${adultForm().name}だよ！ シンドバッドの あいぼうだよ！` }[st.id];
+      if (msg) say(msg, 5000);
+      if (st.id === "baby") setTimeout(checkVoyage, 2500);
+      lastStage = st.id; save();
+    }
+    $("stageName").textContent = st.id === "adult" ? adultForm().name : st.name + (S.sick ? "（びょうき）" : "");
+    $("wSteps").textContent = S.stepsToday.toLocaleString();
+    $("wBanana").textContent = S.bananas;
+    $("wKm").textContent = (S.totalSteps * 0.0007).toFixed(1);
+    const next = STEPS_PER_BANANA - (S.stepsToday % STEPS_PER_BANANA);
+    $("wNote").textContent = ($("wNote").dataset.live ? "📡 歩数 リアルタイムで とどいてるよ · " : "") + (S.bananas <= 0 ? `バナナが ないよ〜！ あと ${next}歩 あるいてほしいな！` : `あと ${next}歩で バナナ 1ぽん ふえるよ！`);
+    meter("Hunger", S.hunger); meter("Happy", S.happy); meter("Energy", S.energy); meter("Clean", S.clean);
+    $("poops").innerHTML = POOP.repeat(S.poops);
+    $("zzz").hidden = !S.sleeping;
+    $("screen").classList.toggle("dark", S.sleeping);
+    $("sleepIcon").textContent = S.sleeping ? "☀️" : "🌙";
+    $("sleepLabel").textContent = S.sleeping ? "おきる" : "ねる";
+    const egg = st.id === "egg";
+    ["bFeed", "bPlay", "bClean", "bSleep"].forEach((b) => ($(b).disabled = egg || gameOn));
+    $("bMed").disabled = egg || !S.sick;
+    const a = careAvg();
+    $("form").textContent = "ぼくの きもち: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ さいこー！" : a >= 45 ? "○ まあまあ" : "△ かまって〜");
+    renderVoyage();
+    renderBg();
+    drawPet();
+  }
+
+  let cheering = false;
+  function cheer() {
+    cheering = false; drawPet();
+    $("pet").setAttribute("class", ""); void $("pet").getBoundingClientRect();
+    $("pet").setAttribute("class", "joy"); cheering = true;
+    setTimeout(() => { cheering = false; drawPet(); }, 1600);
+  }
+
+  // ---- walking (steps from iPhone Shortcuts via #s1234, or typed in) ----
+  const STEPS_PER_BANANA = 500;
+  const DAILY_BANANAS = 3;
+  function rollDay() {
+    const t = today();
+    if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); }
+  }
+  function applySteps(n, live) {
+    rollDay();
+    n = Math.floor(n);
+    if (!(n >= 0) || n > 200000) return live ? undefined : say("その歩数、ぼく よめなかった…");
+    const delta = n - S.stepsToday;
+    if (delta <= 0) return live ? undefined : say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるよ！`);
+    const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(S.stepsToday / STEPS_PER_BANANA);
+    S.stepsToday = n; S.totalSteps += delta;
+    setTimeout(checkVoyage, 1200);
+    S.bananas = Math.min(99, S.bananas + got);
+    if (stageOf().id !== "egg") {
+      S.age += (delta / 1000) * 5;            // walking speeds up growth: 1000 steps = 5 minutes
+      S.happy = clamp(S.happy + Math.min(30, delta / 200));
+      S.energy = clamp(S.energy + Math.min(15, delta / 500));
+    }
+    if (live) {   // steady stream from the iPhone app: only speak when a banana drops
+      if (got > 0) { say(`バナナ ${got}ぽん ゲット！ おさんぽ さいこー！`, 4000); cheer(); }
+      save(); render(); return;
+    }
+    say(got > 0 ? `${delta.toLocaleString()}歩 あるいたね！ バナナ ${got}ぽん ゲットだよ！` : `${delta.toLocaleString()}歩 あるいたね！ その ちょうし！`, 5000);
+    cheer(); save(); render();
+  }
+  function readHash() {
+    const m = /^#s(\d{1,6})$/.exec(location.hash || "");
+    if (!m) return;
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    applySteps(Number(m[1]));
+  }
+
+  // ---- actions ----
+  function feed() {
+    if (S.sleeping) return say("Zzz… むにゃ… いま ねてるの…");
+    rollDay();
+    if (S.hunger >= 95 && S.energy >= 95) { S.happy = clamp(S.happy - 5); say("バナナでも もう おなか いっぱい…"); }
+    else if (S.bananas <= 0) { say("バナナが ない！ さんぽして とってこようね！"); }
+    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.energy = clamp(S.energy + 20); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすきだよ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.35) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
+    save(); render();
+  }
+  function sleepToggle() {
+    if (S.sleeping) { S.sleeping = false; S.happy = clamp(S.happy - (S.energy < 60 ? 8 : 0)); say(S.energy < 60 ? "まだ ねむいよ〜…" : "おはよ！ きょうも あそぼうよ！"); }
+    else { S.sleeping = true; say("おやすみ… また あしたな…"); }
+    save(); render();
+  }
+  function clean() {
+    if (S.poops === 0 && S.clean > 90) return say("もう ぴかぴかだよ！");
+    S.poops = 0; S.clean = 100; S.happy = clamp(S.happy + 5); say("すっきり！ ありがとう！"); cheer(); save(); render();
+  }
+  function medicine() {
+    if (!S.sick) return;
+    S.sick = false; S.lowTime = 0; S.happy = clamp(S.happy - 5); S.energy = clamp(S.energy + 10);
+    say("にが〜い！ …でも げんき でたよ！"); save(); render();
+  }
+
+  // ---- mini games: あそぶ opens a menu of games; each one ends in endGame(id, score, max) ----
+  let gameOn = false, gameTimers = [];
+  const later = (fn, ms) => { const t = setTimeout(fn, ms); gameTimers.push(t); return t; };
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const shuffle = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function gameUI(text, buttons, cls = "") {
+    $("gameText").textContent = text;
+    const row = $("gameRow"); row.className = "game-row " + cls; row.innerHTML = "";
+    buttons.forEach((b) => {
+      const el = document.createElement("button"); el.type = "button";
+      el.innerHTML = b.html || ""; if (!b.html) el.textContent = b.label;
+      if (b.cls) el.className = b.cls;
+      if (b.aria) el.setAttribute("aria-label", b.aria);
+      el.onclick = b.on; row.appendChild(el);
+    });
+    const first = row.querySelector("button"); if (first) first.focus({ preventScroll: true });
+  }
+  const quitBtn = { label: "やめる", cls: "quit", on: () => quitGame() };
+  function clearGame() { gameTimers.forEach(clearTimeout); gameTimers = []; $("fx").innerHTML = ""; $("petWrap").style.transform = ""; }
+  function quitGame(silent) {
+    clearGame(); gameOn = false; $("game").hidden = true;
+    if (!silent) say("また あそぼうね！");
+    render();
+  }
+  function play() {
+    if (TEST) { S.sleeping = false; S.sick = false; S.energy = 100; }
+    if (S.sleeping) return say("Zzz… むにゃ… いま ねてるの…");
+    if (S.energy < 15) return say("つかれて あそべないよ〜… バナナか おひるね ほしい…");
+    if (S.sick) return say("ぐあい わるくて あそべない… くすり ほしいな…");
+    gameOn = true; $("game").hidden = false; showMenu(); render();
+  }
+  function showMenu() {
+    clearGame();
+    S.best = S.best || {};
+    gameUI("なにして あそぶ？ ぼく、なんでも つよいよ！", GAMES.map((g) => ({
+      html: `${g.icon} ${g.name}<small>${S.best[g.id] != null ? "さいこう " + g.best(S.best[g.id]) : "まだ やってない"}</small>`,
+      aria: g.name, on: () => { clearGame(); g.start(); },
+    })).concat(quitBtn), "menu");
+  }
+  function endGame(id, score, max) {
+    clearGame();
+    const g = GAMES.find((x) => x.id === id), lowerIsBetter = !!g.lower;
+    const rate = g.rate ? g.rate(score) : Math.min(1, score / max);
+    S.best = S.best || {};
+    const prev = S.best[id];
+    const isBest = !!score && (prev == null || (lowerIsBetter ? score < prev : score > prev));
+    if (isBest) S.best[id] = score;
+    S.happy = clamp(S.happy + 6 + Math.round(rate * 18)); if (!TEST) { S.energy = clamp(S.energy - 10); S.hunger = clamp(S.hunger - 5); }
+    const line = rate >= .99 ? "かんぺき！ きみ、すごいね！" : rate >= .6 ? "やったね！ たのしかった！" : rate > 0 ? "まあまあだね！ つぎは まけないよ！" : "えへへ、ぼくの かちだね！ また しょうぶしようね！";
+    say((isBest && prev != null ? "しんきろく！ " : "") + line, 4000); cheer();
+    save();
+    gameUI(`${g.icon} ${g.name}: ${g.result(score, max)}`, [{ label: "もういっかい", on: () => { clearGame(); g.start(); } }, { label: "ほかの あそび", on: showMenu }, quitBtn]);
+    render();
+  }
+  const look = (dir) => { $("petWrap").style.transform = { L: "scaleX(-1) rotate(-8deg)", R: "rotate(8deg)", U: "translateY(-14px) rotate(-3deg)", D: "translateY(10px) scale(1.04,.94)" }[dir]; later(() => ($("petWrap").style.transform = ""), 700); };
+
+  const GAMES = [
+    { id: "hoi", icon: "👉", name: "あっちむいてホイ", best: (v) => v + "/5", result: (v, m) => `${v} / ${m}かい かち`,
+      start() {
+        let r = 0, win = 0;
+        const turn = () => gameUI(`ゆびさして… あっちむいて ホイ！（${r + 1}/5）`, [["U", "↑"], ["L", "←"], ["R", "→"], ["D", "↓"]].map(([d, l]) => ({ label: l, cls: "big", aria: { U: "うえ", L: "ひだり", R: "みぎ", D: "した" }[d], on: () => {
+          const me = pick(["U", "D", "L", "R"]); look(me);
+          const hit = me === d; if (hit) win++; r++;
+          say(hit ? "うわっ、つられた〜！" : "えへへ、そっちは むかないよ〜！", 1300);
+          $("gameRow").innerHTML = "";
+          later(() => (r >= 5 ? endGame("hoi", win, 5) : turn()), 900);
+        } })).concat(quitBtn));
+        turn();
+      } },
+    { id: "rps", icon: "✊", name: "じゃんけん", best: (v) => v + "/3", result: (v, m) => `${v} / ${m}かい かち`,
+      start() {
+        const H = [["✊", "グー"], ["✌️", "チョキ"], ["✋", "パー"]];
+        let r = 0, win = 0;
+        const turn = (aiko) => gameUI(`${aiko ? "あいこで…" : "じゃんけん…"}（${r + 1}/3）`, H.map(([e, n], i) => ({ label: e, cls: "big", aria: n, on: () => {
+          const me = Math.floor(Math.random() * 3);
+          $("gameRow").innerHTML = "";
+          if (me === i) { say(`ぼくも ${H[me][0]}！ あいこだ！`, 1300); return later(() => turn(true), 900); }
+          const hit = (i + 1) % 3 === me; if (hit) win++; r++;
+          say(`ぼくは ${H[me][0]}！ ` + (hit ? "まけた〜！" : "ぼくの かち！"), 1400);
+          later(() => (r >= 3 ? endGame("rps", win, 3) : turn()), 1000);
+        } })).concat(quitBtn));
+        turn();
+      } },
+    { id: "catch", icon: "🍌", name: "バナナキャッチ", best: (v) => v + "こ", result: (v) => `${v}こ キャッチ！`,
+      start() {
+        let left = 15, got = 0;
+        const fx = $("fx");
+        const status = () => ($("gameText").textContent = `おちてくる バナナを タップ！ 🌶️は さわるなよ！ のこり ${left}びょう · ${got}こ`);
+        gameUI("", [quitBtn]); status();
+        const spawn = () => {
+          if (left <= 0) return;
+          const hot = Math.random() < .2, b = document.createElement("button");
+          b.type = "button"; b.textContent = hot ? "🌶️" : "🍌"; b.setAttribute("aria-label", hot ? "とうがらし" : "バナナ");
+          b.style.left = 4 + Math.random() * 80 + "%"; b.style.setProperty("--dur", (1.8 + Math.random() * 1.2).toFixed(2) + "s");
+          b.onclick = () => {
+            const r = b.getBoundingClientRect(), f = fx.getBoundingClientRect(), pop = document.createElement("span");
+            pop.className = "pop"; pop.style.left = r.left - f.left + "px"; pop.style.top = r.top - f.top + "px";
+            if (hot) { got = Math.max(0, got - 2); pop.textContent = "-2"; say("からっ！ 🔥", 900); } else { got++; pop.textContent = "+1"; }
+            fx.appendChild(pop); setTimeout(() => pop.remove(), 700); b.remove(); status();
+          };
+          b.addEventListener("animationend", () => b.remove());
+          fx.appendChild(b);
+          later(spawn, 380 + Math.random() * 320);
+        };
+        const tick = () => { left--; status(); if (left <= 0) later(() => endGame("catch", got, 20), 600); else later(tick, 1000); };
+        later(spawn, 300); later(tick, 1000);
+      } },
+    { id: "pots", icon: "🏺", name: "つぼあて", best: (v) => v + "/3", result: (v, m) => `${v} / ${m}かい あたり`,
+      start() {
+        let r = 0, win = 0;
+        const turn = () => {
+          const ans = Math.floor(Math.random() * 3);
+          gameUI(`バナナを つぼに かくしたよ… まぜまぜ〜！（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big shake", aria: `${i + 1}ばんめの つぼ`, on: () => {} })));
+          later(() => gameUI(`バナナは どの つぼだ？（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big", aria: `${i + 1}ばんめの つぼ`, on: () => {
+            const hit = i === ans; if (hit) win++; r++;
+            gameUI(hit ? "あたり！ よく みてたね！" : "ざんねん！ こっちだよ！", [0, 1, 2].map((j) => ({ label: j === ans ? "🍌" : "🏺", cls: "big", on: () => {} })));
+            later(() => (r >= 3 ? endGame("pots", win, 3) : turn()), 1300);
+          } })).concat(quitBtn)), 1000);
+        };
+        turn();
+      } },
+    { id: "memo", icon: "🧠", name: "おぼえてゲーム", best: (v) => "レベル" + v, result: (v) => (v ? `レベル ${v} まで クリア` : "レベル1で まちがえちゃった"),
+      start() {
+        const E = [["🍌", "バナナ"], ["🔔", "すず"], ["💎", "ほうせき"], ["⛵", "ふね"]];
+        let lv = 0, seq = [];
+        const show = () => {
+          seq.push(Math.floor(Math.random() * 4)); if (seq.length < 3) return show();
+          gameUI(`ぼくが だす じゅんばんを おぼえてね！（レベル ${lv + 1}）`, [quitBtn]);
+          seq.forEach((e, i) => {
+            later(() => { $("fx").innerHTML = `<div class="flash">${E[e][0]}</div>`; }, 500 + i * 800);
+            later(() => { $("fx").innerHTML = ""; }, 500 + i * 800 + 600);
+          });
+          later(ask, 500 + seq.length * 800);
+        };
+        const ask = () => {
+          let pos = 0;
+          gameUI(`おなじ じゅんばんで おしてくれ！（${seq.length}こ）`, E.map(([e, n], i) => ({ label: e, cls: "big", aria: n, on: () => {
+            if (i !== seq[pos]) { say("ブッブー！ ちがうよ〜", 1500); $("gameRow").innerHTML = ""; return later(() => endGame("memo", lv, 5), 900); }
+            pos++;
+            if (pos === seq.length) { lv++; say("せいかい！ すごいね！", 1200); $("gameRow").innerHTML = ""; later(() => (lv >= 5 ? endGame("memo", lv, 5) : show()), 1000); }
+          } })).concat(quitBtn));
+        };
+        show();
+      } },
+    { id: "quick", icon: "⚡", name: "はやおし", lower: true, rate: (v) => (v == null ? 0 : Math.max(0, Math.min(1, (900 - v) / 600))), best: (v) => (v / 1000).toFixed(2) + "びょう", result: (v) => (v == null ? "きろく なし" : `いちばん はやかったのは ${(v / 1000).toFixed(2)}びょう`),
+      start() {
+        let r = 0, best = null;
+        const turn = () => {
+          let ready = false, t0 = 0;
+          gameUI(`ぼくが「いまだ！」って いったら おしてね！（${r + 1}/3）`, [{ label: "まだだよ…", cls: "big", on: () => {
+            if (!ready) { say("フライング！ あせんなって！", 1400); r++; $("gameRow").innerHTML = ""; return later(next, 1000); }
+            const ms = Math.round(performance.now() - t0); if (best == null || ms < best) best = ms; r++;
+            say(`${(ms / 1000).toFixed(2)}びょう！ ` + (ms < 350 ? "はやーい！" : ms < 600 ? "なかなかだよ！" : "ちょっと おそいかな〜"), 1500);
+            $("gameRow").innerHTML = ""; later(next, 1100);
+          } }, quitBtn]);
+          later(() => { ready = true; t0 = performance.now(); const b = $("gameRow").querySelector(".big"); if (b) b.textContent = "いまだ！"; $("fx").innerHTML = `<div class="flash">❗</div>`; }, 1200 + Math.random() * 2500);
+        };
+        const next = () => { $("fx").innerHTML = ""; r >= 3 ? endGame("quick", best, 3) : turn(); };
+        turn();
+      } },
+    { id: "hilo", icon: "🃏", name: "ハイ＆ロー", best: (v) => v + "れんしょう", result: (v) => `${v}れんしょう！`,
+      start() {
+        let cur = 1 + Math.floor(Math.random() * 13), streak = 0;
+        const turn = () => gameUI(`いまの カードは【${cur}】。つぎは おおきい？ ちいさい？（${streak}れんしょう中）`, [["hi", "⬆ おおきい"], ["lo", "⬇ ちいさい"]].map(([d, l]) => ({ label: l, on: () => {
+          let nx; do { nx = 1 + Math.floor(Math.random() * 13); } while (nx === cur);
+          const ok = d === "hi" ? nx > cur : nx < cur;
+          $("gameRow").innerHTML = ""; $("fx").innerHTML = `<div class="flash">${nx}</div>`;
+          cur = nx;
+          if (ok) { streak++; say("あたり！ つぎも いけるか？", 1200); later(() => { $("fx").innerHTML = ""; streak >= 7 ? endGame("hilo", streak, 7) : turn(); }, 1000); }
+          else { say(`【${nx}】でした〜！ ざんねん！`, 1500); later(() => endGame("hilo", streak, 7), 1100); }
+        } })).concat(quitBtn));
+        turn();
+      } },
+    { id: "hide", icon: "🙈", name: "かくれんぼ", lower: true, rate: (v) => [0, 1, .7, .4][v] || 0, best: (v) => v + "かいめで", result: (v) => (v ? `${v}かいめで みつけた！` : "みつけられなかった…"),
+      start() {
+        const P = [["🌴", "ヤシの き"], ["🏺", "つぼ"], ["🪨", "いわ"], ["🛶", "ボート"], ["📦", "はこ"]];
+        const ans = Math.floor(Math.random() * 5);
+        let tries = 0;
+        $("petWrap").style.transform = "scale(0)";
+        const opened = new Set();
+        const turn = (msg) => gameUI(msg, P.map(([e, n], i) => ({ label: opened.has(i) ? "💨" : e, cls: "big", aria: n, on: () => {
+          if (opened.has(i)) return;
+          tries++; opened.add(i);
+          if (i === ans) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say("みつかっちゃった〜！", 1500); return later(() => endGame("hide", tries, 3), 900); }
+          if (tries >= 3) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say(`へへっ、${P[ans][1]}の うしろでした〜！`, 1800); return later(() => endGame("hide", 0, 3), 1100); }
+          turn(`${n}には いないよ〜！ あと ${3 - tries}かい！`);
+        } })).concat(quitBtn));
+        turn("ぼく、どこに かくれたでしょーか？ 3かいで みつけてみてね！");
+      } },
+    { id: "quiz", icon: "❓", name: "チャンドゥクイズ", best: (v) => v + "/3", result: (v, m) => `${v} / ${m}もん せいかい`,
+      start() {
+        const TRIVIA = [
+          ["ぼくの だいこうぶつは？", ["バナナ", "にんじん", "おさかな"]],
+          ["ぼくの あいぼうの なまえは？", ["シンドバッド", "アラジン", "ジャスミン"]],
+          ["ぼくの くびわに ついてるのは？", ["きんの すず", "ほしの バッジ", "あかい リボン"]],
+          ["ぼくの ターバンの いろは？", ["あか", "あお", "みどり"]],
+          ["シンドバッドが のっていくのは？", ["ふね", "じてんしゃ", "きしゃ"]],
+          ["ルフ鳥って どんな とり？", ["とっても でっかい", "とっても ちっちゃい", "およぐのが とくい"]],
+          ["ぼくは なんの どうぶつ？", ["トラ", "ネコ", "ライオン"]],
+          ["1日 なん歩 あるくと ぼうけんが すすむ？", ["5,000歩", "500歩", "50,000歩"]],
+          ["ご当地アイテムが もらえるのは なん歩？", ["8,000歩", "1,000歩", "30,000歩"]],
+          ["シンドバッドの こうかいは ぜんぶで なんかい？", ["7かい", "3かい", "10かい"]],
+        ];
+        const seen = CHAPTERS.slice(0, Math.min(S.chapter || 0, CHAPTERS.length)).filter((c) => c.item);
+        const qs = [];
+        if (seen.length >= 3) shuffle(seen).slice(0, 2).forEach((c) => {
+          const wrong = shuffle(ITEMS.filter((it) => it.name !== c.item.name)).slice(0, 2).map((it) => it.name);
+          qs.push([`ぼくが ${c.item.place}で みつけた めいぶつは？`, [c.item.name, ...wrong]]);
+        });
+        shuffle(TRIVIA).slice(0, 3 - qs.length).forEach((q) => qs.push(q));
+        let r = 0, win = 0;
+        const order = shuffle(qs);
+        const turn = () => {
+          const [q, ch] = order[r];
+          gameUI(`Q${r + 1}. ${q}`, shuffle(ch.map((t, i) => [t, i === 0])).map(([t, ok]) => ({ label: t, on: () => {
+            if (ok) win++; r++;
+            say(ok ? "せいかい！ ぼくのこと よく わかってるね！" : `ブッブー！ こたえは「${ch[0]}」だよ！`, 1800);
+            $("gameRow").innerHTML = "";
+            later(() => (r >= order.length ? endGame("quiz", win, order.length) : turn()), 1300);
+          } })).concat(quitBtn));
+        };
+        turn();
+      } },
+  ];
+
+  $("bFeed").onclick = feed;
+  $("bPlay").onclick = play;
+  $("bSleep").onclick = sleepToggle;
+  $("bClean").onclick = clean;
+  $("bMed").onclick = medicine;
+  $("pet").onclick = () => {
+    if (stageOf().id === "egg") return say("ころころ… もうすぐ でるよ！");
+    if (S.sleeping) return say("Zzz…");
+    S.happy = clamp(S.happy + 1); say(["えへへっ", "なでなで、もっと！", "ぼく、チャンドゥ！", "あそぼうよ〜！", "シンドバッド どこ いったのかな？", "バナナ もってない？"][Math.floor(Math.random() * 6)]); render();
+  };
+
+  $("wApply").onclick = () => { const v = $("wInput").value; if (v !== "") { applySteps(Number(v)); $("wInput").value = ""; } };
+  $("wInput").addEventListener("keydown", (e) => { if (e.key === "Enter") $("wApply").click(); });
+  $("wCopy").onclick = () => {
+    const t = $("wUrl").textContent;
+    const done = () => { $("wCopy").textContent = "コピーしたよ！"; setTimeout(() => ($("wCopy").textContent = "コピー"), 2000); };
+    try { navigator.clipboard.writeText(t).then(done, () => selectUrl()); } catch (e) { selectUrl(); }
+  };
+  function selectUrl() { const r = document.createRange(); r.selectNodeContents($("wUrl")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+  window.addEventListener("hashchange", readHash);
+  // On the GitHub Pages copy, the Shortcuts link should point back to that page.
+  if (/github\.io$/.test(location.hostname)) $("wUrl").textContent = location.origin + location.pathname + "#s";
+  $("ver").textContent = "ver " + VERSION;
+  // Inside the iPhone app, the native side pushes today's step total as you walk.
+  window.chanduSetSteps = (n) => applySteps(n, true);
+  if (window.CHANDU_NATIVE) { $("wLink").hidden = true; $("wNote").dataset.live = "1"; }
+
+  if (TEST) { if (S.age < 100) S.age = 100; S.energy = 100; S.sleeping = false; $("ver").textContent += " · テスト"; }
+  rollDay();
+  catchUp();
+  if (stageOf().id === "egg") say("ぼく、まだ たまごの なか… みまもっててね！");
+  render();
+  readHash();
+  $("bZukan").onclick = openZukan;
+  $("zukanClose").onclick = () => { $("zukan").hidden = true; $("bZukan").focus(); };
+  $("infoClose").onclick = () => { $("itemInfo").hidden = true; };
+  $("bHelp").onclick = () => { $("help").hidden = false; $("helpClose").focus(); };
+  $("helpClose").onclick = () => { $("help").hidden = true; $("bHelp").focus(); };
+  ["zukan", "itemInfo", "help"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
+  $("storyNext").onclick = () => {
+    if (storyPages && storyPage < storyPages.n - 1) { storyPage++; return renderStoryPage(); }
+    storyPages = null;
+    if (storyQueue.length) showStory(storyQueue.shift(), true); else $("story").hidden = true;
+  };
+  if (window.CHANDU_BGTEST) bgTestPage();
+  else if (TEST) setTimeout(play, 600); else setTimeout(checkVoyage, 800);
+  // docs/bg-test.html: every chapter's background (drawn scene + real photo) in one scrolling list
+  function bgTestPage() {
+    const wrap = document.createElement("div");
+    wrap.className = "bgt";
+    const sel = document.createElement("select");
+    sel.setAttribute("aria-label", "ばめんを えらぶ");
+    const parts = [];
+    GROUPS.forEach((g, gi) => { const key = g.name.replace(/ \d+\/\d+$/, ""); let p = parts.find((x) => x.key === key); if (!p) parts.push(p = { key, gis: [] }); p.gis.push(gi); });
+    parts.forEach((p, i) => { const o = document.createElement("option"); o.value = i; o.textContent = `${p.key}（${p.gis.reduce((n, gi) => n + GROUPS[gi].chapters.length, 0)}）`; sel.appendChild(o); });
+    const list = document.createElement("div"); list.className = "bgt-list";
+    wrap.innerHTML = '<h1>はいけい テスト</h1><p>ばめんを えらぶと、その ばしょで でる はいけいが ならびます。しゃしんは ネットから よみこむので、すこし まってね。</p>';
+    wrap.appendChild(sel); wrap.appendChild(list);
+    document.body.appendChild(wrap);
+    $("help").hidden = true;
+    const show = () => {
+      list.innerHTML = "";
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { io.unobserve(e.target); e.target._load(); } }), { rootMargin: "300px" });
+      CHAPTERS.forEach((c, idx) => {
+        if (!parts[sel.value].gis.includes(c.gi)) return;
+        const save = S.chapter; S.chapter = idx + 1; const id = bgOf(idx); S.chapter = save;
+        const card = document.createElement("div"); card.className = "bgt-card";
+        card.innerHTML = `<div class="bgt-pic"><svg viewBox="0 0 300 236" preserveAspectRatio="xMidYMax slice">${BGS[id].svg()}</svg></div><b></b><small></small><small class="bgt-st"></small>`;
+        card.querySelector("b").textContent = `${idx + 1}. ${c.title}`;
+        card.querySelector("small").textContent = `イラスト: ${BGS[id].name}` + (c.photoQ ? ` ／ しゃしん: ${c.photoQ}` : "");
+        const st = card.querySelector(".bgt-st");
+        st.textContent = c.photoQ ? "しゃしん よみこみ ちゅう…" : "（この ばめんは イラストだけ）";
+        card._load = () => {
+          if (!c.photoQ) return;
+          photoFor(c, (ph) => {
+            if (!ph) { st.textContent = "しゃしんが みつからなかったので イラストが でます"; return; }
+            const img = new Image(); img.alt = c.title; img.referrerPolicy = "no-referrer";
+            img.onload = () => { card.querySelector(".bgt-pic").appendChild(img); st.textContent = `しゃしん: ${ph.title}　${ph.credit}`; };
+            img.onerror = () => { st.textContent = "しゃしんが よみこめなかったので イラストが でます"; };
+            img.src = ph.url;
+          });
+          setTimeout(() => { if (st.textContent.endsWith("…")) st.textContent = "しゃしんが よみこめません（オフライン？）→ イラストが でます"; }, 8000);
+        };
+        list.appendChild(card); io.observe(card);
+      });
+    };
+    sel.onchange = show; show();
+  }
+  setInterval(() => {
+    const now = Date.now(); const dt = Math.min(5, (now - S.last) / 60000); S.last = now;
+    step(dt); render(); save();
+  }, 1000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { catchUp(); render(); } });
+})();
+</script>
+</body></html>

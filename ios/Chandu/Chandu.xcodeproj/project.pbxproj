@@ -191,7 +191,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥ";
+				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -217,7 +217,7 @@
 				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥ";
+				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
