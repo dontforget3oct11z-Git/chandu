@@ -212,7 +212,7 @@ body {
 .story-card .reward { font-size: 13px; font-weight: 700; color: #6b3a1e; }
 .story-card button { align-self: center; font-family: var(--font-body); font-weight: 700; font-size: 15px; background: var(--shell); color: var(--cream); border: 0; border-radius: 999px; padding: 9px 28px; cursor: pointer; box-shadow: 0 3px 0 var(--shell-dark); }
 .vbtns { display: flex; justify-content: center; gap: 8px; }
-.vbtns button, .footer .help-btn { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.vbtns button, .footer .help-btn, .footer .set-btn { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .voyage-item { font-size: 12px; text-align: center; opacity: .95; }
 .story-card.wide { max-width: 440px; max-height: calc(100dvh - 32px); }
 .story-card .scroll { overflow-y: auto; min-height: 0; flex: 1; display: flex; flex-direction: column; gap: 10px; }
@@ -228,6 +228,19 @@ body {
 .story-card .zk-item.locked b { filter: brightness(0); opacity: .28; }
 .zk-item:focus-visible { outline: 3px solid #b6573a; outline-offset: 2px; }
 #itemInfo { z-index: 12; }
+.story-card { position: relative; }
+.story-card .face-btn, .story-card .mini-btn { box-shadow: none; font-size: 11px; padding: 4px 10px; background: #fff3d6; color: #b6573a; border: 2px solid #f0d9a8; }
+.story-card .face-btn { position: absolute; top: 10px; right: 10px; }
+.story-card .scene img { width: 96px; height: 96px; object-fit: contain; display: block; margin: 0 auto; border-radius: 16px; }
+.story-card .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.story-card .row > input:not([type=checkbox]), .story-card .row > select { flex: 1; min-width: 0; font: inherit; font-size: 14px; padding: 7px 10px; border: 2px solid #f0d9a8; border-radius: 10px; background: #fff; color: #3a2a22; }
+.story-card h4 { margin: 4px 0 0; font-size: 13px; color: #6b3a1e; }
+.story-card .note { font-size: 11px; line-height: 1.6; opacity: .85; margin: 0; }
+.face-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; }
+.face-list figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; text-align: center; }
+.face-list img { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; background: #fff3d6; }
+.story-card .face-list button { box-shadow: none; font-size: 10px; padding: 2px 8px; background: #efe6da; color: #6b3a1e; }
+.bg img.toon, .bgt-pic img.toon { filter: url(#toon) saturate(1.25) contrast(1.05); }
 
 @media (max-width: 380px) {
   .device { padding: 26px 16px 24px; }
@@ -302,13 +315,13 @@ body {
     <div class="voyage-next" id="vNext"></div>
     <div class="voyage-item" id="vItem"></div>
     <div class="treasures" id="treasures"></div>
-    <div class="vbtns"><button type="button" id="bZukan">📖 ご当地ずかん</button></div>
+    <div class="vbtns"><button type="button" id="bZukan">📖 お宝ずかん</button></div>
   </section>
 
   <div class="story" id="zukan" hidden role="dialog" aria-modal="true" aria-labelledby="zukanTitle">
     <div class="story-card wide">
       <div class="eyebrow">ぼくの コレクション</div>
-      <h3 id="zukanTitle">ご当地ずかん</h3>
+      <h3 id="zukanTitle">お宝ずかん</h3>
       <div class="zk-count" id="zukanCount"></div>
       <div class="scroll" id="zukanBody"></div>
       <button type="button" id="zukanClose">とじる</button>
@@ -321,6 +334,7 @@ body {
       <div class="scene" id="infoScene" aria-hidden="true"></div>
       <h3 id="infoTitle"></h3>
       <p id="infoText"></p>
+      <button type="button" class="mini-btn" id="infoHat">🎩 ぼうしに する</button>
       <button type="button" id="infoClose">オッケー！</button>
     </div>
   </div>
@@ -330,11 +344,12 @@ body {
       <div class="eyebrow">チャンドゥが おしえるね</div>
       <h3 id="helpTitle">ぼくとの あそびかた</h3>
       <div class="scroll">
-        <p>やっほー！ ぼく、チャンドゥ。シンドバッドの あいぼうだよ。ぼくを りっぱな おとなに そだててね！</p>
+        <p id="helpHi">やっほー！ ぼく、チャンドゥ。シンドバッドの あいぼうだよ。ぼくを りっぱな おとなに そだててね！</p>
         <ul>
           <li>🍌 バナナは まいにち 3ぼん もらえるよ。500歩 あるくごとに 1ぽん ふえるんだ。ぼくの だいこうぶつで、たべると おなかも げんきも もどるんだ。つかれたら ちょうだいね！</li>
           <li>📖 1日 5,000歩 あるくと、ぼうけんが 1わ すすむよ。シンドバッドの ものがたり → にっぽん一周 → せかいりょこうの じゅんばんだ！</li>
-          <li>🎁 1日 8,000歩 あるくと、そのとき いる とちの ご当地アイテムが もらえるよ！ にっぽん一周と せかいりょこうの あいだだけだから、ずかんを うめてね。</li>
+          <li>🎁 1日 8,000歩 あるくと、そのとき いる とちの お宝が もらえるよ！ にっぽん一周と せかいりょこうの あいだだけだから、ずかんを うめてね。お宝は ぼくの ぼうしに して かぶれるんだ！</li>
+          <li>⚙️ せっていで、きみの なまえや ぼうし、キャラクターの がぞうを かえられるよ。</li>
           <li>📊 おなか・ごきげん・げんき・きれいの 4つを たもってね。あそぶ・ねる・おそうじ・くすりで ぼくの おせわを してくれると うれしいな。</li>
           <li>⏰ アプリを とじてても じかんは すすむよ。たまに ぼくの ようすを みにきてね！</li>
           <li>📱 iPhoneアプリなら、あるいた 歩数が そのまま ぼくに とどくんだよ。</li>
@@ -353,9 +368,49 @@ body {
       <p id="storyText"></p>
       <div class="say" id="storySay"></div>
       <div class="reward" id="storyReward"></div>
+      <button type="button" class="face-btn" id="faceBtn" hidden>📷 がぞう</button>
       <button type="button" id="storyNext">オッケー！</button>
     </div>
   </div>
+
+  <div class="story" id="nameAsk" hidden role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <div class="story-card">
+      <div class="eyebrow">はじめまして！</div>
+      <div class="scene" aria-hidden="true">🐯</div>
+      <h3 id="nameTitle">きみの なまえを おしえて！</h3>
+      <p>ぼく、チャンドゥ！ きみの こと、なんて よんだら いいかな？</p>
+      <div class="row"><input id="nameAskInput" maxlength="12" placeholder="なまえ" autocomplete="nickname" aria-label="なまえ"></div>
+      <button type="button" id="nameAskOk">これで よんでね！</button>
+    </div>
+  </div>
+
+  <div class="story" id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">せってい</div>
+      <h3 id="setTitle">ぼくと きみの こと</h3>
+      <div class="scroll">
+        <h4>👤 きみの なまえ</h4>
+        <div class="row"><input id="setName" maxlength="12" placeholder="なまえ" autocomplete="nickname" aria-label="なまえ"><button type="button" class="mini-btn" id="setNameOk">きめた！</button></div>
+        <h4>🎩 チャンドゥの ぼうし</h4>
+        <div class="row"><select id="setHat" aria-label="ぼうし"></select></div>
+        <p class="note">お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
+        <h4>📷 キャラクターの がぞう</h4>
+        <p class="note">かいわの とき、みぎうえの「📷 がぞう」で その キャラの がぞうを iPhoneの しゃしんから えらべるよ。がぞうは この iPhoneの なかだけに しまわれて、ネットには でないよ。</p>
+        <div class="row"><button type="button" class="mini-btn" id="setChanduFace">🐯 チャンドゥの がぞうを えらぶ</button></div>
+        <div class="face-list" id="faceList"></div>
+        <h4>🖼️ はいけい</h4>
+        <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
+        <h4>📋 スプレッドシート</h4>
+        <p class="note">Googleスプレッドシートの URLを いれると、シートの エリア・キャラクター・はいけいが アプリに はんえいされるよ（アプリを ひらく たびに よみなおすよ）。</p>
+        <div class="row"><input id="setSheet" placeholder="https://docs.google.com/spreadsheets/d/…" aria-label="スプレッドシートの URL" inputmode="url"></div>
+        <div class="row"><button type="button" class="mini-btn" id="setSheetOk">よみこむ</button><button type="button" class="mini-btn" id="setSheetOff">はずす</button></div>
+        <p class="note" id="sheetStatus"></p>
+      </div>
+      <button type="button" id="setClose">とじる</button>
+    </div>
+  </div>
+  <input type="file" id="faceFile" accept="image/*" hidden>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="toon" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.1"/><feComponentTransfer><feFuncR type="discrete" tableValues="0 .15 .3 .45 .6 .75 .9 1"/><feFuncG type="discrete" tableValues="0 .15 .3 .45 .6 .75 .9 1"/><feFuncB type="discrete" tableValues="0 .15 .3 .45 .6 .75 .9 1"/></feComponentTransfer></filter></svg>
 
   <div class="buttons">
     <button class="btn" id="bFeed" type="button"><span class="cap">🍌</span>バナナ</button>
@@ -368,6 +423,7 @@ body {
   <div class="footer">
     <span><span id="form">ぼくの きもち: -</span> <small id="ver" style="opacity:.7"></small></span>
     <span>
+      <button type="button" class="set-btn" id="bSet">⚙️ せってい</button>
       <button type="button" class="help-btn" id="bHelp">❓ あそびかた</button>
     </span>
   </div>
@@ -375,7 +431,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.6";
+  const VERSION = "1.7";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -396,13 +452,23 @@ body {
     const now = Date.now();
     return { born: now, last: now, age: 0, hunger: 80, happy: 80, energy: 90, clean: 100,
              poops: 0, sleeping: false, sick: false, careSum: 0, careTime: 0, lowTime: 0,
-             bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, chapter: 0, goalDays: 0, goalDay: "", treasures: {}, items: {}, itemDay: "" };
+             bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, chapter: 0, goalDays: 0, goalDay: "", treasures: {}, items: {}, itemDay: "", userName: "", hat: "" };
   }
   function load() {
-    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.age === "number") return Object.assign({ bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, chapter: 0, goalDays: 0, goalDay: "", treasures: {}, items: {}, itemDay: "" }, s); } catch (e) {}
+    try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.age === "number") return Object.assign({ bananas: 3, stepDay: today(), stepsToday: 0, totalSteps: 0, chapter: 0, goalDays: 0, goalDay: "", treasures: {}, items: {}, itemDay: "", userName: "", hat: "" }, s); } catch (e) {}
     return fresh();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+  // Pictures for characters, chosen by the player from their own photos: { name: dataURL }. Never uploaded.
+  const FACE_KEY = "chandu-faces-v1";
+  let faces = {};
+  try { faces = JSON.parse(localStorage.getItem(FACE_KEY)) || {}; } catch (e) {}
+  function saveFaces() { try { localStorage.setItem(FACE_KEY, JSON.stringify(faces)); return true; } catch (e) { return false; } }
+  // Settings that are not part of the game save: photo style and the linked spreadsheet.
+  const PREF_KEY = "chandu-prefs-v1";
+  let prefs = { toon: true, sheet: "" };
+  try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY))); } catch (e) {}
+  const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
 
   let S = (window.claude?.hot?.data && window.claude.hot.data.S) || load();
   window.claude?.hot?.snapshot?.(() => ({ S }));
@@ -452,13 +518,13 @@ body {
     const away = mins;
     while (mins > 0) { const d = Math.min(1, mins); step(d); mins -= d; }
     S.last = now;
-    if (away > 5 && stageOf().id !== "egg") say(["おかえり！ まってたんだよ！", "シンドバッドかと おもった！ おかえり！"][Math.floor(Math.random() * 2)]);
+    if (away > 5 && stageOf().id !== "egg") say(["おかえり、{name}！ まってたんだよ！", "{name}！ シンドバッドかと おもった！ おかえり！"][Math.floor(Math.random() * 2)]);
   }
 
   // ---- speech ----
   let sayTimer = 0;
   function say(t, ms = 3200) {
-    $("bubble").textContent = t;
+    $("bubble").textContent = String(t).replace(/\{name\}/g, S.userName || "きみ");
     clearTimeout(sayTimer);
     sayTimer = setTimeout(() => ($("bubble").textContent = ""), ms);
   }
@@ -529,7 +595,17 @@ body {
         <ellipse cx="116" cy="58" rx="${gem + 3}" ry="${gem + 5}" fill="${GOLD}" stroke="${K}" stroke-width="2"/>
         <ellipse cx="116" cy="58" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
         <path d="M112 53 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/>`;
+    const hatItem = S.hat && ITEM_BY_KEY[S.hat];
+    const hat = hatItem ? `<text x="112" y="74" font-size="58" text-anchor="middle" transform="rotate(-8 112 54)">${hatItem.icon}</text>` : turban;
+    const myFace = faces["チャンドゥ"];
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
+    // A picture chosen in せってい replaces the drawn tiger; the hat still sits on top.
+    if (myFace) return setHTML(`
+      <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
+      <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
+        ${sparkle}<image href="${myFace}" x="22" y="40" width="156" height="152" preserveAspectRatio="xMidYMax meet"/>
+        ${hatItem ? `<text x="100" y="66" font-size="54" text-anchor="middle">${hatItem.icon}</text>` : ""}
+      </g>`);
     setHTML(`
       <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
       <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
@@ -551,7 +627,7 @@ body {
         <path d="M74 146 q26 10 52 0" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
         <circle cx="100" cy="158" r="10" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
         <path d="M91 157 h18 M100 160 v7" stroke="${K}" stroke-width="2"/><circle cx="96" cy="153" r="2.5" fill="#fff6c8"/>
-        ${turban}${sweat}
+        ${hat}${sweat}
       </g>`);
   }
   const POOP = `<svg viewBox="0 0 28 24"><path d="M4 22 q-3 -6 4 -8 q-2 -6 6 -7 q0 -6 4 -6 q2 4 6 6 q4 2 0 7 q6 2 2 8 z" fill="#8a5a3a" stroke="#3b4a2a" stroke-width="1.5"/></svg>`;
@@ -2121,7 +2197,7 @@ body {
   };
   const ME = (t) => ["チャンドゥ", "🐯", t];
   const meHello = [
-    (n, w) => `わあ、${n}だ！ ぼく チャンドゥ！ シンドバッドと たびを してるんだよ！`,
+    (n, w) => `わあ、${n}だ！ ぼく チャンドゥ！ {name}と たびを してるんだよ！`,
     (n, w) => `${n}！ あえて うれしいな！ ぼく、チャンドゥだよ！`,
     (n, w) => `こんにちは、${n}！ ぼく、${w.name}に きたんだよ！`,
   ];
@@ -2130,23 +2206,44 @@ body {
     (q, w) => `${q}は もう みたかい？ ${w.name}に きたなら ぜったい みなくちゃ！`,
     (q, w) => `${w.name}は いい ところだろう？ とくに ${q}が すてきなんだよ。`,
   ];
+  // 前編 (A) plays when Chandu arrives; 後編 (B) when the day's 5,000 steps are walked. Each area's two halves
+  // tell one small story of their own: the friend promises to show something, and in 後編 they get there.
+  const questLines = [
+    (q) => `よーし、${q}まで あんないするよ！ 5,000歩 あるいたら つくからね！`,
+    (q) => `${q}を みせてあげたいな。5,000歩 いっしょに あるいてくれる？`,
+    (q) => `ついてきて！ ${q}は 5,000歩 さきだよ！`,
+  ];
+  const meGo = ["うん！ {name}、いっしょに あるこうね！", "やったー！ {name}、5,000歩 がんばろう！", "わくわく！ {name}も いっしょに いこう！"];
   function makeTalk(n, w) {
     if (n < JP_TALK.length) {
       const [, who, icon, a, b] = JP_TALK[n];
-      return [[who, icon, a], ME(meHello[n % 3](who, w)), [who, icon, b], ME(`ありがとう、${who}！ ぼく、${w.sight}んだよ。また あいに くるね！`)];
+      return {
+        A: [[who, icon, a], ME(meHello[n % 3](who, w)), [who, icon, questLines[n % 3](w.name + "の とっておきの ばしょ")], ME(meGo[n % 3])],
+        B: [[who, icon, "ついたよ！ ここが みせたかった ばしょなんだ。"], ME(`わあ… ぼく、${w.sight}んだよ！`), [who, icon, b], ME(`ありがとう、${who}！ また あいに くるね！`)],
+      };
     }
     const k = n - JP_TALK.length, c = CAST[WORLD_CAST[k]];
     if (!c) return null;
     const q = PHOTO_Q[n].replace(/\s*\(.*\)$/, "").replace(/ /g, "の ");
+    const same = w.name.includes(q) || q.includes(w.name), dest = same ? w.name + "の すてきな ばしょ" : q;
     const pick = (a) => a[k % a.length];
-    return [[c.n, c.i, pick(c.h)], ME(meHello[k % 3](c.n, w)),
-      c.mute ? [c.n, c.i, `（${c.n}は ${q}の ほうを じっと みている…）`]
-        : w.name.includes(q) || q.includes(w.name) ? [c.n, c.i, `${q}の まちを ゆっくり あるいてみなよ。きっと すてきな はっけんが あるよ！`] : [c.n, c.i, placeLines[k % 3](q, w)],
-      ME(`ぼく、${w.sight}んだよ！ 「${w.food}」も たべてみるね！`), [c.n, c.i, pick(c.b)]];
+    return {
+      A: [[c.n, c.i, pick(c.h)], ME(meHello[k % 3](c.n, w)),
+        c.mute ? [c.n, c.i, `（${c.n}は ついておいでと いうように ${dest}の ほうへ あるきだした）`] : [c.n, c.i, questLines[k % 3](dest)],
+        ME(meGo[k % 3])],
+      B: [c.mute ? [c.n, c.i, `（${c.n}は ${dest}の まえで とまって、うれしそうに こちらを みた）`]
+          : same ? [c.n, c.i, `ついたよ！ ${q}の まちを ゆっくり あるいてみなよ。きっと すてきな はっけんが あるよ！`] : [c.n, c.i, placeLines[k % 3](q, w)],
+        ME(`ぼく、${w.sight}んだよ！ 「${w.food}」も たべてみるね！`), [c.n, c.i, pick(c.b)]],
+    };
   }
+  const arriveTexts = [
+    (w) => `${w.place}に とうちゃく！ だれかが てを ふってるよ…？`,
+    (w) => `きょうから ${w.place}だよ！ あれ、あそこに だれか いる！`,
+    (w) => `${w.place}に ついたよ！ さっそく ともだちに であえそう！`,
+  ];
   let tourCount = 0;
   const ITEM_GOAL = 8000;
-  const ITEMS = [];
+  const ITEMS = [], ITEM_BY_KEY = {};
   const ITEM_ICONS = [
     [/ラーメン|そば|うどん|そうめん|麺|米線|米粉|フォー|ラグマン|トゥクパ|ラクサ|パスタ|カルボナーラ|モヒンガー|カオソーイ|カオラウ|ほうとう/, "🍜"],
     [/すし|ずし|寿司/, "🍣"], [/カレー|カリー|ダール|ビリヤニ|ルンダン|カオソーイ/, "🍛"],
@@ -2171,7 +2268,7 @@ body {
   ]
   const itemIcon = (food) => (ITEM_ICONS.find(([re]) => re.test(food)) || [0, "🎁"])[1];
   const itemDescs = [
-    (w) => `${w.place}で ゲットした ご当地アイテムだよ！ ${w.sight}あとに、おみせの おじさんが「${w.food}」を くれたんだ。おいしくて しっぽが ぶんぶん ゆれちゃった！`,
+    (w) => `${w.place}で ゲットした お宝だよ！ ${w.sight}あとに、おみせの おじさんが「${w.food}」を くれたんだ。おいしくて しっぽが ぶんぶん ゆれちゃった！`,
     (w) => `これが ${w.place}の めいぶつ「${w.food}」だ！ ${w.sight}ひに、8,000歩 がんばって てに いれたんだよ。ぼくの たからものの ひとつなんだ！`,
     (w) => `${w.place}の「${w.food}」！ ${w.sight}んだ。じもとの みんなが だいすきな あじなんだって。ぼくも だいすきに なったよ！`,
   ];
@@ -2193,8 +2290,9 @@ body {
           chapters: r.items.slice(i * 8, i * 8 + 8).map((w) => {
             const n = tourCount++;
             const item = { key: prefix + "|" + w.place, name: w.food, icon: itemIcon(w.food), place: w.place, region: prefix + " · " + r.name, desc: itemDescs[n % itemDescs.length](w) };
-            ITEMS.push(item);
-            return { item, talk: makeTalk(n, w), photoQ: PHOTO_Q[n], sight: w.sight, icon: w.icon, short: w.name.length > 7 ? w.name.slice(0, 6) + "…" : w.name, place: w.place, title: w.name,
+            ITEMS.push(item); ITEM_BY_KEY[item.key] = item;
+            const tk = makeTalk(n, w) || {};
+            return { item, talkA: tk.A, talkB: tk.B, textA: arriveTexts[n % arriveTexts.length](w), photoQ: PHOTO_Q[n], sight: w.sight, icon: w.icon, short: w.name.length > 7 ? w.name.slice(0, 6) + "…" : w.name, place: w.place, title: w.name,
               text: tourTexts[n % tourTexts.length](w), say: tourSays[n % tourSays.length](w), reward: { bananas: 2, item: stamp } };
           }),
         });
@@ -2225,7 +2323,14 @@ body {
   STORY_TALK.trim().split(/^=/m).filter(Boolean).forEach((blk) => {
     const [title, ...lines] = blk.trim().split("\n");
     const c = CHAPTERS.find((ch) => ch.title === title.trim());
-    if (c) c.talk = lines.map((l) => l.split("|"));
+    if (!c) return;
+    const t = lines.map((l) => l.split("|")), h = Math.ceil(t.length / 2);
+    c.talkA = t.slice(0, h); c.talkB = t.slice(h);
+  });
+  CHAPTERS.forEach((c, i) => {
+    c.no = i + 1;
+    if (!c.textA) { const m = c.text.match(/^.*?[！。…]+/); c.textA = m ? m[0] : c.text; c.textB = m ? c.text.slice(m[0].length).trim() || c.text : c.text; }
+    else c.textB = c.text;
   });
   const LOOP_FROM = JAPAN_START;   // after the world tour, Japan and the world start again
   function chapterAt(k) {
@@ -2283,6 +2388,7 @@ body {
     if (stageOf().id === "egg" || !S.chapter) return "harbor";
     const { c } = chapterAt(k);
     const idx = CHAPTERS.indexOf(c);
+    if (c.bg && BGS[c.bg]) return c.bg;
     if (idx < STORY_BG.length) return STORY_BG[idx];
     const jp = idx < WORLD_FROM;
     const hit = BG_RULES.find(([, re, jpOnly]) => (!jpOnly || jp) && re.test(c.sight || c.title));
@@ -2339,30 +2445,36 @@ body {
     photoFor(c, (ph) => {
       if (!ph || bgKey !== key) return;
       const img = new Image();
-      img.alt = ""; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.alt = ""; img.decoding = "async"; img.referrerPolicy = "no-referrer"; if (prefs.toon) img.className = "toon";
       img.onload = () => { if (bgKey !== key) return; $("bg").appendChild(img); requestAnimationFrame(() => img.classList.add("on")); $("bgName").textContent = "📍 " + c.title; $("bgCredit").textContent = ph.credit; };
       img.src = ph.url;
     });
   }
   const storyQueue = [];
+  // One area per day: arriving plays 前編; walking DAILY_GOAL steps that day plays 後編 and gives the reward;
+  // the move to the next area waits until the next day.
   function reach(k) {
     S.chapter = k + 1;
+    storyQueue.push({ k, part: "A" });
+  }
+  function finish(k) {
     const { c } = chapterAt(k);
+    S.doneChapter = k; S.doneDay = S.stepDay;
+    S.goalDay = S.stepDay; S.goalDays = (S.goalDays || 0) + 1;
     if (c.reward) {
       S.bananas = Math.min(99, S.bananas + c.reward.bananas);
       S.treasures[c.reward.item] = (S.treasures[c.reward.item] || 0) + 1;
       S.happy = clamp(S.happy + 15);
     }
-    storyQueue.push(k);
+    storyQueue.push({ k, part: "B" });
   }
   function checkVoyage() {
     if (stageOf().id === "egg") return;
     rollDay();
+    if (S.doneChapter == null) { S.doneChapter = S.chapter ? S.chapter - 1 : -1; S.doneDay = S.goalDay || ""; }   // saves from before 前編/後編
     if (!S.chapter) reach(0);                                // the voyage begins when the egg hatches
-    if (S.stepsToday >= DAILY_GOAL && S.goalDay !== S.stepDay) {
-      S.goalDay = S.stepDay; S.goalDays = (S.goalDays || 0) + 1;
-      reach(S.chapter);
-    }
+    else if (S.doneChapter === S.chapter - 1 && S.doneDay !== S.stepDay) reach(S.chapter);
+    if (S.stepsToday >= DAILY_GOAL && S.doneChapter !== S.chapter - 1) finish(S.chapter - 1);
     const here = S.chapter ? chapterAt(S.chapter - 1).c : null;
     if (here && here.item && S.stepsToday >= ITEM_GOAL && S.itemDay !== S.stepDay) {
       S.itemDay = S.stepDay;
@@ -2377,37 +2489,52 @@ body {
   }
   // A chapter is shown as pages: the story first, then one page per line of talk; the reward is on the last page.
   let storyPages = null, storyPage = 0;
-  function showStory(k, isNew) {
-    if (typeof k === "object") return showItemGet(k);
-    const { c, lap } = chapterAt(k), g = GROUPS[c.gi];
-    storyPages = { c, eyebrow: (isNew && k > 0 ? "やったよ！ もくひょう たっせい！ · " : "") + (lap > 1 ? `${lap}しゅうめ · ` : "") + g.name, n: 1 + (c.talk ? c.talk.length : 0) };
+  // entry: { k, part: "A" | "B" | "AB" } for a chapter, or { item } for a treasure
+  function showStory(e, isNew) {
+    if (e.item) return showItemGet(e);
+    const { k, part } = e, { c, lap } = chapterAt(k), g = GROUPS[c.gi];
+    const pages = [];
+    if (part.includes("A")) { pages.push({ narr: c.textA, tag: "前編" }); (c.talkA || []).forEach((t) => pages.push({ line: t, tag: "前編" })); }
+    if (part.includes("B")) { pages.push({ narr: c.textB, tag: "後編" }); (c.talkB || []).forEach((t) => pages.push({ line: t, tag: "後編" })); }
+    const head = isNew && part === "B" ? "やったよ！ 5,000歩 たっせい！ · " : isNew ? "あたらしい エリア！ · " : "";
+    storyPages = { c, pages, part, eyebrow: head + (lap > 1 ? `${lap}しゅうめ · ` : "") + g.name, n: pages.length };
     storyPage = 0;
     $("story").hidden = false;
     renderStoryPage();
   }
+  // Character pictures the player picks from their own photo library. They stay on this device only.
+  function setPortrait(name, icon) {
+    const sc = $("storyScene"), url = name && faces[name];
+    if (url) { sc.innerHTML = ""; const im = new Image(); im.alt = ""; im.src = url; sc.appendChild(im); }
+    else sc.textContent = icon;
+    $("faceBtn").hidden = !name; $("faceBtn").dataset.name = name || "";
+  }
+  const fill = (t) => String(t).replace(/\{name\}/g, S.userName || "きみ");
   function renderStoryPage() {
-    const { c, eyebrow, n } = storyPages, last = storyPage === n - 1, card = $("storyCard");
-    const line = storyPage > 0 ? c.talk[storyPage - 1] : null;
+    const { c, eyebrow, n, pages, part } = storyPages, last = storyPage === n - 1, card = $("storyCard");
+    const pg = pages[storyPage], line = pg.line;
     card.classList.toggle("talking", !!line);
     card.classList.toggle("me", !!line && line[0] === "チャンドゥ");
-    $("storyEyebrow").textContent = eyebrow + (n > 1 ? `　${storyPage + 1}/${n}` : "");
-    $("storyScene").textContent = line ? line[1] : c.icon;
+    $("storyEyebrow").textContent = eyebrow + ` · ${pg.tag}　${storyPage + 1}/${n}`;
+    setPortrait(line ? line[0] : null, line ? line[1] : c.icon);
     $("storyTitle").textContent = line ? line[0] : c.title;
-    $("storyText").textContent = line ? line[2] : "📍 " + c.place + "\n" + c.text;
-    $("storySay").textContent = "💬 " + c.say;
-    $("storySay").hidden = !!c.talk || !last;
+    $("storyText").textContent = fill(line ? line[2] : "📍 " + c.place + "\n" + pg.narr);
+    $("storySay").textContent = "💬 " + fill(c.say);
+    $("storySay").hidden = !!(c.talkA || c.talkB) || !last || !part.includes("B");
+    const showReward = last && part.includes("B") && c.reward;
     $("storyReward").textContent = c.reward ? `ゲットしたよ: バナナ ${c.reward.bananas}ぽん ・ ${c.reward.item}` : "";
-    $("storyReward").hidden = !c.reward || !last;
+    $("storyReward").hidden = !showReward;
+    if (last && part === "A") { $("storyReward").hidden = false; $("storyReward").textContent = `🚶 5,000歩 あるくと 後編が はじまるよ！`; }
     $("storyNext").textContent = !last ? (storyPage === 0 ? "はなしかける ▶" : "つぎ ▶") : storyQueue.length ? "つぎ！" : "オッケー！";
     $("storyNext").focus();
   }
   function showItemGet({ item, dup }) {
-    storyPages = null; $("storyCard").classList.remove("talking", "me"); $("storySay").hidden = false;
-    $("storyEyebrow").textContent = "やったよ！ 8,000歩 たっせい！ · ご当地アイテム";
+    storyPages = null; $("storyCard").classList.remove("talking", "me"); $("storySay").hidden = false; setPortrait(null, item.icon);
+    $("storyEyebrow").textContent = "やったよ！ 8,000歩 たっせい！ · お宝";
     $("storyScene").textContent = item.icon;
     $("storyTitle").textContent = item.name;
     $("storyText").textContent = "📍 " + item.place + "\n" + item.desc;
-    $("storySay").textContent = dup ? "💬 これ、もう もってるよ！ かわりに バナナ もらっといた！" : "💬 ご当地ずかんに のせといたよ！ みにきてね！";
+    $("storySay").textContent = dup ? "💬 これ、もう もってるよ！ かわりに バナナ もらっといた！" : "💬 お宝ずかんに のせといたよ！ みにきてね！";
     $("storyReward").textContent = dup ? "ゲットしたよ: バナナ 3ぼん" : "ゲットしたよ: " + item.icon + " " + item.name;
     $("storyReward").hidden = false;
     $("story").hidden = false;
@@ -2435,12 +2562,12 @@ body {
         b.querySelector("b").textContent = it.icon;
         b.querySelector("span").textContent = own ? it.name : "？？？";
         if (own) { b.setAttribute("aria-label", it.name); b.onclick = () => showItemInfo(it); }
-        else { b.disabled = true; b.setAttribute("aria-label", "まだ みつけてない アイテム"); }
+        else { b.disabled = true; b.setAttribute("aria-label", "まだ みつけてない お宝"); }
         grid.appendChild(b);
       });
       body.appendChild(d);
     });
-    $("zukanCount").textContent = `あつめた アイテム ${got} / ${ITEMS.length}` + (got ? "" : " · 8,000歩で ゲットしようね！");
+    $("zukanCount").textContent = `あつめた お宝 ${got} / ${ITEMS.length}` + (got ? "" : " · 8,000歩で ゲットしようね！");
     $("zukan").hidden = false; body.scrollTop = 0; $("zukanClose").focus();
   }
   function showItemInfo(it) {
@@ -2448,6 +2575,9 @@ body {
     $("infoScene").textContent = it.icon;
     $("infoTitle").textContent = it.name;
     $("infoText").textContent = "📍 " + it.place + "\n" + it.desc;
+    const on = S.hat === it.key;
+    $("infoHat").textContent = on ? "🎩 ターバンに もどす" : "🎩 ぼうしに する";
+    $("infoHat").onclick = () => { S.hat = on ? "" : it.key; save(); drawPet(); showItemInfo(it); say(on ? "やっぱり ターバンが おちつくね！" : `「${it.name}」の ぼうし、にあう？ {name}、どうかな？`); };
     $("itemInfo").hidden = false; $("infoClose").focus();
   }
   function renderVoyage() {
@@ -2466,7 +2596,11 @@ body {
         const b = document.createElement("button");
         b.type = "button"; b.className = "stop";
         b.innerHTML = `<i>${ch.icon}</i><span>${ch.short}</span>`;
-        b.onclick = () => { const kk = Math.max(S.chapter, 1) - 1, cur = chapterAt(kk).c.ci; if (i <= cur) showStory(kk - (cur - i), false); };
+        b.onclick = () => {
+          const kk = Math.max(S.chapter, 1) - 1, cur = chapterAt(kk).c.ci;
+          if (i < cur) showStory({ k: kk - (cur - i), part: "AB" }, false);
+          else if (i === cur) showStory({ k: kk, part: S.doneChapter === kk ? "AB" : "A" }, false);
+        };
         route.appendChild(b);
       });
     }
@@ -2477,21 +2611,20 @@ body {
       b.disabled = !reached;
       b.setAttribute("aria-label", g.chapters[i].title + (reached ? "（とうちゃく）" : "（まだ）"));
     });
-    const doneToday = S.goalDay === S.stepDay;
-    const frac = doneToday ? 0 : Math.min(1, S.stepsToday / DAILY_GOAL);
+    const doneToday = S.doneChapter === k && reachedAny;
+    const frac = doneToday ? 1 : Math.min(1, S.stepsToday / DAILY_GOAL);
     const last = c.ci === g.chapters.length - 1;
     const n = g.chapters.length;
     $("routeFill").style.width = (n > 1 ? ((last ? c.ci : c.ci + frac) / (n - 1)) * (100 - 100 / n) : 0) + "%";
-    $("goalFill").style.width = (doneToday ? 100 : frac * 100) + "%";
+    $("goalFill").style.width = frac * 100 + "%";
     const next = chapterAt(k + 1).c;
     $("vNext").textContent = stageOf().id === "egg" ? "ぼくが たまごから でたら、しゅっこうだよ！"
-      : doneToday ? `きょうは もくひょう たっせいだよ！ あしたは「${next.title}」に いこうね！`
-      : `きょう ${S.stepsToday.toLocaleString()} / ${DAILY_GOAL.toLocaleString()}歩！ あと ${(DAILY_GOAL - S.stepsToday).toLocaleString()}歩で「${next.title}」に いけるよ！`;
+      : doneToday ? `${c.title}の おはなしは おしまい！ あしたは「${next.title}」へ しゅっぱつだよ！`
+      : `きょう ${S.stepsToday.toLocaleString()} / ${DAILY_GOAL.toLocaleString()}歩！ あと ${(DAILY_GOAL - S.stepsToday).toLocaleString()}歩で「${c.title}」の 後編だよ！`;
     const itemHere = reachedAny && c.item, gotToday = S.itemDay === S.stepDay;
     $("vItem").hidden = !itemHere;
-    if (itemHere) $("vItem").textContent = gotToday ? "🎁 きょうの ご当地アイテムは ゲットずみだよ！"
-      : S.stepsToday >= DAILY_GOAL && !doneToday ? ""
-      : `🎁 8,000歩で ${c.place.replace(/（.*）/, "")}の ご当地アイテムが もらえるよ！（あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}歩）`;
+    if (itemHere) $("vItem").textContent = gotToday ? "🎁 きょうの お宝は ゲットずみだよ！"
+      : `🎁 8,000歩で ${c.place.replace(/（.*）/, "")}の お宝が もらえるよ！（あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}歩）`;
     $("vPlace").textContent = reachedAny ? "📍 ぼく いま: " + c.place : "";
     $("treasures").innerHTML = "";
     Object.entries(S.treasures).forEach(([name, cnt]) => { const sp = document.createElement("span"); sp.textContent = name + (cnt > 1 ? " ×" + cnt : ""); $("treasures").appendChild(sp); });
@@ -2795,7 +2928,7 @@ body {
           ["ルフ鳥って どんな とり？", ["とっても でっかい", "とっても ちっちゃい", "およぐのが とくい"]],
           ["ぼくは なんの どうぶつ？", ["トラ", "ネコ", "ライオン"]],
           ["1日 なん歩 あるくと ぼうけんが すすむ？", ["5,000歩", "500歩", "50,000歩"]],
-          ["ご当地アイテムが もらえるのは なん歩？", ["8,000歩", "1,000歩", "30,000歩"]],
+          ["お宝が もらえるのは なん歩？", ["8,000歩", "1,000歩", "30,000歩"]],
           ["シンドバッドの こうかいは ぜんぶで なんかい？", ["7かい", "3かい", "10かい"]],
         ];
         const seen = CHAPTERS.slice(0, Math.min(S.chapter || 0, CHAPTERS.length)).filter((c) => c.item);
@@ -2828,7 +2961,7 @@ body {
   $("pet").onclick = () => {
     if (stageOf().id === "egg") return say("ころころ… もうすぐ でるよ！");
     if (S.sleeping) return say("Zzz…");
-    S.happy = clamp(S.happy + 1); say(["えへへっ", "なでなで、もっと！", "ぼく、チャンドゥ！", "あそぼうよ〜！", "シンドバッド どこ いったのかな？", "バナナ もってない？"][Math.floor(Math.random() * 6)]); render();
+    S.happy = clamp(S.happy + 1); say(["えへへっ", "なでなで、もっと！", "ぼく、チャンドゥ！", "あそぼうよ〜！", "シンドバッド どこ いったのかな？", "バナナ もってない？", "{name}、だいすき！", "{name}と いっしょだと たのしいな！"][Math.floor(Math.random() * 8)]); render();
   };
 
   $("wApply").onclick = () => { const v = $("wInput").value; if (v !== "") { applySteps(Number(v)); $("wInput").value = ""; } };
@@ -2864,8 +2997,183 @@ body {
     storyPages = null;
     if (storyQueue.length) showStory(storyQueue.shift(), true); else $("story").hidden = true;
   };
+  // ---- face pictures ----
+  let faceFor = "";
+  $("faceBtn").onclick = () => { faceFor = $("faceBtn").dataset.name; $("faceFile").value = ""; $("faceFile").click(); };
+  $("setChanduFace").onclick = () => { faceFor = "チャンドゥ"; $("faceFile").value = ""; $("faceFile").click(); };
+  $("faceFile").onchange = () => {
+    const f = $("faceFile").files[0], who = faceFor;
+    if (!f || !who) return;
+    const url = URL.createObjectURL(f), im = new Image();
+    im.onload = () => {
+      const max = 256, r = Math.min(1, max / Math.max(im.width, im.height));
+      const cv = document.createElement("canvas"); cv.width = Math.round(im.width * r); cv.height = Math.round(im.height * r);
+      cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+      URL.revokeObjectURL(url);
+      let d = cv.toDataURL("image/png");                    // keeps transparent backgrounds
+      if (d.length > 160000) d = cv.toDataURL("image/jpeg", 0.85);
+      faces[who] = d;
+      if (!saveFaces()) { delete faces[who]; say("がぞうが いっぱいで しまえないよ… いらない がぞうを けしてね"); return; }
+      if (storyPages) renderStoryPage();
+      drawPet(); if (!$("settings").hidden) renderFaceList();
+    };
+    im.onerror = () => { URL.revokeObjectURL(url); say("その がぞうは よめなかったよ…"); };
+    im.src = url;
+  };
+  function renderFaceList() {
+    const box = $("faceList"); box.innerHTML = "";
+    Object.keys(faces).forEach((n) => {
+      const f = document.createElement("figure");
+      f.innerHTML = `<img alt=""><figcaption></figcaption><button type="button">けす</button>`;
+      f.querySelector("img").src = faces[n];
+      f.querySelector("figcaption").textContent = n;
+      f.querySelector("button").setAttribute("aria-label", n + "の がぞうを けす");
+      f.querySelector("button").onclick = () => { delete faces[n]; saveFaces(); drawPet(); renderFaceList(); };
+      box.appendChild(f);
+    });
+    if (!box.children.length) box.innerHTML = '<p class="note">まだ がぞうは ないよ。</p>';
+  }
+
+  // ---- name ----
+  function setName(v) {
+    S.userName = String(v || "").trim().slice(0, 12); S.askedName = true; save();
+    say(S.userName ? `${S.userName}！ すてきな なまえ！ これから そう よぶね！` : "わかった！ じゃあ「きみ」って よぶね！");
+  }
+  $("nameAskOk").onclick = () => { $("nameAsk").hidden = true; setName($("nameAskInput").value); };
+  $("nameAskInput").addEventListener("keydown", (e) => { if (e.key === "Enter") $("nameAskOk").click(); });
+
+  // ---- settings ----
+  function openSettings() {
+    $("setName").value = S.userName || "";
+    const sel = $("setHat"); sel.innerHTML = "";
+    const opt = (v, t) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); };
+    opt("", "👳 ターバン（いつもの）");
+    ITEMS.filter((it) => S.items[it.key]).forEach((it) => opt(it.key, `${it.icon} ${it.name}（${it.place.replace(/（.*）/, "")}）`));
+    sel.value = ITEM_BY_KEY[S.hat] ? S.hat : "";
+    $("setToon").checked = !!prefs.toon;
+    $("setSheet").value = prefs.sheet || "";
+    $("sheetStatus").textContent = sheetNote();
+    renderFaceList();
+    $("settings").hidden = false; $("setClose").focus();
+  }
+  $("bSet").onclick = openSettings;
+  $("setClose").onclick = () => { $("settings").hidden = true; $("bSet").focus(); };
+  $("setNameOk").onclick = () => setName($("setName").value);
+  $("setHat").onchange = () => { S.hat = $("setHat").value; save(); drawPet(); };
+  $("setToon").onchange = () => { prefs.toon = $("setToon").checked; savePrefs(); bgKey = ""; renderBg(); };
+  $("setSheetOk").onclick = () => {
+    const id = sheetId($("setSheet").value);
+    if (!id) { $("sheetStatus").textContent = "URLが よめなかったよ。シートの URLを まるごと はってね。"; return; }
+    prefs.sheet = id; savePrefs();
+    $("sheetStatus").textContent = "よみこみ ちゅう…";
+    loadSheet(true);
+  };
+  $("setSheetOff").onclick = () => { prefs.sheet = ""; savePrefs(); try { localStorage.removeItem(SHEET_KEY); } catch (e) {} $("setSheet").value = ""; $("sheetStatus").textContent = "はずしたよ。アプリを ひらきなおすと もとに もどるよ。"; };
+  ["settings"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
+  $("bHelp").addEventListener("click", () => { $("helpHi").textContent = `やっほー、${S.userName || "きみ"}！ ぼく、チャンドゥ。シンドバッドの あいぼうだよ。いっしょに あるいて、せかいじゅうを ぼうけんしようね！`; });
+
+  // ---- Google Sheets: the エリア / キャラクター / はいけい tabs override the built-in story data ----
+  const SHEET_KEY = "chandu-sheet-v1";
+  const SHEET_TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけい" };
+  const sheetId = (v) => { v = String(v || "").trim(); const m = v.match(/\/d\/([\w-]{20,})/); return m ? m[1] : /^[\w-]{20,}$/.test(v) ? v : ""; };
+  let sheetInfo = null;
+  try { sheetInfo = JSON.parse(localStorage.getItem(SHEET_KEY)); } catch (e) {}
+  function sheetNote() {
+    if (!prefs.sheet) return "いまは アプリに はいってる データを つかってるよ。";
+    if (!sheetInfo || sheetInfo.id !== prefs.sheet) return "まだ よみこめて ないよ。";
+    const d = new Date(sheetInfo.at);
+    return `✅ ${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}に よみこんだよ（エリア ${sheetInfo.n}こ を はんえい）` + (sheetInfo.err ? `\n⚠️ ${sheetInfo.err}` : "");
+  }
+  function parseCSV(t) {
+    const rows = []; let row = [], cell = "", q = false;
+    for (let i = 0; i < t.length; i++) {
+      const ch = t[i];
+      if (q) { if (ch === '"') { if (t[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += ch; }
+      else if (ch === '"') q = true;
+      else if (ch === ",") { row.push(cell); cell = ""; }
+      else if (ch === "\n" || ch === "\r") { if (ch === "\r" && t[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+      else cell += ch;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  // rows → objects keyed by the header row
+  const toObjs = (rows) => { const h = (rows.shift() || []).map((x) => x.trim()); return rows.filter((r) => r.some((x) => x.trim())).map((r) => Object.fromEntries(h.map((k, i) => [k, (r[i] || "").trim()]))); };
+  // "なまえ: セリフ" per line → [[name, icon, line]]
+  function parseTalk(cell, icons) {
+    if (!cell) return null;
+    const out = cell.split(/\n+/).map((l) => l.trim()).filter(Boolean).map((l) => {
+      const m = l.match(/^([^:：]{1,24})[:：]\s*(.+)$/);
+      const who = m ? m[1].trim() : "チャンドゥ", line = m ? m[2] : l;
+      return [who, icons[who] || (who === "チャンドゥ" ? "🐯" : "💬"), line];
+    });
+    return out.length ? out : null;
+  }
+  function applySheet(data) {
+    const icons = {};
+    CHAPTERS.forEach((c) => [...(c.talkA || []), ...(c.talkB || [])].forEach(([n, i]) => { if (!icons[n]) icons[n] = i; }));
+    (data.chars || []).forEach((r) => { if (r["なまえ"] && r["アイコン"]) icons[r["なまえ"]] = r["アイコン"]; });
+    let n = 0;
+    (data.areas || []).forEach((r) => {
+      const c = CHAPTERS[Number(r["No"]) - 1]; if (!c) return;
+      n++;
+      const set = (col, f) => { const v = r[col]; if (v != null && v !== "") f(v); };
+      set("タイトル", (v) => { c.title = v; c.short = v.length > 7 ? v.slice(0, 6) + "…" : v; });
+      set("ばしょ", (v) => (c.place = v));
+      set("アイコン", (v) => (c.icon = v));
+      set("みどころ", (v) => (c.sight = v));
+      if (c.item) { set("お宝", (v) => (c.item.name = v)); set("お宝アイコン", (v) => (c.item.icon = v)); set("お宝せつめい", (v) => (c.item.desc = v)); }
+      set("前編の文", (v) => (c.textA = v));
+      set("後編の文", (v) => (c.textB = v));
+      set("前編の会話", (v) => (c.talkA = parseTalk(v, icons)));
+      set("後編の会話", (v) => (c.talkB = parseTalk(v, icons)));
+    });
+    (data.bgs || []).forEach((r) => {
+      const c = CHAPTERS[Number(r["No"]) - 1]; if (!c) return;
+      if (r["イラスト"] && BGS[r["イラスト"]]) c.bg = r["イラスト"];
+      if (r["しゃしんの けんさくご"] != null && r["しゃしんの けんさくご"] !== "") c.photoQ = r["しゃしんの けんさくご"];
+    });
+    return n;
+  }
+  function loadSheet(user) {
+    const id = prefs.sheet; if (!id) return;
+    const url = (tab) => `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&headers=1&sheet=${encodeURIComponent(tab)}`;
+    const keys = Object.keys(SHEET_TABS);
+    Promise.all(keys.map((k) => fetch(url(SHEET_TABS[k]), { cache: "no-store" }).then((r) => (r.ok ? r.text() : Promise.reject(r.status))).then((t) => toObjs(parseCSV(t)), () => null)))
+      .then((res) => {
+        const data = {}; keys.forEach((k, i) => (data[k] = res[i] || []));
+        const miss = keys.filter((k, i) => !res[i]).map((k) => SHEET_TABS[k]);
+        if (miss.length === keys.length) throw new Error("all");
+        sheetInfo = { id, at: Date.now(), data, n: applySheet(data), err: miss.length ? `「${miss.join("・")}」の シートが よめなかったよ` : "" };
+        try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}
+        bgKey = ""; const rk = $("route"); if (rk) rk.dataset.key = ""; render();
+        if (user) $("sheetStatus").textContent = sheetNote();
+      })
+      .catch(() => { if (user) $("sheetStatus").textContent = "よみこめなかったよ。シートの きょうゆうを「リンクを しっている ぜんいん」に して、もう いちど ためしてね。"; });
+  }
+  if (prefs.sheet && sheetInfo && sheetInfo.id === prefs.sheet) { applySheet(sheetInfo.data); render(); }
+  if (prefs.sheet) loadSheet(false);
+
+  // Rows for the spreadsheet: what is in the app now, one tab per list.
+  window.chanduExport = () => {
+    const talkCell = (t) => (t || []).map(([n, , l]) => `${n}: ${l}`).join("\n");
+    const areas = [], chars = {}, bgs = [];
+    CHAPTERS.forEach((c, i) => {
+      const no = i + 1, g = GROUPS[c.gi];
+      areas.push({ No: no, "へん": g.name, "タイトル": c.title, "ばしょ": c.place, "アイコン": c.icon, "みどころ": c.sight || "",
+        "お宝": c.item ? c.item.name : "", "お宝アイコン": c.item ? c.item.icon : "", "お宝せつめい": c.item ? c.item.desc : "",
+        "前編の文": c.textA, "前編の会話": talkCell(c.talkA), "後編の文": c.textB, "後編の会話": talkCell(c.talkB) });
+      [...(c.talkA || []), ...(c.talkB || [])].forEach(([n, ic]) => { const e = chars[n] || (chars[n] = { "なまえ": n, "アイコン": ic, nos: [] }); if (!e.nos.includes(no)) e.nos.push(no); });
+      const save = S.chapter; S.chapter = no; const id = bgOf(i); S.chapter = save;
+      bgs.push({ No: no, "タイトル": c.title, "イラスト": id, "イラストの なまえ": BGS[id].name, "しゃしんの けんさくご": c.photoQ || "" });
+    });
+    const charRows = Object.values(chars).map((e) => ({ "なまえ": e["なまえ"], "アイコン": e["アイコン"], "でる エリア": e.nos.length > 12 ? `${e.nos.length}かしょ` : e.nos.join(", ") }));
+    return { areas, chars: charRows, bgs, themes: Object.entries(BGS).map(([k, b]) => ({ id: k, name: b.name })) };
+  };
+
+  if (!TEST && !window.CHANDU_BGTEST && !S.askedName && !S.userName) { $("nameAsk").hidden = false; setTimeout(() => $("nameAskInput").focus(), 50); }
   if (window.CHANDU_BGTEST) bgTestPage();
-  else if (TEST) setTimeout(play, 600); else setTimeout(checkVoyage, 800);
+  else if (TEST) setTimeout(play, 600); else setTimeout(function wait() { if (!$("nameAsk").hidden) return setTimeout(wait, 500); checkVoyage(); }, 800);
   // docs/bg-test.html: every chapter's background (drawn scene + real photo) in one scrolling list
   function bgTestPage() {
     const wrap = document.createElement("div");
@@ -2896,7 +3204,7 @@ body {
           if (!c.photoQ) return;
           photoFor(c, (ph) => {
             if (!ph) { st.textContent = "しゃしんが みつからなかったので イラストが でます"; return; }
-            const img = new Image(); img.alt = c.title; img.referrerPolicy = "no-referrer";
+            const img = new Image(); img.alt = c.title; img.referrerPolicy = "no-referrer"; if (prefs.toon) img.className = "toon";
             img.onload = () => { card.querySelector(".bgt-pic").appendChild(img); st.textContent = `しゃしん: ${ph.title}　${ph.credit}`; };
             img.onerror = () => { st.textContent = "しゃしんが よみこめなかったので イラストが でます"; };
             img.src = ph.url;
