@@ -7,6 +7,7 @@
 //          {op:"rows", tab, rows:[{No:…, 列名:値}]}  No が おなじ ぎょうを うわがき（なければ ついか）
 //          {op:"tab", tab, values:[[…],[…]]}     シートを まるごと いれかえる
 const IMG = "がぞう";
+const ICONS = "アイコン";   // one row per character: put its picture in the アイコン column
 const CHANDU = "チャンドゥ";
 const TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけい" };
 
@@ -14,7 +15,8 @@ function doGet() {
   const ss = SpreadsheetApp.getActive(), out = {};
   Object.keys(TABS).forEach((k) => (out[k] = readTab(ss.getSheetByName(TABS[k]))));
   out.images = readImages(ss);
-  Object.assign(out, readIcons(ss.getSheetByName(TABS.chars)));
+  const a = readIcons(ss.getSheetByName(TABS.chars)), b = readIcons(ss.getSheetByName(ICONS));
+  out.icons = Object.assign(a.icons, b.icons); out.iconsMissed = a.iconsMissed + b.iconsMissed;
   let ch = ss.getSheetByName(CHANDU);
   if (!ch) { ch = ss.insertSheet(CHANDU); ch.getRange(1, 1, 21, 3).setValues([["No", "キャラクター", "アイコン"]].concat(Array.from({ length: 20 }, (_, i) => [i + 1, "チャンドゥ", "🐯"]))); }
   out.chandu = readChandu(ch);
@@ -77,14 +79,14 @@ function readIcons(sh) {
   const r = sh.getDataRange(), v = r.getValues(), f = r.getFormulas(), h = v[0].map(String);
   for (let i = 1; i < v.length; i++) h.forEach((c, j) => {
     const k = c.match(/^アイコン(\d*)$/); if (!k) return;
-    const ni = h.indexOf(k[1] ? "キャラクター" + k[1] : "なまえ"), name = ni >= 0 ? String(v[i][ni]).trim() : "";
+    const ni = k[1] ? h.indexOf("キャラクター" + k[1]) : Math.max(h.indexOf("なまえ"), h.indexOf("キャラクター")), name = ni >= 0 ? String(v[i][ni]).trim() : "";
     if (!name || out[name]) return;
     const u = cellImageUrl(v[i][j], f[i][j]); if (u) out[name] = u;
   });
   sh.getImages().forEach((im) => {
     const a = im.getAnchorCell(), col = h[a.getColumn() - 1] || "", k = col.match(/^アイコン(\d*)$/);
     if (!k || a.getRow() < 2) return;
-    const ni = h.indexOf(k[1] ? "キャラクター" + k[1] : "なまえ"), name = ni >= 0 ? String(v[a.getRow() - 1][ni]).trim() : "";
+    const ni = k[1] ? h.indexOf("キャラクター" + k[1]) : Math.max(h.indexOf("なまえ"), h.indexOf("キャラクター")), name = ni >= 0 ? String(v[a.getRow() - 1][ni]).trim() : "";
     let u = ""; try { u = im.getUrl() || ""; } catch (e) {}
     if (name && !out[name]) { if (u) out[name] = u; else missed++; }
   });
@@ -120,9 +122,14 @@ function saveRows(sh, rows, key) {
   rows.forEach((r) => {
     Object.keys(r).forEach((c) => { if (h.indexOf(c) < 0) { h.push(c); sh.getRange(1, h.length).setValue(c); } });
     const i = v.findIndex((x, j) => j > 0 && String(x[ki]) === String(r[key]));
-    const line = h.map((c, ci) => (c in r ? r[c] : i > 0 ? (v[i][ci] ?? "") : ""));
-    if (i > 0) { sh.getRange(i + 1, 1, 1, h.length).setValues([line]); v[i] = line; }
-    else { sh.appendRow(line); v.push(line); }
+    if (i < 0) { const line = h.map((c) => (c in r ? r[c] : "")); sh.appendRow(line); v.push(line); return; }
+    // Only the given cells are written, in runs of neighbouring columns, so pictures in other cells stay put.
+    const cols = Object.keys(r).map((c) => h.indexOf(c)).sort((a, b) => a - b);
+    for (let s = 0; s < cols.length;) {
+      let e = s; while (e + 1 < cols.length && cols[e + 1] === cols[e] + 1) e++;
+      sh.getRange(i + 1, cols[s] + 1, 1, e - s + 1).setValues([cols.slice(s, e + 1).map((ci) => r[h[ci]])]);
+      s = e + 1;
+    }
   });
   return { ok: true, rows: rows.length };
 }
