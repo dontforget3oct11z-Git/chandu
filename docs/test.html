@@ -467,7 +467,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.15";
+  const VERSION = "1.16";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -607,78 +607,63 @@ body {
     const W = "#fffdf8";           // white fur
     const RED = "#d3123f";         // turban red
     const GOLD = "#e3b23c";
-    // eyes: big glossy eyes, brown irises with a dark centre, like the reference art
+    // eyes: big white eyes with dark irises, like the reference
     let eyes;
-    if (md === "sleep") eyes = `<path d="M68 106 q11 8 22 0 M110 106 q11 8 22 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
-    else if (md === "happy") eyes = `<path d="M68 108 q11 -14 22 0 M110 108 q11 -14 22 0" stroke="${K}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
-    else if (md === "sick") eyes = `<path d="M71 97 l14 14 M85 97 l-14 14 M115 97 l14 14 M129 97 l-14 14" stroke="${K}" stroke-width="4" stroke-linecap="round"/>`;
+    if (md === "sleep") eyes = `<path d="M70 104 q10 8 20 0 M110 104 q10 8 20 0" stroke="${K}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+    else if (md === "happy") eyes = `<path d="M70 106 q10 -13 20 0 M110 106 q10 -13 20 0" stroke="${K}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+    else if (md === "sick") eyes = `<path d="M72 96 l14 14 M86 96 l-14 14 M114 96 l14 14 M128 96 l-14 14" stroke="${K}" stroke-width="4" stroke-linecap="round"/>`;
     else {
       const look = md === "sad" ? 3 : 0;
-      const eye = (cx, flip) => `<path d="M${cx - 13 * flip} 92 C${cx - 15 * flip} 104 ${cx - 11 * flip} 118 ${cx} 118 C${cx + 12 * flip} 118 ${cx + 15 * flip} 104 ${cx + 12 * flip} 94 C${cx + 8 * flip} 86 ${cx - 9 * flip} 85 ${cx - 13 * flip} 92 Z" fill="${W}" stroke="${K}" stroke-width="3"/>
-        <ellipse cx="${cx + 2 * flip}" cy="${106 + look}" rx="9" ry="11" fill="#5a3418"/><ellipse cx="${cx + 2 * flip}" cy="${107 + look}" rx="5.5" ry="7" fill="#1c120c"/>
-        <circle cx="${cx + 5 * flip}" cy="${101 + look}" r="3.4" fill="#fff"/><circle cx="${cx - 1 * flip}" cy="${111 + look}" r="1.6" fill="#fff"/>`;
-      eyes = eye(79, 1) + eye(121, -1) +
-        (md === "sad" ? `<path d="M66 84 l18 5 M134 84 l-18 5" stroke="${K}" stroke-width="3" stroke-linecap="round"/>` : `<path d="M67 84 q10 -6 20 -2 M133 84 q-10 -6 -20 -2" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`);
+      eyes = `<ellipse cx="80" cy="102" rx="13" ry="15" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="120" cy="102" rx="13" ry="15" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="82" cy="${104 + look}" rx="8" ry="10" fill="#3a2316"/><ellipse cx="118" cy="${104 + look}" rx="8" ry="10" fill="#3a2316"/>
+        <circle cx="85" cy="${100 + look}" r="3" fill="#fff"/><circle cx="121" cy="${100 + look}" r="3" fill="#fff"/>
+        ${md === "sad" ? `<path d="M68 86 l18 4 M132 86 l-18 4" stroke="${K}" stroke-width="3" stroke-linecap="round"/>` : `<path d="M68 86 q12 -6 22 0 M110 86 q12 -6 22 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`}`;
     }
     let mouth;
-    if (md === "happy") mouth = `<path d="M91 134 q9 13 18 0 q-9 3 -18 0 z" fill="#e0576a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`;
-    else if (md === "sad" || md === "sick") mouth = `<path d="M92 139 q8 -7 16 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-    else if (md === "sleep") mouth = `<ellipse cx="100" cy="136" rx="3.5" ry="2.5" fill="${K}"/>`;
-    else mouth = `<path d="M100 128 v5 M91 133 q4.5 5 9 0 q4.5 5 9 0" stroke="${K}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
-    const sweat = md === "sick" || md === "sad" ? `<path d="M152 78 q6 10 0 14 q-6 -4 0 -14z" fill="#7fb6e8" stroke="${K}" stroke-width="2"/>` : "";
-    const sparkle = adult && adult.crown ? `<g fill="${GOLD}" stroke="${K}" stroke-width="1.5"><path d="M28 60 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 z"/><path d="M176 40 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 z"/></g>` : "";
-    // a tapered stripe: from a base on the edge (x,y) pointing in direction (dx,dy), w wide
-    const wedge = (x, y, dx, dy, w) => { const l = Math.hypot(dx, dy), nx = -dy / l * w / 2, ny = dx / l * w / 2;
-      return `M${(x + nx).toFixed(1)} ${(y + ny).toFixed(1)} Q${(x + dx * .55 + nx * .4).toFixed(1)} ${(y + dy * .55 + ny * .4).toFixed(1)} ${(x + dx).toFixed(1)} ${(y + dy).toFixed(1)} Q${(x + dx * .55 - nx * .4).toFixed(1)} ${(y + dy * .55 - ny * .4).toFixed(1)} ${(x - nx).toFixed(1)} ${(y - ny).toFixed(1)} Z`; };
-    const stripes = (list) => `<path d="${list.map((a) => wedge(...a)).join("")}" fill="${K}"/>`;
-    const tailPath = "M138 180 C172 182 186 160 180 132 C176 112 168 100 176 84 C180 76 188 74 192 78";
+    if (md === "happy") mouth = `<path d="M90 130 q10 14 20 0 z" fill="#e0576a" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    else if (md === "sad" || md === "sick") mouth = `<path d="M91 136 q9 -7 18 0" stroke="${K}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    else if (md === "sleep") mouth = `<ellipse cx="100" cy="133" rx="3.5" ry="2.5" fill="${K}"/>`;
+    else mouth = `<path d="M100 125 v4 M90 129 q5 5 10 0 q5 5 10 0" stroke="${K}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+    const sweat = md === "sick" || md === "sad" ? `<path d="M148 80 q6 10 0 14 q-6 -4 0 -14z" fill="#7fb6e8" stroke="${K}" stroke-width="2"/>` : "";
+    const sparkle = adult && adult.crown ? `<g fill="${GOLD}" stroke="${K}" stroke-width="1.5"><path d="M32 60 l3 8 l8 3 l-8 3 l-3 8 l-3 -8 l-8 -3 l8 -3 z"/><path d="M172 44 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 z"/></g>` : "";
     const tail = st !== "baby" ? `
-        <path d="${tailPath}" fill="none" stroke="${K}" stroke-width="15" stroke-linecap="round"/>
-        <path d="${tailPath}" fill="none" stroke="${OR}" stroke-width="9.5" stroke-linecap="round"/>
-        <path d="M161 178 l2 -6 M174 166 l-5 -4 M180 146 l-6 0 M177 124 l-6 2 M171 104 l-6 0" stroke="${K}" stroke-width="4.5" stroke-linecap="round"/>
-        <path d="M181 79 C186 74 192 74 194 79 C195 84 189 87 185 86 Z" fill="${K}"/>` : "";
-    const whiskers = `<path d="M74 128 l-38 -9 M74 133 l-40 1 M75 138 l-36 9 M126 128 l38 -9 M126 133 l40 1 M125 138 l36 9" stroke="${K}" stroke-width="1.5" stroke-linecap="round"/>`;
+        <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${K}" stroke-width="16" stroke-linecap="round"/>
+        <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${OR}" stroke-width="10" stroke-linecap="round"/>
+        <path d="M161 166 l8 -6 M171 148 l8 -2 M174 128 l7 2 M170 112 l6 4" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="168" cy="100" r="5" fill="${K}"/>` : "";
+    const whiskers = `<path d="M70 124 l-36 -8 M70 130 l-38 2 M130 124 l36 -8 M130 130 l38 2" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>`;
     const gem = adult && adult.crown ? 11 : 9;
-    // the turban: a round red cap worn high on the head with a gold brooch and a ruby
     const turban = `
-        <path d="M80 64 C68 38 86 8 116 8 C146 8 162 38 148 66 C132 76 96 76 80 64 Z" fill="${RED}" stroke="${K}" stroke-width="3"/>
-        <path d="M116 9 C96 22 88 46 92 70 M116 9 C108 28 108 52 114 73 M116 9 C130 26 136 48 132 72 M116 9 C140 22 152 42 148 60 M80 44 C100 32 134 30 154 42" stroke="#9c0c2e" stroke-width="2.3" fill="none" stroke-linecap="round"/>
-        <path d="M80 64 C98 76 132 76 148 66" stroke="${K}" stroke-width="3" fill="none"/>
-        <ellipse cx="102" cy="22" rx="9" ry="5" fill="#fff" opacity=".22" transform="rotate(-25 102 22)"/>
-        <ellipse cx="126" cy="46" rx="${gem + 4}" ry="${gem + 3}" fill="${GOLD}" stroke="${K}" stroke-width="2" transform="rotate(-12 126 46)"/>
-        <path d="M${126 - gem - 2} 46 h3 M${126 + gem + 2} 46 h-3 M126 ${46 - gem - 1} v3 M126 ${46 + gem + 1} v-3" stroke="#a0731c" stroke-width="2"/>
-        <path d="M126 ${46 - gem + 2} l${gem - 2} ${gem - 2} l-${gem - 2} ${gem - 2} l-${gem - 2} -${gem - 2} z" fill="#b0103a" stroke="#6e0a22" stroke-width="1"/>
-        <path d="M126 ${46 - gem + 2} l-3 ${gem - 2} l3 ${gem - 2} M${126 - gem + 2} 46 h${2 * gem - 4}" stroke="#ff6f8f" stroke-width="1" opacity=".8" fill="none"/>`;
+        <circle cx="114" cy="48" r="28" fill="${RED}" stroke="${K}" stroke-width="3"/>
+        <path d="M88 42 q26 -14 52 0 M87 54 q27 -12 54 0 M92 64 q22 -8 44 0 M114 20 q-10 28 0 56" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="116" cy="52" rx="${gem + 3}" ry="${gem + 5}" fill="${GOLD}" stroke="${K}" stroke-width="2"/>
+        <ellipse cx="116" cy="52" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
+        <path d="M112 47 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/>`;
     const hatItem = S.hat && ITEM_BY_KEY[S.hat];
-    const hat = hatItem ? `<text x="112" y="58" font-size="58" text-anchor="middle" transform="rotate(-8 112 38)">${hatItem.icon}</text>` : turban;
-    // head outline: round crown, cheeks that flare out into fluffy tufts, soft chin
-    const head = "M100 62 C126 62 146 74 152 96 C154 104 156 108 160 112 L152 114 L162 122 L151 124 L158 133 L146 133 C140 144 124 152 100 152 C76 152 60 144 54 133 L42 133 L49 124 L38 122 L48 114 L40 112 C44 108 46 104 48 96 C54 74 74 62 100 62 Z";
+    const hat = hatItem ? `<text x="112" y="56" font-size="58" text-anchor="middle" transform="rotate(-8 112 36)">${hatItem.icon}</text>` : turban;
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
-      <ellipse cx="100" cy="193" rx="${64 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
+      <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
       <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
         ${sparkle}${tail}
-        <path d="M70 140 C58 154 54 172 60 186 L140 186 C146 172 142 154 130 140 Z" fill="${OR}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
-        <path d="M58 168 C46 170 44 186 58 189 L74 189 C70 182 68 174 58 168 Z M142 168 C154 170 156 186 142 189 L126 189 C130 182 132 174 142 168 Z" fill="${OR}" stroke="${K}" stroke-width="3" stroke-linejoin="round"/>
-        ${stripes([[60, 160, 12, 2, 6], [59, 172, 11, -1, 5], [140, 160, -12, 2, 6], [141, 172, -11, -1, 5], [49, 177, 9, -4, 4], [151, 177, -9, -4, 4]])}
-        <path d="M86 146 C82 160 82 176 88 186 L112 186 C118 176 118 160 114 146 Z" fill="${W}"/>
-        <path d="M76 160 C72 170 72 180 74 186 L92 186 C93 178 92 168 88 158 Z M124 160 C128 170 128 180 126 186 L108 186 C107 178 108 168 112 158 Z" fill="${OR}" stroke="${K}" stroke-width="2.6" stroke-linejoin="round"/>
-        ${stripes([[76, 170, 7, 0, 4], [124, 170, -7, 0, 4]])}
-        <path d="M70 182 C66 194 96 196 94 184 C92 179 74 178 70 182 Z M130 182 C134 194 104 196 106 184 C108 179 126 178 130 182 Z" fill="${W}" stroke="${K}" stroke-width="2.8"/>
-        <path d="M78 185 v5 M85 185 v5 M115 185 v5 M122 185 v5" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/>
-        <path d="M54 86 C44 66 50 48 64 50 C74 52 80 62 82 70 Z" fill="${K}"/><path d="M58 80 C52 66 56 56 64 57 C70 58 74 64 75 70 Z" fill="${W}"/>
-        <path d="M146 86 C156 66 150 48 136 50 C126 52 120 62 118 70 Z" fill="${K}"/><path d="M142 80 C148 66 144 56 136 57 C130 58 126 64 125 70 Z" fill="${W}"/>
-        <path d="${head}" fill="${OR}" stroke="${K}" stroke-width="3.5" stroke-linejoin="round"/>
-        <path d="M54 116 L44 122 L54 126 L48 133 L60 134 C66 142 78 148 90 148 C78 140 70 128 66 116 Z M146 116 L156 122 L146 126 L152 133 L140 134 C134 142 122 148 110 148 C122 140 130 128 134 116 Z" fill="${W}"/>
-        ${stripes([[100, 64, 0, 13, 7], [90, 65, 2, 11, 5], [110, 65, -2, 11, 5], [49, 96, 13, 3, 6], [48, 106, 12, -1, 5], [151, 96, -13, 3, 6], [152, 106, -12, -1, 5], [58, 80, 9, 6, 4], [142, 80, -9, 6, 4]])}
-        <path d="M100 116 C110 116 120 120 122 128 C124 138 112 142 100 138 C88 142 76 138 78 128 C80 120 90 116 100 116 Z" fill="${W}"/>
-        <path d="M91 118 C94 113 106 113 109 118 C108 124 104 128 100 129 C96 128 92 124 91 118 Z" fill="#ef8fa3" stroke="${K}" stroke-width="2.4" stroke-linejoin="round"/>
-        <ellipse cx="96" cy="118" rx="3" ry="1.6" fill="#fff" opacity=".7"/>
+        <ellipse cx="100" cy="162" rx="40" ry="30" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
+        <path d="M66 152 l10 4 M64 166 l11 2 M134 152 l-10 4 M136 166 l-11 2" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="100" cy="166" rx="20" ry="22" fill="${W}"/>
+        <ellipse cx="82" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <ellipse cx="118" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
+        <path d="M78 183 v6 M86 183 v6 M114 183 v6 M122 183 v6" stroke="${K}" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="58" cy="66" r="17" fill="${K}"/><circle cx="58" cy="66" r="12" fill="${W}"/>
+        <circle cx="142" cy="66" r="17" fill="${K}"/><circle cx="142" cy="66" r="12" fill="${W}"/>
+        <path d="M100 58 C146 58 158 88 156 112 C154 138 130 148 100 148 C70 148 46 138 44 112 C42 88 54 58 100 58 Z" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
+        <path d="M46 112 q4 30 30 34 q-8 -10 -6 -22 z M154 112 q-4 30 -30 34 q8 -10 6 -22 z" fill="${W}"/>
+        <path d="M94 64 l2 12 M106 64 l-2 12 M100 62 v10 M48 96 l12 2 M47 108 l12 -1 M152 96 l-12 2 M153 108 l-12 -1" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        <ellipse cx="89" cy="128" rx="14" ry="11" fill="${W}"/><ellipse cx="111" cy="128" rx="14" ry="11" fill="${W}"/>
+        <path d="M92 116 q8 -4 16 0 q-2 8 -8 10 q-6 -2 -8 -10 z" fill="#e88a9c" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>
         ${whiskers}${eyes}${mouth}
-        <path d="M70 146 C86 154 114 154 130 146" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <circle cx="100" cy="160" r="10.5" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
-        <path d="M90 159 h20" stroke="${K}" stroke-width="2"/><circle cx="100" cy="164" r="2.2" fill="${K}"/><path d="M100 165 v5" stroke="${K}" stroke-width="2"/>
-        <circle cx="95.5" cy="154.5" r="2.6" fill="#fff6c8"/>
+        <path d="M74 146 q26 10 52 0" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="100" cy="158" r="10" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
+        <path d="M91 157 h18 M100 160 v7" stroke="${K}" stroke-width="2"/><circle cx="96" cy="153" r="2.5" fill="#fff6c8"/>
         ${hat}${sweat}
       </g>`);
   }
