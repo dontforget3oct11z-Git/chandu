@@ -467,7 +467,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.17";
+  const VERSION = "1.18";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -632,6 +632,10 @@ body {
         <path d="M134 176 q36 -2 40 -40 q2 -22 -6 -36" fill="none" stroke="${OR}" stroke-width="10" stroke-linecap="round"/>
         <path d="M161 166 l8 -6 M171 148 l8 -2 M174 128 l7 2 M170 112 l6 4" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
         <circle cx="168" cy="100" r="5" fill="${K}"/>` : "";
+    // a tapered stripe: from a base on the edge (x,y) pointing in direction (dx,dy), w wide
+    const wedge = (x, y, dx, dy, w) => { const l = Math.hypot(dx, dy), nx = -dy / l * w / 2, ny = dx / l * w / 2;
+      return `M${x + nx} ${y + ny}Q${x + dx * .55 + nx * .4} ${y + dy * .55 + ny * .4} ${x + dx} ${y + dy}Q${x + dx * .55 - nx * .4} ${y + dy * .55 - ny * .4} ${x - nx} ${y - ny}Z`; };
+    const stripes = (list) => `<path d="${list.map((a) => wedge(...a)).join("")}" fill="${K}"/>`;
     const whiskers = `<path d="M70 124 l-36 -8 M70 130 l-38 2 M130 124 l36 -8 M130 130 l38 2" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>`;
     const gem = adult && adult.crown ? 11 : 9;
     // a little taller than round: stretched upward from its bottom edge
@@ -649,7 +653,7 @@ body {
       <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
         ${sparkle}${tail}
         <ellipse cx="100" cy="162" rx="40" ry="30" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
-        <path d="M66 152 l10 4 M64 166 l11 2 M134 152 l-10 4 M136 166 l-11 2" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        ${stripes([[61, 152, 13, 3, 6], [62, 166, 12, 0, 5], [139, 152, -13, 3, 6], [138, 166, -12, 0, 5]])}
         <ellipse cx="100" cy="166" rx="20" ry="22" fill="${W}"/>
         <ellipse cx="82" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
         <ellipse cx="118" cy="186" rx="15" ry="9" fill="${W}" stroke="${K}" stroke-width="3"/>
@@ -658,7 +662,7 @@ body {
         <circle cx="142" cy="66" r="17" fill="${K}"/><circle cx="142" cy="66" r="12" fill="${W}"/>
         <path d="M100 58 C146 58 158 88 156 112 C154 138 130 148 100 148 C70 148 46 138 44 112 C42 88 54 58 100 58 Z" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
         <path d="M46 112 q4 30 30 34 q-8 -10 -6 -22 z M154 112 q-4 30 -30 34 q8 -10 6 -22 z" fill="${W}"/>
-        <path d="M94 64 l2 12 M106 64 l-2 12 M100 62 v10 M48 96 l12 2 M47 108 l12 -1 M152 96 l-12 2 M153 108 l-12 -1" stroke="${K}" stroke-width="4" stroke-linecap="round"/>
+        ${stripes([[100, 60, 0, 13, 7], [90, 61, 2, 11, 5], [110, 61, -2, 11, 5], [47, 94, 13, 3, 6], [46, 106, 12, -1, 5], [153, 94, -13, 3, 6], [154, 106, -12, -1, 5]])}
         <ellipse cx="89" cy="128" rx="14" ry="11" fill="${W}"/><ellipse cx="111" cy="128" rx="14" ry="11" fill="${W}"/>
         <path d="M92 116 q8 -4 16 0 q-2 8 -8 10 q-6 -2 -8 -10 z" fill="#e88a9c" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>
         ${whiskers}${eyes}${mouth}
