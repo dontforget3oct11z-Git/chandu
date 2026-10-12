@@ -138,8 +138,12 @@ body {
 .screen.dark .bg { filter: brightness(.45) saturate(.7); }
 #petWrap { position: relative; z-index: 1; }
 .poops, .zzz { z-index: 1; }
-.bg-name { position: absolute; left: 8px; bottom: 6px; z-index: 1; font-size: 10px; background: rgba(255,248,239,.8); color: var(--lcd-ink); border-radius: 999px; padding: 1px 8px; max-width: 46%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.bg-name:empty { display: none; }
+.bg-name { position: absolute; left: 8px; bottom: 14px; z-index: 1; font-size: 10px; background: rgba(255,248,239,.8); color: var(--lcd-ink); border-radius: 999px; padding: 1px 8px; max-width: 46%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bg-name:empty, .bg-credit:empty { display: none; }
+.bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .9s; }
+.bg img.on { opacity: 1; }
+.bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,248,239,.25), rgba(255,248,239,0) 35%, rgba(0,0,0,0) 70%, rgba(0,0,0,.18)); pointer-events: none; }
+.bg-credit { position: absolute; left: 8px; bottom: 2px; z-index: 1; font-family: var(--font-body); font-size: 8px; line-height: 1.3; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.7); max-width: 70%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: .9; }
 @media (prefers-reduced-motion: reduce) { .bg svg.in, .game-row button.shake { animation: none; } }
 .game-row button {
   font-family: var(--font-display); font-size: 18px; padding: 6px 18px; border-radius: 10px;
@@ -225,11 +229,11 @@ body {
   <div class="screen" id="screen">
     <div class="topline">
       <span class="stage-name" id="stageName">たまご</span>
-      <span id="age">0さい 0ふん</span>
     </div>
     <div class="stage" id="stage">
       <div class="bg" id="bg" aria-hidden="true"></div>
       <div class="bg-name" id="bgName"></div>
+      <div class="bg-credit" id="bgCredit"></div>
       <div class="fx" id="fx"></div>
       <div class="bubble" id="bubble" aria-live="polite"></div>
       <div id="petWrap"><svg id="pet" viewBox="0 0 200 200" aria-hidden="true"></svg></div>
@@ -257,8 +261,8 @@ body {
     </div>
     <div class="walk-note" id="wNote">500歩 あるくごとに バナナが 1ぽん とれるよ</div>
     <details id="wLink">
-      <summary>iPhoneの歩数と オレを つなぐ</summary>
-      <p>iPhoneの「ショートカット」Appで、ヘルスケアの歩数を オレに おくれるんだぜ。いちど つくれば、タップ1回で とどくぞ！</p>
+      <summary>iPhoneの歩数と ぼくを つなぐ</summary>
+      <p>iPhoneの「ショートカット」Appで、ヘルスケアの歩数を ぼくに おくれるんだよ。いちど つくれば、タップ1回で とどくんだよ！</p>
       <ol>
         <li>ショートカットAppで「＋」を押して 新しいショートカットを つくる</li>
         <li>「ヘルスケアサンプルを検索」を追加し、種類を「歩数」、開始日を「今日」にする</li>
@@ -268,8 +272,8 @@ body {
         <li>「URLを開く」を追加して完成。名前は「チャンドゥさんぽ」など</li>
       </ol>
       <p>URL: <code id="wUrl">https://claude.ai/artifact/7CTwVXui6onSx7CDKFxnko#s</code> <button type="button" class="copy" id="wCopy">コピー</button></p>
-      <p>「オートメーション」で 毎日 きまった じかんに うごくように すれば、もっと らくちんだぜ。Safariで claude.ai に ログインしといてくれよな！</p>
-      <label for="wInput">歩数を 手で おしえてくれても いいぜ</label>
+      <p>「オートメーション」で 毎日 きまった じかんに うごくように すれば、もっと らくちんだよ。Safariで claude.ai に ログインしておいてね！</p>
+      <label for="wInput">歩数を 手で おしえてくれても いいよ</label>
       <div class="walk-form">
         <input id="wInput" type="number" inputmode="numeric" min="0" step="1" placeholder="きょうの歩数（例: 6500）">
         <button type="button" id="wApply">はんえい</button>
@@ -290,7 +294,7 @@ body {
 
   <div class="story" id="zukan" hidden role="dialog" aria-modal="true" aria-labelledby="zukanTitle">
     <div class="story-card wide">
-      <div class="eyebrow">オレの コレクション</div>
+      <div class="eyebrow">ぼくの コレクション</div>
       <h3 id="zukanTitle">ご当地ずかん</h3>
       <div class="zk-count" id="zukanCount"></div>
       <div class="scroll" id="zukanBody"></div>
@@ -310,21 +314,21 @@ body {
 
   <div class="story" id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
     <div class="story-card wide">
-      <div class="eyebrow">チャンドゥが おしえるぜ</div>
-      <h3 id="helpTitle">オレとの あそびかた</h3>
+      <div class="eyebrow">チャンドゥが おしえるね</div>
+      <h3 id="helpTitle">ぼくとの あそびかた</h3>
       <div class="scroll">
-        <p>よう！ オレ、チャンドゥ。シンドバッドの あいぼうだぜ。オレを りっぱな おとなに そだててくれよな！</p>
+        <p>やっほー！ ぼく、チャンドゥ。シンドバッドの あいぼうだよ。ぼくを りっぱな おとなに そだててね！</p>
         <ul>
-          <li>🍌 バナナは まいにち 3ぼん もらえるぜ。500歩 あるくごとに 1ぽん ふえるんだ。オレの だいこうぶつだから、はらぺこの ときは たのむぞ！</li>
-          <li>📖 1日 5,000歩 あるくと、ぼうけんが 1わ すすむぜ。シンドバッドの ものがたり → にっぽん一周 → せかいりょこうの じゅんばんだ！</li>
-          <li>🎁 1日 10,000歩 あるくと、そのとき いる とちの ご当地アイテムが もらえるぜ！ にっぽん一周と せかいりょこうの あいだだけだから、ずかんを うめてくれよな。</li>
-          <li>📊 おなか・ごきげん・げんき・きれいの 4つを たもってくれ。あそぶ・ねる・おそうじ・くすりで オレの せわを してくれよ。</li>
-          <li>⏰ アプリを とじてても じかんは すすむぜ。たまに オレの ようすを みにきてくれよな！</li>
-          <li>📱 iPhoneアプリなら、あるいた 歩数が そのまま オレに とどくんだぜ。</li>
+          <li>🍌 バナナは まいにち 3ぼん もらえるよ。500歩 あるくごとに 1ぽん ふえるんだ。ぼくの だいこうぶつだから、おなかが すいたら ちょうだいね！</li>
+          <li>📖 1日 5,000歩 あるくと、ぼうけんが 1わ すすむよ。シンドバッドの ものがたり → にっぽん一周 → せかいりょこうの じゅんばんだ！</li>
+          <li>🎁 1日 8,000歩 あるくと、そのとき いる とちの ご当地アイテムが もらえるよ！ にっぽん一周と せかいりょこうの あいだだけだから、ずかんを うめてね。</li>
+          <li>📊 おなか・ごきげん・げんき・きれいの 4つを たもってね。あそぶ・ねる・おそうじ・くすりで ぼくの おせわを してくれると うれしいな。</li>
+          <li>⏰ アプリを とじてても じかんは すすむよ。たまに ぼくの ようすを みにきてね！</li>
+          <li>📱 iPhoneアプリなら、あるいた 歩数が そのまま ぼくに とどくんだよ。</li>
         </ul>
-        <p>よーし、いっしょに あるこうぜ！</p>
+        <p>よーし、いっしょに あるこうね！</p>
       </div>
-      <button type="button" id="helpClose">わかったぜ！</button>
+      <button type="button" id="helpClose">わかった！</button>
     </div>
   </div>
 
@@ -349,15 +353,9 @@ body {
   </div>
 
   <div class="footer">
-    <span><span id="form">オレの きもち: -</span> <small id="ver" style="opacity:.7"></small></span>
+    <span><span id="form">ぼくの きもち: -</span> <small id="ver" style="opacity:.7"></small></span>
     <span>
       <button type="button" class="help-btn" id="bHelp">❓ あそびかた</button>
-      <button type="button" id="bReset">はじめから</button>
-      <span class="confirm" id="confirm" hidden>
-        ほんとに たまごから やりなおす？
-        <button type="button" id="bYes">はい</button>
-        <button type="button" id="bNo">いいえ</button>
-      </span>
     </span>
   </div>
 </div>
@@ -365,7 +363,9 @@ body {
 <script>
 (() => {
   const VERSION = "1.6";
-  const KEY = "chandu-save-v1";
+  // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
+  const TEST = !!window.CHANDU_TEST;
+  const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
   const MAX_OFFLINE_MIN = 12 * 60;
   // Stage thresholds in minutes of age
   const STAGES = [
@@ -413,7 +413,7 @@ body {
       S.hunger -= 0.4 * dt * speed;
       S.happy -= 0.2 * dt;
       S.energy += 3 * dt;
-      if (S.energy >= 100) { S.energy = 100; S.sleeping = false; say("ふぁ〜 よくねた！ げんき まんたんだぜ！"); }
+      if (S.energy >= 100) { S.energy = 100; S.sleeping = false; say("ふぁ〜 よくねた！ げんき いっぱいだよ！"); }
     } else {
       S.hunger -= 1.2 * dt * speed;
       S.happy -= 0.9 * dt;
@@ -427,7 +427,7 @@ body {
 
     const low = S.hunger < 15 || S.clean < 20 || S.energy < 10;
     S.lowTime = low ? S.lowTime + dt : Math.max(0, S.lowTime - dt);
-    if (!S.sick && S.lowTime > 3) { S.sick = true; say("うう… オレ、ぐあい わるい… くすり ほしい…"); }
+    if (!S.sick && S.lowTime > 3) { S.sick = true; say("うう… ぼく、ぐあい わるい… くすり ほしい…"); }
 
     const avg = (S.hunger + S.happy + S.energy + S.clean) / 4 - (S.sick ? 15 : 0);
     S.careSum += avg * dt; S.careTime += dt;
@@ -439,7 +439,7 @@ body {
     const away = mins;
     while (mins > 0) { const d = Math.min(1, mins); step(d); mins -= d; }
     S.last = now;
-    if (away > 5 && stageOf().id !== "egg") say(["おかえり！ まってたんだぜ！", "シンドバッドかと おもった！ おかえり！"][Math.floor(Math.random() * 2)]);
+    if (away > 5 && stageOf().id !== "egg") say(["おかえり！ まってたんだよ！", "シンドバッドかと おもった！ おかえり！"][Math.floor(Math.random() * 2)]);
   }
 
   // ---- speech ----
@@ -548,10 +548,6 @@ body {
     bar.style.background = v > 55 ? "var(--meter-good)" : v > 25 ? "var(--meter-mid)" : "var(--meter-low)";
     $("v" + id).textContent = Math.round(v);
   }
-  function fmtAge(m) {
-    const d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), mm = Math.floor(m % 60);
-    return d > 0 ? `${d}にち ${h}じかん` : h > 0 ? `${h}じかん ${mm}ふん` : `${mm}ふん`;
-  }
 
   let lastStage = stageOf().id;
   // ---- Sindbad's voyage: every day you walk DAILY_GOAL steps, the story moves on one chapter ----
@@ -559,25 +555,25 @@ body {
   const GROUPS = [
     { name: "シンドバッドの ぼうけん", chapters: [
       { icon: "⛵", short: "みなと", place: "シンドバッドの みなと", title: "シンドバッドの みなと",
-        text: "ここが オレと シンドバッドの みなとだぜ！ はたや のぼりが ゆれて、みんなが みおくってくれるんだ。3にんの けんじゃの じいちゃんたちが「あらしに きをつけろ」って さけんでた。へへっ、オレたちなら へっちゃらさ！",
-        say: "いってきまーす！ シンドバッド、いこうぜ！" },
+        text: "ここが ぼくと シンドバッドの みなとだよ！ はたや のぼりが ゆれて、みんなが みおくってくれるんだ。3にんの けんじゃの じいちゃんたちが「あらしに きをつけろ」って さけんでた。えへへ、ぼくたちなら だいじょうぶ！",
+        say: "いってきまーす！ シンドバッド、いこうね！" },
       { icon: "🧜", short: "マーメイド", place: "マーメイドの いわば", title: "マーメイドの いわば",
-        text: "うわっ、あらしで ふねが いわに ドカーン！ もう ダメかと おもったら、マーメイドたちが うたって たすけてくれたんだ。あたらしい ふねも もらって、ぼうけん つづけるぜ！",
-        say: "マーメイドの おねえさん、ありがとな！", reward: { bananas: 2, item: "しんじゅ" } },
+        text: "うわっ、あらしで ふねが いわに ドカーン！ もう ダメかと おもったら、マーメイドたちが うたって たすけてくれたんだ。あたらしい ふねも もらって、ぼうけん つづけるよ！",
+        say: "マーメイドの おねえさん、ありがとう！", reward: { bananas: 2, item: "しんじゅ" } },
       { icon: "🪶", short: "ルフ鳥", place: "ルフ鳥の しま", title: "ルフ鳥の しま",
-        text: "でっかい ルフ鳥の たまごから、かいぞくが はねを ぬすもうと してたんだ！ オレと シンドバッドで とめに はいったら、ルフ鳥が かいぞくを つかんで ビューン！ ざまあみろ！",
+        text: "でっかい ルフ鳥の たまごから、かいぞくが はねを ぬすもうと してたんだ！ ぼくと シンドバッドで とめに はいったら、ルフ鳥が かいぞくを つかんで ビューン！ やったね！",
         say: "たまごに さわるなー！ がおー！", reward: { bananas: 2, item: "ルフの はね" } },
       { icon: "🎻", short: "巨人", place: "巨人の どうくつ", title: "巨人の どうくつ",
-        text: "ルフの はねで ろうやの かぎを あけて、つかまってた 巨人を たすけたぜ。オレも かいぞくを おいはらったんだ！ 巨人は おれいに 楽器を ひいて、きんかを くれたんだぜ。",
+        text: "ルフの はねで ろうやの かぎを あけて、つかまってた 巨人を たすけたよ。ぼくも かいぞくを おいはらったんだよ！ 巨人は おれいに 楽器を ひいて、きんかを くれたんだよ。",
         say: "巨人の うた、おなかに ひびくぅ〜！", reward: { bananas: 3, item: "きんか" } },
       { icon: "🐘", short: "宮殿", place: "サルタンの 宮殿", title: "サルタンの 宮殿",
-        text: "ぞうさんが はこぶ こしの よこを とおって、サルタンの 宮殿へ。サルタンが、あばれる サルたちを しずめる まほうの 楽器を くれたんだ。オレは でっかい たいこで ぴょんぴょん！",
+        text: "ぞうさんが はこぶ こしの よこを とおって、サルタンの 宮殿へ。サルタンが、あばれる サルたちを しずめる まほうの 楽器を くれたんだ。ぼくは おっきな たいこで ぴょんぴょん！",
         say: "ぼよーん ぼよーん！ たのしー！", reward: { bananas: 3, item: "まほうの 楽器" } },
       { icon: "🐒", short: "サルの国", place: "サルの 国", title: "サルの 国",
-        text: "まほうの 楽器を ならしたら、サルたちも いっしょに えんそう！ サルの 王さまとも ともだちに なったぜ。おれいに バナナが どっさり！ オレ、しあわせすぎる…。",
-        say: "バナナの やま！ オレ、ここに すみたい…！", reward: { bananas: 10, item: "サルの 王さまの かんむり" } },
+        text: "まほうの 楽器を ならしたら、サルたちも いっしょに えんそう！ サルの 王さまとも ともだちに なったよ。おれいに バナナが どっさり！ ぼく、しあわせすぎる…。",
+        say: "バナナの やま！ ぼく、ここに すみたい…！", reward: { bananas: 10, item: "サルの 王さまの かんむり" } },
       { icon: "🐋", short: "クジラ", place: "クジラの かいきょう", title: "クジラの かいきょう",
-        text: "月あかりの なか、でっかい クジラが あらわれたんだ。やさしい クジラは オレたちを せなかに のせて、あらなみを ザブーンと こえていったぜ！",
+        text: "月あかりの なか、でっかい クジラが あらわれたんだ。やさしい クジラは ぼくたちを せなかに のせて、あらなみを ザブーンと こえていったよ！",
         say: "せなか ひろーい！ しおが ぷしゅー！", reward: { bananas: 3, item: "クジラの しお" } },
       { icon: "🎆", short: "ただいま", place: "シンドバッドの みなと", title: "おかえり、シンドバッド！",
         text: "みなとに かえったら「おかえり シンドバッド」の のぼりと はなび！ いちばんの たからものは、たびで できた ともだち なんだって。…そしたら シンドバッドが にやっと わらった。「つぎは でんせつの 7つの こうかいだ！」",
@@ -585,57 +581,57 @@ body {
     ] },
     { name: "1かいめの こうかい", chapters: [
       { icon: "🏙️", short: "バスラ", place: "バグダッド → バスラ（イラク）", title: "バスラの みなと",
-        text: "まずは バグダッドから かわを くだって、うみの みなと バスラへ！ しょうにんたちと にもつを つみこんで、インドの ほうへ しゅっぱつだぜ！",
+        text: "まずは バグダッドから かわを くだって、うみの みなと バスラへ！ しょうにんたちと にもつを つみこんで、インドの ほうへ しゅっぱつだよ！",
         say: "スパイスの いい におい！ くんくん", reward: { bananas: 2, item: "コショウの ふくろ" } },
       { icon: "🐋", short: "クジラ島", place: "インド洋", title: "うごく しま",
-        text: "みどりの しまに あがって ひを たいたら… しまが ぐらっ！ なんと ねてた おおクジラの せなか だったんだ！ オレと シンドバッドは きの おけに つかまって ぷかぷか…。",
-        say: "しまじゃ なかったのかよ!? びしょびしょだぜ〜", reward: { bananas: 2, item: "きの おけ" } },
+        text: "みどりの しまに あがって ひを たいたら… しまが ぐらっ！ なんと ねてた おおクジラの せなか だったんだ！ ぼくと シンドバッドは きの おけに つかまって ぷかぷか…。",
+        say: "しまじゃ なかったの!? びしょびしょだよ〜", reward: { bananas: 2, item: "きの おけ" } },
       { icon: "🐎", short: "王さま", place: "インドの 西の 海岸", title: "マフラジャーン王の くに",
-        text: "ながれついた くにで、やさしい マフラジャーン王に あったんだ。みなとの しごとを てつだってたら、はぐれた ふねが にもつごと やってきた！ ぶじに バグダッドに かえれたぜ。",
-        say: "王さま、ありがとな！ にもつも もどってきたぜ", reward: { bananas: 3, item: "王さまの おくりもの" } },
+        text: "ながれついた くにで、やさしい マフラジャーン王に あったんだ。みなとの しごとを てつだってたら、はぐれた ふねが にもつごと やってきた！ ぶじに バグダッドに かえれたよ。",
+        say: "王さま、ありがとう！ にもつも もどってきたよ", reward: { bananas: 3, item: "王さまの おくりもの" } },
     ] },
     { name: "2かいめの こうかい", chapters: [
       { icon: "🌴", short: "むじん島", place: "インド洋の むじんとう", title: "おきざりの しま",
         text: "しまで ひるねして おきたら、ふねが いない！ たかい きに のぼったら、まっしろで まるい やねが 見えたんだ。ちかよってみたら… ルフ鳥の でっかい たまご だった！",
         say: "これ、なんにんぶんの オムレツだ…？", reward: { bananas: 2, item: "たまごの から" } },
       { icon: "🪶", short: "ルフ鳥", place: "インド洋の そら", title: "ルフ鳥と そらの たび",
-        text: "シンドバッドが ターバンで じぶんと オレを ルフ鳥の あしに むすびつけたんだ。ルフ鳥が とびたつと、くもの うえを びゅーん！ ふかい たにに おろされたぜ。",
-        say: "たかーい！ オレの ターバン とばないでくれー！", reward: { bananas: 2, item: "おおきな はね" } },
+        text: "シンドバッドが ターバンで じぶんと ぼくを ルフ鳥の あしに むすびつけたんだ。ルフ鳥が とびたつと、くもの うえを びゅーん！ ふかい たにに おろされたよ。",
+        say: "たかーい！ ぼくの ターバン とばないでくれー！", reward: { bananas: 2, item: "おおきな はね" } },
       { icon: "💎", short: "ダイヤの谷", place: "セレンディブ（スリランカ）ちかく", title: "ダイヤモンドの たに",
-        text: "たには ダイヤモンドで きらっきら！ でも でっかい ヘビも いるんだ…。シンドバッドは にくの かたまりに つかまって、ワシに はこんでもらって だっしゅつ！ もちろん ダイヤも いっしょだぜ。",
+        text: "たには ダイヤモンドで きらっきら！ でも でっかい ヘビも いるんだ…。シンドバッドは にくの かたまりに つかまって、ワシに はこんでもらって だっしゅつ！ もちろん ダイヤも いっしょだよ。",
         say: "きらきら… でも ヘビは にがて！", reward: { bananas: 3, item: "ダイヤモンド" } },
     ] },
     { name: "3かいめの こうかい", chapters: [
       { icon: "🐒", short: "サルの島", place: "アンダマン海", title: "ふしぎな サルの しま",
-        text: "ふねが けむくじゃらの サルたちに かこまれて、しまに おいてかれちゃった。オレが「がおー」って ほえても、サルたち へっちゃら なんだぜ…。",
+        text: "ふねが けむくじゃらの サルたちに かこまれて、しまに おいてかれちゃった。ぼくが「がおー」って ほえても、サルたち へっちゃら なんだもん…。",
         say: "がおー！ …あれ、こわくないの？", reward: { bananas: 4, item: "サルの しっぽの け" } },
       { icon: "🏰", short: "巨人", place: "なぞの しま", title: "巨人の やかた",
-        text: "でっかい やかたの 巨人から にげるため、みんなで いかだを つくったんだ。よるの うちに こっそり うみへ こぎだして、なんとか にげきったぜ！",
+        text: "でっかい やかたの 巨人から にげるため、みんなで いかだを つくったんだ。よるの うちに こっそり うみへ こぎだして、なんとか にげきったよ！",
         say: "しーっ… ねてる ねてる… いまだ！", reward: { bananas: 2, item: "いかだの ロープ" } },
       { icon: "🐍", short: "大ヘビ", place: "ベンガル湾の しま", title: "大ヘビの しま",
-        text: "こんどは 大ヘビの しま！ きの いたで まわりを かこんで よるを すごして、あさ とおりかかった ふねに たすけてもらった。その ふねに シンドバッドの なくした にもつが のってたんだぜ！",
-        say: "ねむれなかった… でも にもつ あったな！", reward: { bananas: 3, item: "白檀（びゃくだん）" } },
+        text: "こんどは 大ヘビの しま！ きの いたで まわりを かこんで よるを すごして、あさ とおりかかった ふねに たすけてもらった。その ふねに シンドバッドの なくした にもつが のってたんだよ！",
+        say: "ねむれなかった… でも にもつ あったね！", reward: { bananas: 3, item: "白檀（びゃくだん）" } },
     ] },
     { name: "4かいめの こうかい", chapters: [
       { icon: "🌊", short: "あらし", place: "インド洋", title: "あらしの うみ",
-        text: "おおあらしで ふねが こわれて、いたに つかまって なみに ゆられたんだ。ながーい よるの あと、しらない しまの はまに ついたぜ。",
-        say: "シンドバッド、だいじょうぶか？ オレが あっためてやる！", reward: { bananas: 2, item: "ながれぎ" } },
+        text: "おおあらしで ふねが こわれて、いたに つかまって なみに ゆられたんだ。ながーい よるの あと、しらない しまの はまに ついたよ。",
+        say: "シンドバッド、だいじょうぶ？ ぼくが あっためて あげるね！", reward: { bananas: 2, item: "ながれぎ" } },
       { icon: "🐴", short: "くら", place: "スマトラ（インドネシア）", title: "くらを つくった シンドバッド",
-        text: "その くにの ひとたち、うまに のるのに「くら」を つかってなかったんだ。シンドバッドが くらを つくって みせたら、王さまは おおよろこび！ くにじゅうで ひっぱりだこだぜ。",
-        say: "シンドバッド すげー！ オレのも つくってくれよ！", reward: { bananas: 3, item: "かわの くら" } },
+        text: "その くにの ひとたち、うまに のるのに「くら」を つかってなかったんだ。シンドバッドが くらを つくって みせたら、王さまは おおよろこび！ くにじゅうで ひっぱりだこだよ。",
+        say: "シンドバッド すごーい！ ぼくのも つくってほしいな！", reward: { bananas: 3, item: "かわの くら" } },
       { icon: "🕯️", short: "どうくつ", place: "スマトラの 山", title: "ちかの どうくつ",
-        text: "まいごに なって、まっくらな ちかの どうくつに とじこめられちゃった…。でも どうぶつの あとを ついていったら、ひかりの すきまを 見つけたんだ！ うみべに でて、ふねに たすけてもらったぜ。",
-        say: "オレの はなが ひかりを みつけたんだぜ！", reward: { bananas: 3, item: "ふしぎな ほうせき" } },
+        text: "まいごに なって、まっくらな ちかの どうくつに とじこめられちゃった…。でも どうぶつの あとを ついていったら、ひかりの すきまを 見つけたんだ！ うみべに でて、ふねに たすけてもらったよ。",
+        say: "ぼくの はなが ひかりを みつけたんだよ！", reward: { bananas: 3, item: "ふしぎな ほうせき" } },
     ] },
     { name: "5かいめの こうかい", chapters: [
       { icon: "🥚", short: "ルフの卵", place: "インド洋の しま", title: "ルフ鳥の いかり",
         text: "なかまの しょうにんが ルフ鳥の たまごを わっちゃった！ おこった ルフ鳥が そらから でっかい いわを おとしてきて、ふねは まっぷたつ…！",
-        say: "ごめんなさーい！ オレじゃ ないってばー！", reward: { bananas: 2, item: "いわの かけら" } },
+        say: "ごめんなさーい！ ぼくじゃ ないってばー！", reward: { bananas: 2, item: "いわの かけら" } },
       { icon: "👴", short: "海の老人", place: "なぞの しま", title: "うみの ろうじん",
-        text: "かわを わたりたいって いう おじいさんを おんぶしたら、ぜんぜん おりてくれないんだ！ シンドバッドが ぶどうの ジュースを のませて、うとうと した すきに そーっと おろしたぜ。",
-        say: "おもかった〜… つぎは オレを おんぶしてくれよな！", reward: { bananas: 2, item: "ぶどうの つる" } },
+        text: "かわを わたりたいって いう おじいさんを おんぶしたら、ぜんぜん おりてくれないんだ！ シンドバッドが ぶどうの ジュースを のませて、うとうと した すきに そーっと おろしたよ。",
+        say: "おもかった〜… つぎは ぼくを おんぶしてね！", reward: { bananas: 2, item: "ぶどうの つる" } },
       { icon: "🥥", short: "ヤシの森", place: "マレー半島", title: "ヤシの みの もり",
-        text: "きの うえの サルに こいしを なげたら、サルたちが ヤシの みを なげかえしてきた！ あつめた ヤシの みを うって、コショウや しんじゅに かえたんだぜ。",
+        text: "きの うえの サルに こいしを なげたら、サルたちが ヤシの みを なげかえしてきた！ あつめた ヤシの みを うって、コショウや しんじゅに かえたんだよ。",
         say: "ヤシの み あまーい！ バナナの つぎに すき！", reward: { bananas: 4, item: "ヤシの み" } },
     ] },
     { name: "6かいめの こうかい", chapters: [
@@ -644,21 +640,21 @@ body {
         say: "きれいだけど… はら へったな", reward: { bananas: 2, item: "こはく" } },
       { icon: "🛶", short: "地下の川", place: "やまの した", title: "ちかを ながれる かわ",
         text: "シンドバッドが いかだを つくって、やまの したを ながれる くらい かわへ。いかだに ほうせきを つんで、まっくらな なかを どこまでも ながれていったんだ。",
-        say: "まっくら… シンドバッド、て にぎっててくれよな", reward: { bananas: 2, item: "いかだの かい" } },
+        say: "まっくら… シンドバッド、て にぎっててね", reward: { bananas: 2, item: "いかだの かい" } },
       { icon: "🏝️", short: "セレンディブ", place: "セレンディブ（スリランカ）", title: "セレンディブの 王さま",
-        text: "めを さましたら、そこは セレンディブ！ やさしい 王さまが むかえてくれて、バグダッドの カリフへの てがみと おくりものを たのまれたぜ。",
+        text: "めを さましたら、そこは セレンディブ！ やさしい 王さまが むかえてくれて、バグダッドの カリフへの てがみと おくりものを たのまれたよ。",
         say: "おちゃの いい かおり！", reward: { bananas: 3, item: "セイロンの おちゃ" } },
     ] },
     { name: "7かいめの こうかい", chapters: [
       { icon: "🎁", short: "カリフ", place: "バグダッド（イラク）", title: "カリフの つかい",
-        text: "バグダッドの カリフ、ハールーン・アッ＝ラシードに「セレンディブの 王さまに おくりものを とどけてくれ」って たのまれたんだ。さいごの こうかいの はじまりだぜ！",
-        say: "おつかいだな！ オレに まかせとけ！", reward: { bananas: 2, item: "カリフの てがみ" } },
+        text: "バグダッドの カリフ、ハールーン・アッ＝ラシードに「セレンディブの 王さまに おくりものを とどけてくれ」って たのまれたんだ。さいごの こうかいの はじまりだよ！",
+        say: "おつかいだね！ ぼくに まかせて！", reward: { bananas: 2, item: "カリフの てがみ" } },
       { icon: "🐘", short: "ぞうの森", place: "インドの もり", title: "ぞうの はかば",
-        text: "かえりみちで かいぞくに つかまって、ぞうの もりで はたらく ことに…。ある日、ぞうたちが シンドバッドを ぞうげの ねむる ひみつの ばしょへ つれてったんだ。「もう ぞうを おわないで」って おねがい だったんだぜ。",
-        say: "ぞうさん、オレたち ともだちだぜ！", reward: { bananas: 3, item: "ぞうの ともだちの しるし" } },
+        text: "かえりみちで かいぞくに つかまって、ぞうの もりで はたらく ことに…。ある日、ぞうたちが シンドバッドを ぞうげの ねむる ひみつの ばしょへ つれてったんだ。「もう ぞうを おわないで」って おねがい だったんだよ。",
+        say: "ぞうさん、ぼくたち ともだちだよ！", reward: { bananas: 3, item: "ぞうの ともだちの しるし" } },
       { icon: "🏠", short: "ただいま", place: "バグダッド（イラク）", title: "ただいま、バグダッド",
-        text: "ながーい たびが おわって、バグダッドの いえに かえってきた。うみ、しま、どうぶつ、ひとびと… せかいじゅうに ともだちが できたぜ。でも オレ、もう つぎの たびが したくて うずうず してるんだ！",
-        say: "シンドバッド、つぎは どこ いく？ オレ、日本に いってみたい！", reward: { bananas: 5, item: "せかいの ちず" } },
+        text: "ながーい たびが おわって、バグダッドの いえに かえってきた。うみ、しま、どうぶつ、ひとびと… せかいじゅうに ともだちが できたよ。でも ぼく、もう つぎの たびが したくて うずうず してるんだ！",
+        say: "シンドバッド、つぎは どこ いく？ ぼく、日本に いってみたい！", reward: { bananas: 5, item: "せかいの ちず" } },
     ] },
   ];
   // After the legend: a trip around Japan (islands included), then around the world, one place per chapter.
@@ -787,6 +783,511 @@ body {
 利尻島|海に うかぶ 利尻富士を 見上げた|ウニ
 礼文島|花の 浮島で 高山植物を 見た|ホッケ
 `;
+  // Wikipedia article (or search words) for a real photo of each tour stop, in tour order
+  const PHOTO_Q = `
+与那国島 西崎
+川平湾
+西表島 マングローブ
+竹富島
+伊良部大橋
+はての浜
+座間味島
+首里城
+百合ヶ浜
+昇竜洞
+徳之島
+奄美大島
+喜界島
+縄文杉
+種子島宇宙センター
+桜島
+高千穂峡
+熊本城
+天草諸島
+端島 (長崎県)
+五島列島 教会
+猿岩
+対馬
+有田町
+太宰府天満宮
+別府地獄めぐり
+道後温泉
+しまなみ海道
+桂浜
+鳴門の渦潮
+金刀比羅宮
+エンジェルロード
+直島
+倉敷美観地区
+原爆ドーム
+厳島神社
+錦帯橋
+角島大橋
+出雲大社
+ローソク島
+鳥取砂丘
+姫路城
+淡路島
+大阪城
+那智滝
+奈良公園
+伏見稲荷大社
+琵琶湖
+伊勢神宮
+答志島
+名古屋城
+日間賀島
+白川郷
+福井県立恐竜博物館
+兼六園
+雪の大谷
+信濃川
+たらい舟
+地獄谷野猿公苑
+逆さ富士
+富士山
+鎌倉大仏
+江の島
+東京スカイツリー
+三原山
+八丈島
+小笠原諸島
+成田山新勝寺
+時の鐘 (川越市)
+国営ひたち海浜公園
+日光東照宮
+草津温泉 湯畑
+鶴ヶ城
+松島
+立石寺
+飛島
+なまはげ
+中尊寺金色堂
+青森ねぶた
+函館山
+鍋釣岩
+小樽運河
+さっぽろ雪まつり
+青い池
+旭山動物園
+十勝平野
+釧路湿原
+知床五湖
+宗谷岬
+利尻山
+礼文島
+バグダード
+イマーム広場
+クウェート・タワー
+生命の木 (バーレーン)
+ドーハ
+ブルジュ・ハリファ
+ソハール
+シバーム
+アル・ウラー
+ペトラ
+ダマスカス
+カッパドキア
+ペトラ・トゥ・ロミウ
+ジェイタ洞窟
+死海
+ベツレヘム
+ギザの大ピラミッド
+メロエ
+スッド
+アスマラ
+アッサル湖
+ラリベラ
+モガディシュ
+マサイマラ国立保護区
+ビクトリア湖
+ヴォルカン国立公園
+タンガニーカ湖
+キリマンジャロ
+ココ・デ・メール
+コモロ
+バオバブ街道
+ル・モーン・ブラバン
+モザンビーク島
+マラウイ湖
+ヴィクトリアの滝
+グレート・ジンバブエ遺跡
+オカバンゴ・デルタ
+ソススフレイ
+テーブルマウンテン
+レソト
+エスワティニ
+カランドゥーラの滝
+コンゴ川
+オザラ国立公園
+ロアンゴ国立公園
+ビオコ島
+サントメ島
+カメルーン山
+ザンガ・サンガ
+ウニアンガ湖群
+ズマ・ロック
+アガデス
+ガンビエ
+ロメ
+ケープコースト城
+ノートルダム・ド・ラ・ペ大聖堂
+シンドゥの岩峰群
+ジェンネの泥のモスク
+モンロビア
+タクガマ・チンパンジー保護区
+フータ・ジャロン
+ビジャゴ諸島
+ガンビア川
+レトバ湖
+カーボベルデ
+リシャット構造
+シャウエン
+タッシリ・ナジェール
+シディ・ブ・サイド
+レプティス・マグナ
+バレッタ
+エトナ火山
+ポンペイ
+コロッセオ
+サン・ピエトロ大聖堂
+サンタ・マリア・デル・フィオーレ大聖堂
+サンマリノ
+ヴェネツィア
+ミラノ大聖堂
+モナコ
+コート・ダジュール
+ヴァランソル
+アンドラ
+サグラダ・ファミリア
+プラド美術館
+アルハンブラ宮殿
+セビリア
+リスボン市電
+ドン・ルイス1世橋
+ブルス広場
+モン・サン=ミシェル
+エッフェル塔
+タワーブリッジ
+コンウィ城
+モハーの断崖
+ジャイアンツ・コーズウェイ
+エディンバラ城
+ゲイシール
+キンデルダイク
+グラン・プラス
+ルクセンブルク市
+マッターホルン
+ファドゥーツ城
+シェーンブルン宮殿
+ブレッド湖
+ドゥブロヴニク
+スタリ・モスト
+コトル湾
+ベラト
+パルテノン神殿
+イア (サントリーニ島)
+オフリド湖
+プリズレン
+ベオグラード要塞
+リラ修道院
+ブラン城
+オルヘイ・ヴェキ
+リヴィウ
+ブダペスト
+スピシュ城
+カレル橋
+ノイシュヴァンシュタイン城
+ケルン大聖堂
+ブランデンブルク門
+シュパイヒャーシュタット
+ニューハウン
+ガイランゲルフィヨルド
+ガムラスタン
+サンタクロース村
+タリン歴史地区
+リガ歴史地区
+夜明けの門
+クラクフ歴史地区
+ベロヴェーシの森
+エルミタージュ美術館
+聖ワシリイ大聖堂
+カザン・クレムリン
+ソチ
+ゲルゲティ三位一体教会
+アララト山
+フレイム・タワーズ
+ダルヴァザ
+レギスタン広場
+バイテレク
+イシク・クル湖
+パミール高原
+ブルーモスク (マザーリシャリーフ)
+フンザ
+黄金寺院
+パンゴン湖
+カールカー・シムラー鉄道
+クルクシェートラ
+レッド・フォート
+リシケーシュ
+タージ・マハル
+ジャイプル
+統一の像
+インド門 (ムンバイ)
+ボム・ジェズ教会
+ハンピ
+ケーララ州 バックウォーター
+ミーナークシ寺院
+シーギリヤ
+モルディブ
+ティルマラ・ヴェンカテーシュワラ寺院
+チャールミナール
+カジュラーホーの建造物群
+チトラコート滝
+コナーラクのスーリヤ寺院
+フンドル滝
+マハーボーディー寺院
+ハウラー橋
+カンチェンジュンガ
+カジランガ国立公園
+生きた根の橋
+タワン僧院
+ホーンビル・フェスティバル
+ロクタク湖
+チェロー・ダンス
+ニールマハル
+シュンドルボン
+タクツァン僧院
+エベレスト
+ポタラ宮
+石林
+成都ジャイアントパンダ繁育研究基地
+洪崖洞
+黄果樹瀑布
+桂林
+三亜
+広州塔
+ヴィクトリア・ピーク
+聖ポール天主堂跡
+福建土楼
+景徳鎮
+武陵源
+三峡
+黄山
+西湖
+外灘
+拙政園
+曲阜
+少林寺
+兵馬俑
+平遥古城
+山海関
+天津之眼
+紫禁城
+瀋陽故宮
+天池 (白頭山)
+ハルビン氷祭り
+フルンボイル
+沙坡頭
+莫高窟
+茶卡塩湖
+カシュガル
+ゲル
+バイカル湖
+オイミャコン
+クリュチェフスカヤ山
+ウラジオストク駅
+景福宮
+甘川文化村
+城山日出峰
+台北101
+九份
+バナウエの棚田
+チョコレート・ヒルズ
+ダバオ
+ハロン湾
+ホイアン
+メコンデルタ
+ルアンパバーン
+アンコール・ワット
+ワット・アルン
+チェンマイ
+バガン
+ジョージタウン (ペナン州)
+ペトロナスツインタワー
+マリーナベイ・サンズ
+グヌン・レウセル国立公園
+ボロブドゥール
+ジャティルウィ
+コモドドラゴン
+アタウロ島
+トラジャ
+テングザル
+カンポン・アイール
+ラジャ・アンパット諸島
+ゴクラクチョウ
+グレート・バリア・リーフ
+ウルル
+ロットネスト島
+カンガルー島
+十二使徒 (オーストラリア)
+タスマニアデビル
+オーストラリア国会議事堂
+シドニー・オペラハウス
+ロトルア
+ミルフォード・サウンド
+ハート・オブ・ヴォー
+ヤスール山
+ソロモン諸島
+ジェリーフィッシュレイク
+ナン・マトール
+ナウル
+マジュロ
+キリバス
+フナフティ
+フィジー
+トンガ
+トスア・オーシャン・トレンチ
+モアイ
+サンティアゴ (チリ)
+月の谷 (チリ)
+トーレス・デル・パイネ国立公園
+レ・ゼクレルール灯台
+ペリト・モレノ氷河
+アコンカグア
+タンゴ
+コロニア・デル・サクラメント
+ガウチョ
+ブルメナウ
+イグアスの滝
+サンパウロ
+コルコバードのキリスト像
+オウロ・プレット
+ペドラ・アズール
+ペロウリーニョ
+サン・フランシスコ川
+マラゴジ
+フェルナンド・デ・ノローニャ
+ポンタ・ド・セイシャス
+ジェニパブ
+ジェリコアコアラ
+セッチ・シダージス国立公園
+レンソイス・マラニャンセス国立公園
+ジャラパオ
+カルダス・ノヴァス
+ブラジリア
+ボニート
+パンタナール
+マデイラ・マモレ鉄道
+パラゴムノキ
+ネグロ川とソリモンエス川の合流点
+ロライマ山
+ヴェール・オ・ペーゾ
+マルコ・ゼロ
+ギアナ宇宙センター
+パラマリボ
+カイエトゥールの滝
+エンジェルフォール
+カルタヘナ (コロンビア)
+ガラパゴス諸島
+マチュ・ピチュ
+ウユニ塩湖
+ラ・サンティシマ・トリニダー・デ・パラナ
+スチールパン
+グレナダ
+バルバドス
+ベキア島
+ピトン
+ボイリング・レイク
+アンティグア島
+ブリムストーン・ヒル要塞国立公園
+カスティーヨ・サン・フェリペ・デル・モロ
+サント・ドミンゴ
+シタデル・ラフェリエール
+ビッグ・メジャー・ケイ
+ハバナ旧市街
+ダンズ・リバー・フォールズ
+パナマ運河
+モンテベルデ
+マサヤ火山
+コパン遺跡
+コアテペケ湖
+ティカル
+グレート・ブルー・ホール
+セノーテ
+チチェン・イッツァ
+スミデロ渓谷
+死者の日
+テオティワカン
+マリアッチ
+コッパー・キャニオン
+コククジラ
+ゴールデンゲートブリッジ
+キラウエア
+ハバード氷河
+スペースニードル
+クレーターレイク国立公園
+ラスベガス・ストリップ
+グランド・キャニオン
+ホワイトサンズ国立公園
+アラモ砦
+国立カウボーイ&ウェスタン・ヘリテージ博物館
+カンザス州 ヒマワリ
+ロッキー山脈国立公園
+デリケート・アーチ
+クレーターズ・オブ・ザ・ムーン国定公園
+グレイシャー国立公園
+オールド・フェイスフル・ガイザー
+ラシュモア山
+セオドア・ルーズベルト国立公園
+カーヘンジ
+フィールド・オブ・ドリームス
+バウンダリー・ウォーターズ
+ウィスコンシン州
+スプリット・ロック灯台
+クラウド・ゲート
+インディアナポリス・モーター・スピードウェイ
+ゲートウェイ・アーチ
+クレーター・オブ・ダイヤモンド州立公園
+フレンチ・クオーター
+ミシシッピ川 蒸気船
+アメリカ宇宙ロケットセンター
+エバーグレーズ国立公園
+サバンナ (ジョージア州)
+レインボー・ロウ
+ライト兄弟国立記念碑
+ナッシュビル
+チャーチルダウンズ競馬場
+ニューリバー渓谷橋
+ロックの殿堂
+自由の鐘
+コロニアル・ウィリアムズバーグ
+リンカーン記念堂
+インナー・ハーバー
+ニューキャッスル (デラウェア州)
+アトランティックシティ
+自由の女神像 (ニューヨーク)
+ミスティック・シーポート
+ブレーカーズ
+フリーダム・トレイル
+バーモント州 紅葉
+ワシントン山 (ニューハンプシャー州)
+ポートランド・ヘッド灯台
+ファンディ湾
+ペギーズ・コーブ
+グリーン・ゲイブルズ
+アイスバーグ・アレイ
+ケベック旧市街
+ナイアガラの滝
+チャーチル (マニトバ州)
+サスカチュワン州
+モレーン湖
+スタンレー・パーク
+ドーソン・シティ
+オーロラ
+イグルー
+イルリサット・アイスフィヨルド
+`.trim().split("\n");
   const WORLD = `
 #中東
 🗺️|バグダッド（イラク）|せかいちずを ひろげて、せかいりょこうの けいかくを たてた|ナツメヤシ
@@ -1255,21 +1756,21 @@ body {
 🇬🇱|グリーンランド|巨大な 氷山が うかぶ イルリサットを 見た|スアーサット
 `;
   const tourTexts = [
-    (w) => `${w.place}に とうちゃく！ オレ、${w.sight}んだぜ！ めいぶつの「${w.food}」も くったぞ！`,
-    (w) => `つぎは ${w.place}！ ${w.sight}んだ。はらが へったら「${w.food}」に きまりだぜ！`,
-    (w) => `${w.place}に やってきたぜ！ ${w.sight}んだ。「${w.food}」、うまかった〜！`,
+    (w) => `${w.place}に とうちゃく！ ぼく、${w.sight}んだよ！ めいぶつの「${w.food}」も たべたよ！`,
+    (w) => `つぎは ${w.place}！ ${w.sight}んだ。おなかが すいたら「${w.food}」で きまりだね！`,
+    (w) => `${w.place}に やってきたよ！ ${w.sight}んだ。「${w.food}」、おいしかった〜！`,
   ];
   const tourSays = [
-    (w) => `${w.food}、もう ひとくち くれよ〜！`,
-    (w) => `${w.name}、また こようぜ！`,
-    () => "シンドバッド、見ろよ！ すっげー！",
-    (w) => `${w.food}も いいけど… やっぱ バナナだな！`,
-    () => "スタンプ ゲット！ つぎは どこだ？",
-    () => "たびって さいこーだぜ！",
-    () => "あしたも いっぱい あるこうな！",
+    (w) => `${w.food}、もう ひとくち ちょうだい〜！`,
+    (w) => `${w.name}、また こようね！`,
+    () => "シンドバッド、みてみて！ すごーい！",
+    (w) => `${w.food}も いいけど… やっぱり バナナが いちばん！`,
+    () => "スタンプ ゲット！ つぎは どこかな？",
+    () => "たびって さいこーだよ！",
+    () => "あしたも いっぱい あるこうね！",
   ];
   let tourCount = 0;
-  const ITEM_GOAL = 10000;
+  const ITEM_GOAL = 8000;
   const ITEMS = [];
   const ITEM_ICONS = [
     [/ラーメン|そば|うどん|そうめん|麺|米線|米粉|フォー|ラグマン|トゥクパ|ラクサ|パスタ|カルボナーラ|モヒンガー|カオソーイ|カオラウ|ほうとう/, "🍜"],
@@ -1295,9 +1796,9 @@ body {
   ]
   const itemIcon = (food) => (ITEM_ICONS.find(([re]) => re.test(food)) || [0, "🎁"])[1];
   const itemDescs = [
-    (w) => `${w.place}で ゲットした ご当地アイテムだぜ！ ${w.sight}あとに、みせの おっちゃんが「${w.food}」を くれたんだ。うまくて しっぽが ぶんぶん ゆれちまった！`,
-    (w) => `これが ${w.place}の めいぶつ「${w.food}」だ！ ${w.sight}ひに、1まん歩 がんばって てに いれたんだぜ。オレの たからものの ひとつさ！`,
-    (w) => `${w.place}の「${w.food}」！ ${w.sight}んだ。じもとの みんなが だいすきな あじなんだって。オレも だいすきに なったぜ！`,
+    (w) => `${w.place}で ゲットした ご当地アイテムだよ！ ${w.sight}あとに、おみせの おじさんが「${w.food}」を くれたんだ。おいしくて しっぽが ぶんぶん ゆれちゃった！`,
+    (w) => `これが ${w.place}の めいぶつ「${w.food}」だ！ ${w.sight}ひに、8,000歩 がんばって てに いれたんだよ。ぼくの たからものの ひとつなんだ！`,
+    (w) => `${w.place}の「${w.food}」！ ${w.sight}んだ。じもとの みんなが だいすきな あじなんだって。ぼくも だいすきに なったよ！`,
   ];
   function addTour(data, prefix, stamp) {
     const regions = [];
@@ -1318,7 +1819,7 @@ body {
             const n = tourCount++;
             const item = { key: prefix + "|" + w.place, name: w.food, icon: itemIcon(w.food), place: w.place, region: prefix + " · " + r.name, desc: itemDescs[n % itemDescs.length](w) };
             ITEMS.push(item);
-            return { item, sight: w.sight, icon: w.icon, short: w.name.length > 7 ? w.name.slice(0, 6) + "…" : w.name, place: w.place, title: w.name,
+            return { item, photoQ: PHOTO_Q[n], sight: w.sight, icon: w.icon, short: w.name.length > 7 ? w.name.slice(0, 6) + "…" : w.name, place: w.place, title: w.name,
               text: tourTexts[n % tourTexts.length](w), say: tourSays[n % tourSays.length](w), reward: { bananas: 2, item: stamp } };
           }),
         });
@@ -1329,21 +1830,21 @@ body {
   const JAPAN_START = countChapters();
   GROUPS.push({ name: "にっぽん一周 · しゅっぱつ", chapters: [
     { icon: "⛵", short: "日本へ", place: "インド洋 → 日本", title: "日本へ しゅっぱつ！",
-      text: "7つの こうかいを おえた オレと シンドバッド。つぎは うみの むこうの しまぐに、日本だ！ 南の しまから 北の しままで、ぜーんぶ まわってやるぜ！",
+      text: "7つの こうかいを おえた ぼくと シンドバッド。つぎは うみの むこうの しまぐに、日本だ！ 南の しまから 北の しままで、ぜーんぶ まわっちゃうよ！",
       say: "日本って どんな とこかな？ バナナ あるかな？", reward: { bananas: 3, item: "にっぽんの スタンプ" } },
   ] });
   addTour(JAPAN, "にっぽん一周", "にっぽんの スタンプ");
   GROUPS.push({ name: "にっぽん一周 · ゴール", chapters: [
     { icon: "🎌", short: "日本一周", place: "北海道 → せかいへ", title: "にっぽん一周 たっせい！",
       text: "南の 与那国島から 北の 礼文島まで、日本の しまも ぜんぶ まわって にっぽん一周 たっせい！ つぎは いよいよ せかいりょこうだ。シンドバッドの ふるさと バグダッドへ ひとっとび！",
-      say: "日本、だいすきに なったぜ！ せかい、まってろよ〜！", reward: { bananas: 8, item: "にっぽん一周の おまもり" } },
+      say: "日本、だいすきに なったよ！ せかい、まっててね〜！", reward: { bananas: 8, item: "にっぽん一周の おまもり" } },
   ] });
   const WORLD_FROM = countChapters();
   addTour(WORLD, "せかいりょこう", "せかいの スタンプ");
   GROUPS.push({ name: "せかいりょこう · ゴール", chapters: [
     { icon: "🏰", short: "ただいま", place: "アラビアン・コースト", title: "ただいま、アラビアン・コースト",
-      text: "せかいを ぐるっと ひとまわり！ さいごに たどりついたのは、オレと シンドバッドの ぼうけんが はじまった みなとだった。あるいた ぶんだけ、せかいじゅうに ともだちが いるんだぜ。いっしょに あるいてくれて、ありがとな！",
-      say: "せかい一周 できたな！ …また いこうぜ！", reward: { bananas: 10, item: "せかい一周の メダル" } },
+      text: "せかいを ぐるっと ひとまわり！ さいごに たどりついたのは、ぼくと シンドバッドの ぼうけんが はじまった みなとだった。あるいた ぶんだけ、せかいじゅうに ともだちが いるんだよ。いっしょに あるいてくれて、ありがとう！",
+      say: "せかい一周 できたね！ …また いこうね！", reward: { bananas: 10, item: "せかい一周の メダル" } },
   ] });
   const CHAPTERS = GROUPS.flatMap((g, gi) => g.chapters.map((c, ci) => Object.assign({ gi, ci }, c)));
   const LOOP_FROM = JAPAN_START;   // after the world tour, Japan and the world start again
@@ -1407,12 +1908,60 @@ body {
     return hit ? hit[0] : /島|諸島/.test(c.title) ? "island" : jp ? "shrine" : "fields";
   }
   let bgKey = "";
+  // Japan and world stops show a real photo of the place from Wikipedia when the network allows;
+  // the drawn scene stays underneath as the fallback (offline, or no photo found).
+  const PHOTO_KEY = "chandu-photos-v1";
+  let photos = {};
+  try { photos = JSON.parse(localStorage.getItem(PHOTO_KEY)) || {}; } catch (e) {}
+  const photoPending = {};
+  const BAD_IMG = /\.svg|\.gif|map|flag|locat|位置|地図|旗|紋章|emblem|seal|coat.of.arms|logo|diagram|chart/i;
+  const stripHtml = (h) => { const d = document.createElement("div"); d.innerHTML = h || ""; return d.textContent.trim().replace(/\s+/g, " "); };
+  async function wikiPages(params) {
+    const u = "https://ja.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&prop=pageimages&piprop=thumbnail|name&pithumbsize=960&" + params;
+    const j = await (await fetch(u)).json();
+    return Object.values((j.query && j.query.pages) || {}).sort((a, b) => (a.index || 0) - (b.index || 0));
+  }
+  const goodPage = (pages) => pages.find((p) => p.thumbnail && p.pageimage && !BAD_IMG.test(p.pageimage));
+  async function findPhoto(q) {
+    let p = goodPage(await wikiPages("titles=" + encodeURIComponent(q)));
+    if (!p) p = goodPage(await wikiPages("generator=search&gsrnamespace=0&gsrlimit=6&gsrsearch=" + encodeURIComponent(q)));
+    if (!p) return { none: 1, t: Date.now() };
+    let credit = "";
+    try {
+      const m = await (await fetch("https://commons.wikimedia.org/w/api.php?action=query&format=json&origin=*&prop=imageinfo&iiprop=extmetadata&titles=" + encodeURIComponent("File:" + p.pageimage))).json();
+      const ii = Object.values(m.query.pages)[0].imageinfo, md = ii && ii[0].extmetadata;
+      if (md) credit = [stripHtml(md.Artist && md.Artist.value), md.LicenseShortName && md.LicenseShortName.value].filter(Boolean).join(" · ");
+    } catch (e) {}
+    return { url: p.thumbnail.source, title: p.title, credit: "📷 " + (credit ? credit + " / " : "") + "Wikimedia Commons" };
+  }
+  function photoFor(c, cb) {
+    const q = c.photoQ, hit = photos[q];
+    if (hit && (!hit.none || Date.now() - hit.t < 864e5)) return cb(hit.none ? null : hit);
+    if (photoPending[q]) return;
+    photoPending[q] = 1;
+    findPhoto(q).then((r) => {
+      photos[q] = r;
+      try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photos)); } catch (e) {}
+      cb(r.none ? null : r);
+    }).catch(() => {}).finally(() => { delete photoPending[q]; });   // offline: try again next time
+  }
   function renderBg() {
     const k = Math.max(S.chapter || 0, 1) - 1, id = bgOf(k);
-    if (id === bgKey) return;
-    const first = !bgKey; bgKey = id;
+    const c = S.chapter && stageOf().id !== "egg" ? chapterAt(k).c : null;
+    const key = id + "|" + (c && c.photoQ ? c.photoQ : "");
+    if (key === bgKey) return;
+    const first = !bgKey; bgKey = key;
     $("bg").innerHTML = `<svg viewBox="0 0 300 236" preserveAspectRatio="xMidYMax slice"${first ? "" : ' class="in"'}>${BGS[id].svg()}</svg>`;
-    $("bgName").textContent = S.chapter ? BGS[id].name : "";
+    $("bgName").textContent = c ? (c.photoQ ? c.title : BGS[id].name) : "";
+    $("bgCredit").textContent = "";
+    if (!c || !c.photoQ) return;
+    photoFor(c, (ph) => {
+      if (!ph || bgKey !== key) return;
+      const img = new Image();
+      img.alt = ""; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+      img.onload = () => { if (bgKey !== key) return; $("bg").appendChild(img); requestAnimationFrame(() => img.classList.add("on")); $("bgName").textContent = "📍 " + c.title; $("bgCredit").textContent = ph.credit; };
+      img.src = ph.url;
+    });
   }
   const storyQueue = [];
   function reach(k) {
@@ -1448,24 +1997,24 @@ body {
   function showStory(k, isNew) {
     if (typeof k === "object") return showItemGet(k);
     const { c, lap } = chapterAt(k), g = GROUPS[c.gi];
-    $("storyEyebrow").textContent = (isNew && k > 0 ? "やったぜ！ もくひょう たっせい！ · " : "") + (lap > 1 ? `${lap}しゅうめ · ` : "") + g.name;
+    $("storyEyebrow").textContent = (isNew && k > 0 ? "やったよ！ もくひょう たっせい！ · " : "") + (lap > 1 ? `${lap}しゅうめ · ` : "") + g.name;
     $("storyScene").textContent = c.icon;
     $("storyTitle").textContent = c.title;
     $("storyText").textContent = "📍 " + c.place + "\n" + c.text;
     $("storySay").textContent = "💬 " + c.say;
-    $("storyReward").textContent = c.reward ? `ゲットしたぜ: バナナ ${c.reward.bananas}ぽん ・ ${c.reward.item}` : "";
+    $("storyReward").textContent = c.reward ? `ゲットしたよ: バナナ ${c.reward.bananas}ぽん ・ ${c.reward.item}` : "";
     $("storyReward").hidden = !c.reward;
     $("story").hidden = false;
     $("storyNext").textContent = storyQueue.length ? "つぎ！" : "オッケー！";
     $("storyNext").focus();
   }
   function showItemGet({ item, dup }) {
-    $("storyEyebrow").textContent = "やったぜ！ 1まん歩 たっせい！ · ご当地アイテム";
+    $("storyEyebrow").textContent = "やったよ！ 8,000歩 たっせい！ · ご当地アイテム";
     $("storyScene").textContent = item.icon;
     $("storyTitle").textContent = item.name;
     $("storyText").textContent = "📍 " + item.place + "\n" + item.desc;
-    $("storySay").textContent = dup ? "💬 これ、もう もってるぜ！ かわりに バナナ もらっといた！" : "💬 ご当地ずかんに のせといたぜ！ みにきてくれよな！";
-    $("storyReward").textContent = dup ? "ゲットしたぜ: バナナ 3ぼん" : "ゲットしたぜ: " + item.icon + " " + item.name;
+    $("storySay").textContent = dup ? "💬 これ、もう もってるよ！ かわりに バナナ もらっといた！" : "💬 ご当地ずかんに のせといたよ！ みにきてね！";
+    $("storyReward").textContent = dup ? "ゲットしたよ: バナナ 3ぼん" : "ゲットしたよ: " + item.icon + " " + item.name;
     $("storyReward").hidden = false;
     $("story").hidden = false;
     $("storyNext").textContent = storyQueue.length ? "つぎ！" : "オッケー！";
@@ -1497,7 +2046,7 @@ body {
       });
       body.appendChild(d);
     });
-    $("zukanCount").textContent = `あつめた アイテム ${got} / ${ITEMS.length}` + (got ? "" : " · 1まん歩で ゲットしようぜ！");
+    $("zukanCount").textContent = `あつめた アイテム ${got} / ${ITEMS.length}` + (got ? "" : " · 8,000歩で ゲットしようね！");
     $("zukan").hidden = false; body.scrollTop = 0; $("zukanClose").focus();
   }
   function showItemInfo(it) {
@@ -1541,15 +2090,15 @@ body {
     $("routeFill").style.width = (n > 1 ? ((last ? c.ci : c.ci + frac) / (n - 1)) * (100 - 100 / n) : 0) + "%";
     $("goalFill").style.width = (doneToday ? 100 : frac * 100) + "%";
     const next = chapterAt(k + 1).c;
-    $("vNext").textContent = stageOf().id === "egg" ? "オレが たまごから でたら、しゅっこうだぜ！"
-      : doneToday ? `きょうは もくひょう たっせいだぜ！ あしたは「${next.title}」に いこうな！`
-      : `きょう ${S.stepsToday.toLocaleString()} / ${DAILY_GOAL.toLocaleString()}歩！ あと ${(DAILY_GOAL - S.stepsToday).toLocaleString()}歩で「${next.title}」に いけるぜ！`;
+    $("vNext").textContent = stageOf().id === "egg" ? "ぼくが たまごから でたら、しゅっこうだよ！"
+      : doneToday ? `きょうは もくひょう たっせいだよ！ あしたは「${next.title}」に いこうね！`
+      : `きょう ${S.stepsToday.toLocaleString()} / ${DAILY_GOAL.toLocaleString()}歩！ あと ${(DAILY_GOAL - S.stepsToday).toLocaleString()}歩で「${next.title}」に いけるよ！`;
     const itemHere = reachedAny && c.item, gotToday = S.itemDay === S.stepDay;
     $("vItem").hidden = !itemHere;
-    if (itemHere) $("vItem").textContent = gotToday ? "🎁 きょうの ご当地アイテムは ゲットずみだぜ！"
+    if (itemHere) $("vItem").textContent = gotToday ? "🎁 きょうの ご当地アイテムは ゲットずみだよ！"
       : S.stepsToday >= DAILY_GOAL && !doneToday ? ""
-      : `🎁 1まん歩で ${c.place.replace(/（.*）/, "")}の ご当地アイテムが もらえるぜ！（あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}歩）`;
-    $("vPlace").textContent = reachedAny ? "📍 オレ いま: " + c.place : "";
+      : `🎁 8,000歩で ${c.place.replace(/（.*）/, "")}の ご当地アイテムが もらえるよ！（あと ${Math.max(0, ITEM_GOAL - S.stepsToday).toLocaleString()}歩）`;
+    $("vPlace").textContent = reachedAny ? "📍 ぼく いま: " + c.place : "";
     $("treasures").innerHTML = "";
     Object.entries(S.treasures).forEach(([name, cnt]) => { const sp = document.createElement("span"); sp.textContent = name + (cnt > 1 ? " ×" + cnt : ""); $("treasures").appendChild(sp); });
   }
@@ -1557,18 +2106,17 @@ body {
   function render() {
     const st = stageOf();
     if (st.id !== lastStage) {
-      const msg = { baby: "うまれたぜ！ オレ、チャンドゥ！ よろしくな！", child: "オレ、おおきく なったぜ！ ぼうけん いこうぜ！", adult: `おとなに なったぜ！ ${adultForm().name}だ！ シンドバッドの あいぼうさ！` }[st.id];
+      const msg = { baby: "うまれたよ！ ぼく、チャンドゥ！ よろしくね！", child: "ぼく、おおきく なったよ！ ぼうけん いこうね！", adult: `おとなに なったよ！ ${adultForm().name}だよ！ シンドバッドの あいぼうだよ！` }[st.id];
       if (msg) say(msg, 5000);
       if (st.id === "baby") setTimeout(checkVoyage, 2500);
       lastStage = st.id; save();
     }
     $("stageName").textContent = st.id === "adult" ? adultForm().name : st.name + (S.sick ? "（びょうき）" : "");
-    $("age").textContent = "オレ " + fmtAge(S.age);
     $("wSteps").textContent = S.stepsToday.toLocaleString();
     $("wBanana").textContent = S.bananas;
     $("wKm").textContent = (S.totalSteps * 0.0007).toFixed(1);
     const next = STEPS_PER_BANANA - (S.stepsToday % STEPS_PER_BANANA);
-    $("wNote").textContent = ($("wNote").dataset.live ? "📡 歩数 リアルタイムで とどいてるぜ · " : "") + (S.bananas <= 0 ? `バナナが ねーよ！ あと ${next}歩 あるいてくれ〜！` : `あと ${next}歩で バナナ 1ぽん ふえるぜ！`);
+    $("wNote").textContent = ($("wNote").dataset.live ? "📡 歩数 リアルタイムで とどいてるよ · " : "") + (S.bananas <= 0 ? `バナナが ないよ〜！ あと ${next}歩 あるいてほしいな！` : `あと ${next}歩で バナナ 1ぽん ふえるよ！`);
     meter("Hunger", S.hunger); meter("Happy", S.happy); meter("Energy", S.energy); meter("Clean", S.clean);
     $("poops").innerHTML = POOP.repeat(S.poops);
     $("zzz").hidden = !S.sleeping;
@@ -1579,7 +2127,7 @@ body {
     ["bFeed", "bPlay", "bClean", "bSleep"].forEach((b) => ($(b).disabled = egg || gameOn));
     $("bMed").disabled = egg || !S.sick;
     const a = careAvg();
-    $("form").textContent = "オレの きもち: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ さいこー！" : a >= 45 ? "○ まあまあ" : "△ かまってくれ〜");
+    $("form").textContent = "ぼくの きもち: " + (S.careTime < 1 ? "-" : a >= 70 ? "◎ さいこー！" : a >= 45 ? "○ まあまあ" : "△ かまって〜");
     renderVoyage();
     renderBg();
     drawPet();
@@ -1603,9 +2151,9 @@ body {
   function applySteps(n, live) {
     rollDay();
     n = Math.floor(n);
-    if (!(n >= 0) || n > 200000) return live ? undefined : say("その歩数、オレ よめなかった…");
+    if (!(n >= 0) || n > 200000) return live ? undefined : say("その歩数、ぼく よめなかった…");
     const delta = n - S.stepsToday;
-    if (delta <= 0) return live ? undefined : say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるぜ！`);
+    if (delta <= 0) return live ? undefined : say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるよ！`);
     const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(S.stepsToday / STEPS_PER_BANANA);
     S.stepsToday = n; S.totalSteps += delta;
     setTimeout(checkVoyage, 1200);
@@ -1619,7 +2167,7 @@ body {
       if (got > 0) { say(`バナナ ${got}ぽん ゲット！ おさんぽ さいこー！`, 4000); cheer(); }
       save(); render(); return;
     }
-    say(got > 0 ? `${delta.toLocaleString()}歩 あるいたな！ バナナ ${got}ぽん ゲットだぜ！` : `${delta.toLocaleString()}歩 あるいたな！ その ちょうし！`, 5000);
+    say(got > 0 ? `${delta.toLocaleString()}歩 あるいたね！ バナナ ${got}ぽん ゲットだよ！` : `${delta.toLocaleString()}歩 あるいたね！ その ちょうし！`, 5000);
     cheer(); save(); render();
   }
   function readHash() {
@@ -1631,26 +2179,26 @@ body {
 
   // ---- actions ----
   function feed() {
-    if (S.sleeping) return say("Zzz… むにゃ… いま ねてるんだってば…");
+    if (S.sleeping) return say("Zzz… むにゃ… いま ねてるの…");
     rollDay();
-    if (S.hunger >= 95) { S.happy = clamp(S.happy - 5); say("バナナでも もう はいらねー…"); }
-    else if (S.bananas <= 0) { say("バナナが ない！ さんぽして とってこようぜ！"); }
-    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ うめー！", "バナナ だいすきだぜ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.35) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
+    if (S.hunger >= 95) { S.happy = clamp(S.happy - 5); say("バナナでも もう おなか いっぱい…"); }
+    else if (S.bananas <= 0) { say("バナナが ない！ さんぽして とってこようね！"); }
+    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすきだよ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.35) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
     save(); render();
   }
   function sleepToggle() {
-    if (S.sleeping) { S.sleeping = false; S.happy = clamp(S.happy - (S.energy < 60 ? 8 : 0)); say(S.energy < 60 ? "まだ ねむいってば…" : "おはよ！ きょうも あそぼうぜ！"); }
+    if (S.sleeping) { S.sleeping = false; S.happy = clamp(S.happy - (S.energy < 60 ? 8 : 0)); say(S.energy < 60 ? "まだ ねむいよ〜…" : "おはよ！ きょうも あそぼうよ！"); }
     else { S.sleeping = true; say("おやすみ… また あしたな…"); }
     save(); render();
   }
   function clean() {
-    if (S.poops === 0 && S.clean > 90) return say("もう ぴかぴかだぜ！");
-    S.poops = 0; S.clean = 100; S.happy = clamp(S.happy + 5); say("すっきり！ ありがとな！"); cheer(); save(); render();
+    if (S.poops === 0 && S.clean > 90) return say("もう ぴかぴかだよ！");
+    S.poops = 0; S.clean = 100; S.happy = clamp(S.happy + 5); say("すっきり！ ありがとう！"); cheer(); save(); render();
   }
   function medicine() {
     if (!S.sick) return;
     S.sick = false; S.lowTime = 0; S.happy = clamp(S.happy - 5); S.energy = clamp(S.energy + 10);
-    say("にがっ！ …でも げんき でたぜ！"); save(); render();
+    say("にが〜い！ …でも げんき でたよ！"); save(); render();
   }
 
   // ---- mini games: あそぶ opens a menu of games; each one ends in endGame(id, score, max) ----
@@ -1674,19 +2222,20 @@ body {
   function clearGame() { gameTimers.forEach(clearTimeout); gameTimers = []; $("fx").innerHTML = ""; $("petWrap").style.transform = ""; }
   function quitGame(silent) {
     clearGame(); gameOn = false; $("game").hidden = true;
-    if (!silent) say("また あそぼうな！");
+    if (!silent) say("また あそぼうね！");
     render();
   }
   function play() {
-    if (S.sleeping) return say("Zzz… むにゃ… いま ねてるんだってば…");
-    if (S.energy < 15) return say("つかれて あそべねー… バナナか おひるね ほしい…");
-    if (S.sick) return say("ぐあい わるくて あそべない… くすり くれよ…");
+    if (TEST) { S.sleeping = false; S.sick = false; S.energy = 100; }
+    if (S.sleeping) return say("Zzz… むにゃ… いま ねてるの…");
+    if (S.energy < 15) return say("つかれて あそべないよ〜… バナナか おひるね ほしい…");
+    if (S.sick) return say("ぐあい わるくて あそべない… くすり ほしいな…");
     gameOn = true; $("game").hidden = false; showMenu(); render();
   }
   function showMenu() {
     clearGame();
     S.best = S.best || {};
-    gameUI("なにして あそぶ？ オレ、なんでも つよいぜ！", GAMES.map((g) => ({
+    gameUI("なにして あそぶ？ ぼく、なんでも つよいよ！", GAMES.map((g) => ({
       html: `${g.icon} ${g.name}<small>${S.best[g.id] != null ? "さいこう " + g.best(S.best[g.id]) : "まだ やってない"}</small>`,
       aria: g.name, on: () => { clearGame(); g.start(); },
     })).concat(quitBtn), "menu");
@@ -1699,8 +2248,8 @@ body {
     const prev = S.best[id];
     const isBest = !!score && (prev == null || (lowerIsBetter ? score < prev : score > prev));
     if (isBest) S.best[id] = score;
-    S.happy = clamp(S.happy + 6 + Math.round(rate * 18)); S.energy = clamp(S.energy - 10); S.hunger = clamp(S.hunger - 5);
-    const line = rate >= .99 ? "かんぺきだ！ おまえ、すげーな！" : rate >= .6 ? "やるじゃん！ たのしかったぜ！" : rate > 0 ? "まあまあだな！ つぎは まけねーぞ！" : "へへっ、オレの かちだな！ また しょうぶだ！";
+    S.happy = clamp(S.happy + 6 + Math.round(rate * 18)); if (!TEST) { S.energy = clamp(S.energy - 10); S.hunger = clamp(S.hunger - 5); }
+    const line = rate >= .99 ? "かんぺき！ きみ、すごいね！" : rate >= .6 ? "やったね！ たのしかった！" : rate > 0 ? "まあまあだね！ つぎは まけないよ！" : "えへへ、ぼくの かちだね！ また しょうぶしようね！";
     say((isBest && prev != null ? "しんきろく！ " : "") + line, 4000); cheer();
     save();
     gameUI(`${g.icon} ${g.name}: ${g.result(score, max)}`, [{ label: "もういっかい", on: () => { clearGame(); g.start(); } }, { label: "ほかの あそび", on: showMenu }, quitBtn]);
@@ -1715,7 +2264,7 @@ body {
         const turn = () => gameUI(`ゆびさして… あっちむいて ホイ！（${r + 1}/5）`, [["U", "↑"], ["L", "←"], ["R", "→"], ["D", "↓"]].map(([d, l]) => ({ label: l, cls: "big", aria: { U: "うえ", L: "ひだり", R: "みぎ", D: "した" }[d], on: () => {
           const me = pick(["U", "D", "L", "R"]); look(me);
           const hit = me === d; if (hit) win++; r++;
-          say(hit ? "うわっ、つられた〜！" : "へへっ、そっちは むかないぜ！", 1300);
+          say(hit ? "うわっ、つられた〜！" : "えへへ、そっちは むかないよ〜！", 1300);
           $("gameRow").innerHTML = "";
           later(() => (r >= 5 ? endGame("hoi", win, 5) : turn()), 900);
         } })).concat(quitBtn));
@@ -1728,9 +2277,9 @@ body {
         const turn = (aiko) => gameUI(`${aiko ? "あいこで…" : "じゃんけん…"}（${r + 1}/3）`, H.map(([e, n], i) => ({ label: e, cls: "big", aria: n, on: () => {
           const me = Math.floor(Math.random() * 3);
           $("gameRow").innerHTML = "";
-          if (me === i) { say(`オレも ${H[me][0]}！ あいこだ！`, 1300); return later(() => turn(true), 900); }
+          if (me === i) { say(`ぼくも ${H[me][0]}！ あいこだ！`, 1300); return later(() => turn(true), 900); }
           const hit = (i + 1) % 3 === me; if (hit) win++; r++;
-          say(`オレは ${H[me][0]}！ ` + (hit ? "まけた〜！" : "オレの かち！"), 1400);
+          say(`ぼくは ${H[me][0]}！ ` + (hit ? "まけた〜！" : "ぼくの かち！"), 1400);
           later(() => (r >= 3 ? endGame("rps", win, 3) : turn()), 1000);
         } })).concat(quitBtn));
         turn();
@@ -1764,10 +2313,10 @@ body {
         let r = 0, win = 0;
         const turn = () => {
           const ans = Math.floor(Math.random() * 3);
-          gameUI(`バナナを つぼに かくしたぜ… まぜまぜ〜！（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big shake", aria: `${i + 1}ばんめの つぼ`, on: () => {} })));
+          gameUI(`バナナを つぼに かくしたよ… まぜまぜ〜！（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big shake", aria: `${i + 1}ばんめの つぼ`, on: () => {} })));
           later(() => gameUI(`バナナは どの つぼだ？（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big", aria: `${i + 1}ばんめの つぼ`, on: () => {
             const hit = i === ans; if (hit) win++; r++;
-            gameUI(hit ? "あたり！ よく みてたな！" : "ざんねん！ こっちだぜ！", [0, 1, 2].map((j) => ({ label: j === ans ? "🍌" : "🏺", cls: "big", on: () => {} })));
+            gameUI(hit ? "あたり！ よく みてたね！" : "ざんねん！ こっちだよ！", [0, 1, 2].map((j) => ({ label: j === ans ? "🍌" : "🏺", cls: "big", on: () => {} })));
             later(() => (r >= 3 ? endGame("pots", win, 3) : turn()), 1300);
           } })).concat(quitBtn)), 1000);
         };
@@ -1779,7 +2328,7 @@ body {
         let lv = 0, seq = [];
         const show = () => {
           seq.push(Math.floor(Math.random() * 4)); if (seq.length < 3) return show();
-          gameUI(`オレが だす じゅんばんを おぼえろよ！（レベル ${lv + 1}）`, [quitBtn]);
+          gameUI(`ぼくが だす じゅんばんを おぼえてね！（レベル ${lv + 1}）`, [quitBtn]);
           seq.forEach((e, i) => {
             later(() => { $("fx").innerHTML = `<div class="flash">${E[e][0]}</div>`; }, 500 + i * 800);
             later(() => { $("fx").innerHTML = ""; }, 500 + i * 800 + 600);
@@ -1789,9 +2338,9 @@ body {
         const ask = () => {
           let pos = 0;
           gameUI(`おなじ じゅんばんで おしてくれ！（${seq.length}こ）`, E.map(([e, n], i) => ({ label: e, cls: "big", aria: n, on: () => {
-            if (i !== seq[pos]) { say("ブッブー！ ちがうぜ〜", 1500); $("gameRow").innerHTML = ""; return later(() => endGame("memo", lv, 5), 900); }
+            if (i !== seq[pos]) { say("ブッブー！ ちがうよ〜", 1500); $("gameRow").innerHTML = ""; return later(() => endGame("memo", lv, 5), 900); }
             pos++;
-            if (pos === seq.length) { lv++; say("せいかい！ やるな！", 1200); $("gameRow").innerHTML = ""; later(() => (lv >= 5 ? endGame("memo", lv, 5) : show()), 1000); }
+            if (pos === seq.length) { lv++; say("せいかい！ すごいね！", 1200); $("gameRow").innerHTML = ""; later(() => (lv >= 5 ? endGame("memo", lv, 5) : show()), 1000); }
           } })).concat(quitBtn));
         };
         show();
@@ -1801,10 +2350,10 @@ body {
         let r = 0, best = null;
         const turn = () => {
           let ready = false, t0 = 0;
-          gameUI(`オレが「いまだ！」って いったら おせ！（${r + 1}/3）`, [{ label: "まだだぜ…", cls: "big", on: () => {
+          gameUI(`ぼくが「いまだ！」って いったら おしてね！（${r + 1}/3）`, [{ label: "まだだよ…", cls: "big", on: () => {
             if (!ready) { say("フライング！ あせんなって！", 1400); r++; $("gameRow").innerHTML = ""; return later(next, 1000); }
             const ms = Math.round(performance.now() - t0); if (best == null || ms < best) best = ms; r++;
-            say(`${(ms / 1000).toFixed(2)}びょう！ ` + (ms < 350 ? "はえー！" : ms < 600 ? "なかなかだぜ！" : "ちょっと おそいぞ〜"), 1500);
+            say(`${(ms / 1000).toFixed(2)}びょう！ ` + (ms < 350 ? "はやーい！" : ms < 600 ? "なかなかだよ！" : "ちょっと おそいかな〜"), 1500);
             $("gameRow").innerHTML = ""; later(next, 1100);
           } }, quitBtn]);
           later(() => { ready = true; t0 = performance.now(); const b = $("gameRow").querySelector(".big"); if (b) b.textContent = "いまだ！"; $("fx").innerHTML = `<div class="flash">❗</div>`; }, 1200 + Math.random() * 2500);
@@ -1835,31 +2384,31 @@ body {
         const turn = (msg) => gameUI(msg, P.map(([e, n], i) => ({ label: opened.has(i) ? "💨" : e, cls: "big", aria: n, on: () => {
           if (opened.has(i)) return;
           tries++; opened.add(i);
-          if (i === ans) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say("みつかっちまった〜！", 1500); return later(() => endGame("hide", tries, 3), 900); }
+          if (i === ans) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say("みつかっちゃった〜！", 1500); return later(() => endGame("hide", tries, 3), 900); }
           if (tries >= 3) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say(`へへっ、${P[ans][1]}の うしろでした〜！`, 1800); return later(() => endGame("hide", 0, 3), 1100); }
-          turn(`${n}には いないぜ〜！ あと ${3 - tries}かい！`);
+          turn(`${n}には いないよ〜！ あと ${3 - tries}かい！`);
         } })).concat(quitBtn));
-        turn("オレ、どこに かくれたでしょーか？ 3かいで みつけてみな！");
+        turn("ぼく、どこに かくれたでしょーか？ 3かいで みつけてみてね！");
       } },
     { id: "quiz", icon: "❓", name: "チャンドゥクイズ", best: (v) => v + "/3", result: (v, m) => `${v} / ${m}もん せいかい`,
       start() {
         const TRIVIA = [
-          ["オレの だいこうぶつは？", ["バナナ", "にんじん", "おさかな"]],
-          ["オレの あいぼうの なまえは？", ["シンドバッド", "アラジン", "ジャスミン"]],
-          ["オレの くびわに ついてるのは？", ["きんの すず", "ほしの バッジ", "あかい リボン"]],
-          ["オレの ターバンの いろは？", ["あか", "あお", "みどり"]],
+          ["ぼくの だいこうぶつは？", ["バナナ", "にんじん", "おさかな"]],
+          ["ぼくの あいぼうの なまえは？", ["シンドバッド", "アラジン", "ジャスミン"]],
+          ["ぼくの くびわに ついてるのは？", ["きんの すず", "ほしの バッジ", "あかい リボン"]],
+          ["ぼくの ターバンの いろは？", ["あか", "あお", "みどり"]],
           ["シンドバッドが のっていくのは？", ["ふね", "じてんしゃ", "きしゃ"]],
           ["ルフ鳥って どんな とり？", ["とっても でっかい", "とっても ちっちゃい", "およぐのが とくい"]],
-          ["オレは なんの どうぶつ？", ["トラ", "ネコ", "ライオン"]],
+          ["ぼくは なんの どうぶつ？", ["トラ", "ネコ", "ライオン"]],
           ["1日 なん歩 あるくと ぼうけんが すすむ？", ["5,000歩", "500歩", "50,000歩"]],
-          ["ご当地アイテムが もらえるのは なん歩？", ["10,000歩", "1,000歩", "3,000歩"]],
+          ["ご当地アイテムが もらえるのは なん歩？", ["8,000歩", "1,000歩", "30,000歩"]],
           ["シンドバッドの こうかいは ぜんぶで なんかい？", ["7かい", "3かい", "10かい"]],
         ];
         const seen = CHAPTERS.slice(0, Math.min(S.chapter || 0, CHAPTERS.length)).filter((c) => c.item);
         const qs = [];
         if (seen.length >= 3) shuffle(seen).slice(0, 2).forEach((c) => {
           const wrong = shuffle(ITEMS.filter((it) => it.name !== c.item.name)).slice(0, 2).map((it) => it.name);
-          qs.push([`オレが ${c.item.place}で みつけた めいぶつは？`, [c.item.name, ...wrong]]);
+          qs.push([`ぼくが ${c.item.place}で みつけた めいぶつは？`, [c.item.name, ...wrong]]);
         });
         shuffle(TRIVIA).slice(0, 3 - qs.length).forEach((q) => qs.push(q));
         let r = 0, win = 0;
@@ -1868,7 +2417,7 @@ body {
           const [q, ch] = order[r];
           gameUI(`Q${r + 1}. ${q}`, shuffle(ch.map((t, i) => [t, i === 0])).map(([t, ok]) => ({ label: t, on: () => {
             if (ok) win++; r++;
-            say(ok ? "せいかい！ オレのこと よく わかってるな！" : `ブッブー！ こたえは「${ch[0]}」だぜ！`, 1800);
+            say(ok ? "せいかい！ ぼくのこと よく わかってるね！" : `ブッブー！ こたえは「${ch[0]}」だよ！`, 1800);
             $("gameRow").innerHTML = "";
             later(() => (r >= order.length ? endGame("quiz", win, order.length) : turn()), 1300);
           } })).concat(quitBtn));
@@ -1883,22 +2432,16 @@ body {
   $("bClean").onclick = clean;
   $("bMed").onclick = medicine;
   $("pet").onclick = () => {
-    if (stageOf().id === "egg") return say("ころころ… もうすぐ でるぜ！");
+    if (stageOf().id === "egg") return say("ころころ… もうすぐ でるよ！");
     if (S.sleeping) return say("Zzz…");
-    S.happy = clamp(S.happy + 1); say(["えへへっ", "なでなで、もっと！", "オレ、チャンドゥ！", "あそぼうぜ〜！", "シンドバッド どこ いったんだ？", "バナナ もってない？"][Math.floor(Math.random() * 6)]); render();
-  };
-  $("bReset").onclick = () => { $("bReset").hidden = true; $("confirm").hidden = false; };
-  $("bNo").onclick = () => { $("bReset").hidden = false; $("confirm").hidden = true; };
-  $("bYes").onclick = () => {
-    S = Object.assign(fresh(), { totalSteps: S.totalSteps, stepsToday: S.stepsToday, stepDay: S.stepDay, chapter: S.chapter, goalDays: S.goalDays, goalDay: S.goalDay, treasures: S.treasures, items: S.items, itemDay: S.itemDay }); lastStage = "egg"; quitGame(true);
-    $("bReset").hidden = false; $("confirm").hidden = true; save(); say("オレ、たまごから やりなおしだ！ よろしくな！"); render();
+    S.happy = clamp(S.happy + 1); say(["えへへっ", "なでなで、もっと！", "ぼく、チャンドゥ！", "あそぼうよ〜！", "シンドバッド どこ いったのかな？", "バナナ もってない？"][Math.floor(Math.random() * 6)]); render();
   };
 
   $("wApply").onclick = () => { const v = $("wInput").value; if (v !== "") { applySteps(Number(v)); $("wInput").value = ""; } };
   $("wInput").addEventListener("keydown", (e) => { if (e.key === "Enter") $("wApply").click(); });
   $("wCopy").onclick = () => {
     const t = $("wUrl").textContent;
-    const done = () => { $("wCopy").textContent = "コピーしたぜ！"; setTimeout(() => ($("wCopy").textContent = "コピー"), 2000); };
+    const done = () => { $("wCopy").textContent = "コピーしたよ！"; setTimeout(() => ($("wCopy").textContent = "コピー"), 2000); };
     try { navigator.clipboard.writeText(t).then(done, () => selectUrl()); } catch (e) { selectUrl(); }
   };
   function selectUrl() { const r = document.createRange(); r.selectNodeContents($("wUrl")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -1910,9 +2453,10 @@ body {
   window.chanduSetSteps = (n) => applySteps(n, true);
   if (window.CHANDU_NATIVE) { $("wLink").hidden = true; $("wNote").dataset.live = "1"; }
 
+  if (TEST) { if (S.age < 100) S.age = 100; S.energy = 100; S.sleeping = false; $("ver").textContent += " · テスト"; }
   rollDay();
   catchUp();
-  if (stageOf().id === "egg") say("オレ、まだ たまごの なか… みまもっててくれよな！");
+  if (stageOf().id === "egg") say("ぼく、まだ たまごの なか… みまもっててね！");
   render();
   readHash();
   $("bZukan").onclick = openZukan;
@@ -1922,7 +2466,7 @@ body {
   $("helpClose").onclick = () => { $("help").hidden = true; $("bHelp").focus(); };
   ["zukan", "itemInfo", "help"].forEach((id) => $(id).addEventListener("click", (e) => { if (e.target.id === id) $(id).hidden = true; }));
   $("storyNext").onclick = () => { if (storyQueue.length) showStory(storyQueue.shift(), true); else $("story").hidden = true; };
-  setTimeout(checkVoyage, 800);
+  if (TEST) setTimeout(play, 600); else setTimeout(checkVoyage, 800);
   setInterval(() => {
     const now = Date.now(); const dt = Math.min(5, (now - S.last) / 60000); S.last = now;
     step(dt); render(); save();
