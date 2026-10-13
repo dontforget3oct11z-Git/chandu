@@ -464,7 +464,7 @@ body {
             <button type="button" class="wide" id="hatFitReset">もとに もどす</button>
           </div>
         </div>
-        <p class="note">ボタンで ぼうしの いち・おおきさ・かたむきを かえられるよ（ぼうしごとに おぼえるよ）。お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
+        <p class="note">ボタンで ぼうしの いち・おおきさ・かたむきを かえられるよ（ぼうしごとに おぼえるよ）。「まいにち ランダム」に すると、あつめた お宝から まいにち ちがう ぼうしを かぶるよ。お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -498,7 +498,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.27";
+  const VERSION = "1.28";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -1208,6 +1208,14 @@ body {
     const a = itemArt(icon); if (a) box.innerHTML = a; else box.textContent = icon;
   };
   // how each hat sits: [right, down, size, tilt°], saved per hat ("" is the turban)
+  // "@random": a different お宝 from the zukan each day (the same one all day long)
+  const wornHat = () => {
+    if (S.hat !== "@random") return S.hat || "";
+    const own = ITEMS.filter((it) => S.items && S.items[it.key]);
+    if (!own.length) return "";
+    let h = 0; for (const ch of today()) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return own[h % own.length].key;
+  };
   const hatFit = (key) => { const f = (S.hatFit || {})[key || ""]; return Array.isArray(f) && f.length === 4 ? f : [0, 0, 1, 0]; };
   function drawPet() {
     const st = stageOf().id;
@@ -1271,12 +1279,12 @@ body {
         <ellipse cx="116" cy="52" rx="${gem + 3}" ry="${gem + 5}" fill="${GOLD}" stroke="${K}" stroke-width="2"/>
         <ellipse cx="116" cy="52" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
         <path d="M112 47 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/></g>`;
-    const hatItem = S.hat && ITEM_BY_KEY[S.hat];
+    const hatKey = wornHat(), hatItem = hatKey && ITEM_BY_KEY[hatKey];
     const hat = !hatItem ? turban : isUrl(hatItem.icon) ? `<image href="${hatItem.icon.replace(/"/g, "%22")}" x="80" y="0" width="64" height="64" transform="rotate(-8 112 36)"/>`
       : ITEM_ART[hatItem.icon] ? `<svg x="80" y="0" width="64" height="64" viewBox="0 0 64 64" transform="rotate(-8 112 36)">${ITEM_ART[hatItem.icon]}</svg>`
       : `<text x="112" y="56" font-size="58" text-anchor="middle" transform="rotate(-8 112 36)">${hatItem.icon}</text>`;
     // the player's own fit for this hat (set in せってい): shift, size and tilt around the top of the head
-    const [hx, hy, hs, hr] = hatFit(S.hat);
+    const [hx, hy, hs, hr] = hatFit(hatKey);
     const hatFitted = hx || hy || hs !== 1 || hr ? `<g transform="translate(${112 + hx} ${36 + hy}) rotate(${hr}) scale(${hs}) translate(-112 -36)">${hat}</g>` : hat;
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
@@ -3954,7 +3962,10 @@ body {
     const opt = (v, t) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); };
     opt("", "👳 ターバン（いつもの）");
     ITEMS.filter((it) => S.items[it.key]).forEach((it) => opt(it.key, `${it.name}（${it.place.replace(/（.*）/, "")}）`));
-    sel.value = ITEM_BY_KEY[S.hat] ? S.hat : "";
+    const rnd = wornHat(), rndItem = S.hat === "@random" && ITEM_BY_KEY[rnd];
+    opt("@random", "🎲 まいにち ランダム" + (rndItem ? `（きょうは ${rndItem.name}）` : ""));
+    sel.insertBefore(sel.lastChild, sel.children[1]);
+    sel.value = S.hat === "@random" ? "@random" : ITEM_BY_KEY[S.hat] ? S.hat : "";
     showHatPrev();
     $("setToon").checked = !!prefs.toon;
     $("setSheet").value = prefs.sheet || "";
@@ -3972,14 +3983,16 @@ body {
       const x = tx + bb.x * sc, y = ty + bb.y * sc, w = bb.width * sc, side = Math.max(w, 90);
       pv.setAttribute("viewBox", `${x + w / 2 - side / 2} ${y - 6} ${side} ${side}`); } catch (e) { pv.setAttribute("viewBox", "0 0 200 200"); }
   };
-  $("setHat").onchange = () => { S.hat = $("setHat").value; save(); showHatPrev(); };
+  $("setHat").onchange = () => { S.hat = $("setHat").value; save(); showHatPrev(); if (S.hat === "@random") openSettingsHat(); };
+  // refresh the random option's label so it says which お宝 today is
+  const openSettingsHat = () => { const o = $("setHat").querySelector('option[value="@random"]'), it = ITEM_BY_KEY[wornHat()]; if (o) o.textContent = "🎲 まいにち ランダム" + (it ? `（きょうは ${it.name}）` : ""); };
   document.querySelectorAll(".hat-btns [data-fit]").forEach((b) => (b.onclick = () => {
-    const d = b.dataset.fit.split(",").map(Number), [x, y, sc, r] = hatFit(S.hat), clampN = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const d = b.dataset.fit.split(",").map(Number), [x, y, sc, r] = hatFit(wornHat()), clampN = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     S.hatFit = S.hatFit || {};
-    S.hatFit[S.hat || ""] = [clampN(x + d[0], -60, 60), clampN(y + d[1], -40, 80), Math.round(clampN(sc + d[2], 0.4, 2) * 100) / 100, clampN(r + d[3], -60, 60)];
+    S.hatFit[wornHat()] = [clampN(x + d[0], -60, 60), clampN(y + d[1], -40, 80), Math.round(clampN(sc + d[2], 0.4, 2) * 100) / 100, clampN(r + d[3], -60, 60)];
     save(); showHatPrev();
   }));
-  $("hatFitReset").onclick = () => { if (S.hatFit) delete S.hatFit[S.hat || ""]; save(); showHatPrev(); };
+  $("hatFitReset").onclick = () => { if (S.hatFit) delete S.hatFit[wornHat()]; save(); showHatPrev(); };
   $("setToon").onchange = () => { prefs.toon = $("setToon").checked; savePrefs(); bgKey = ""; renderBg(); };
   $("setSheetOk").onclick = () => {
     const id = sheetId($("setSheet").value);
