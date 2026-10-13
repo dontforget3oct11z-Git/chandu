@@ -471,6 +471,7 @@ body {
         <p class="note">ボタンで ぼうしの いち・おおきさ・かたむきを かえられるよ（ぼうしごとに おぼえるよ）。「まいにち ランダム」に すると、あつめた お宝から まいにち ちがう ぼうしを かぶるよ。お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
         <h4>🔊 おと</h4>
         <label class="row vol-row">🎵 BGM <input type="range" id="setBgm" min="0" max="100" step="5" aria-label="BGMの おおきさ"><output id="setBgmV"></output></label>
+        <label class="row" style="font-size:13px">🎶 きょく <select id="setSong" aria-label="BGMの きょく" style="flex:1;min-width:0"></select></label>
         <label class="row vol-row">🐯 こえ <input type="range" id="setVoice" min="0" max="100" step="5" aria-label="チャンドゥの こえの おおきさ"><output id="setVoiceV"></output></label>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setTalk" style="flex:0"> チャンドゥの ことばを よみあげる</label>
         <div class="row"><button type="button" class="mini-btn" id="setVoiceTry">▶ こえを きいてみる</button></div>
@@ -508,7 +509,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.29";
+  const VERSION = "1.30";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -552,7 +553,7 @@ body {
   }
   // Settings that are not part of the game save: photo style and the linked spreadsheet.
   const PREF_KEY = "chandu-prefs-v1";
-  let prefs = { toon: true, sheet: "", bgmVol: 30, voiceVol: 70, talk: true };
+  let prefs = { toon: true, sheet: "", bgmVol: 30, voiceVol: 70, talk: true, bgmSong: -1 };
   try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY))); } catch (e) {}
   const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
 
@@ -575,18 +576,18 @@ body {
     if (st === "egg") return;
     const speed = st === "baby" ? 1.3 : 1;
     if (S.sleeping) {
-      S.hunger -= 0.4 * dt * speed;
+      S.hunger -= 0.1 * dt * speed;
       S.happy -= 0.2 * dt;
       S.energy += 3 * dt;
       if (S.energy >= 100) { S.energy = 100; S.sleeping = false; say("ふぁ〜 よくねた！ げんき いっぱいだよ！"); }
     } else {
-      S.hunger -= 1.2 * dt * speed;
+      S.hunger -= (S.hunger < 30 ? 0.12 : 0.22) * dt * speed;   // a full tummy lasts most of a day without a walk
       S.happy -= 0.9 * dt;
       S.energy -= 0.7 * dt;
-      if (S.hunger > 30 && Math.random() < 0.06 * dt) { S.poops = Math.min(4, S.poops + 1); }
+      if (S.hunger > 30 && Math.random() < 0.008 * dt) { S.poops = Math.min(4, S.poops + 1); }   // about one every two hours
     }
-    S.clean -= (0.15 + S.poops * 0.8) * dt;
-    if (S.poops > 0) S.happy -= 0.3 * S.poops * dt;
+    S.clean -= (0.08 + S.poops * 0.3) * dt;
+    if (S.poops > 0) S.happy -= 0.12 * S.poops * dt;
     if (S.sick) { S.happy -= 0.6 * dt; S.energy -= 0.4 * dt; }
     ["hunger", "happy", "energy", "clean"].forEach((k) => (S[k] = clamp(S[k])));
 
@@ -611,16 +612,16 @@ body {
   let sayTimer = 0;
   function say(t, ms = 3200) {
     $("bubble").textContent = String(t).replace(/\{name\}/g, S.userName || "きみ");
-    chanduVoice($("bubble").textContent);
+    chanduVoice($("bubble").textContent, t);
     clearTimeout(sayTimer);
     sayTimer = setTimeout(() => ($("bubble").textContent = ""), ms);
   }
 
 
-  // ---- sound: Chandu's voice and the BGM, all made in the browser (no sound files) ----
-  // The voice is a little tiger-cub cry (high, around 360 Hz, rising and falling, like the cub at the ride)
-  // followed by the line read aloud in a high, childlike voice. The BGM is an original Arabian-style loop.
-  const AUD = { ctx: null, voice: null, bgm: null, bgmOn: false, next: 0, step: 0, timer: 0, noise: null };
+  // ---- sound: Chandu's voice and the BGM ----
+  // Chandu speaks with pre-made AI voice clips (below); when there is no clip he gives a little tiger-cub cry
+  // (high, around 360 Hz, rising and falling, like the cub at the ride). The BGM songs are made from notes in the browser.
+  const AUD = { ctx: null, voice: null, bgm: null, bgmOn: false, next: 0, step: 0, timer: 0, noise: null, song: null, loops: 0 };
   function audioCtx() {
     if (!AUD.ctx) {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
@@ -657,32 +658,138 @@ body {
     br.connect(bf); bf.connect(bg); bg.connect(g);
     [o, vib, br].forEach((x) => { x.start(t); x.stop(t + len + 0.05); });
   }
-  let jaVoice = null;
-  const pickVoice = () => { try { const vs = speechSynthesis.getVoices().filter((v) => /^ja/i.test(v.lang)); jaVoice = vs.find((v) => /kyoko|o-ren|female|女性|nanami|haruka/i.test(v.name)) || vs[0] || null; } catch (e) {} };
-  try { speechSynthesis.onvoiceschanged = pickVoice; pickVoice(); } catch (e) {}
-  function speakLine(text) {
-    if (!prefs.talk || !prefs.voiceVol || !window.speechSynthesis) return;
-    const t = String(text).replace(/\p{Extended_Pictographic}|️|‍/gu, "").replace(/[…⋯]+/g, "、").replace(/[〜～ー]{2,}/g, "ー").replace(/\s+/g, " ").trim();
-    if (!t || /^[、。！？!?\s]*$/.test(t) || /^z+/i.test(t)) return;
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(t);
-      u.lang = "ja-JP"; if (jaVoice) u.voice = jaVoice;
-      u.pitch = 1.9; u.rate = 1.12; u.volume = Math.min(1, prefs.voiceVol / 100);
-      speechSynthesis.speak(u);
-    } catch (e) {}
+  // Chandu's lines are read by an AI voice (Kokoro TTS, voice "jf_tebukuro"), made ahead of time: one small mp3 per
+  // sentence in docs/voice/, named by a hash of the sentence as written in the game ({name} read as "きみ").
+  // A sentence with no file (numbers, lines changed in the sheet) is skipped; a line with none at all gets the cub cry.
+  const VOICE_BASE = /^https?:$/.test(location.protocol) && !/github\.io$/.test(location.hostname) ? "https://dontforget3oct11z-git.github.io/chandu/voice/" : "voice/";
+  const voicePieces = (t) => (String(t).replace(/\s+/g, " ").match(/[^！？。!?…〜♪]*[！？。!?…〜♪]+|[^！？。!?…〜♪]+$/g) || [])
+    .map((s) => s.trim()).filter((s) => s && !s.includes("${") && /[ぁ-んァ-ヶ一-龯]/.test(s));
+  const voiceKey = (s) => { let h = 0x811c9dc5; for (const ch of s) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, "0"); };
+  const voiceBufs = new Map();   // the last few decoded clips
+  function voiceClip(key) {
+    if (voiceBufs.has(key)) { const p = voiceBufs.get(key); voiceBufs.delete(key); voiceBufs.set(key, p); return p; }
+    const p = fetch(VOICE_BASE + key + ".mp3").then((r) => (r.ok ? r.arrayBuffer() : null))
+      .then((b) => b && new Promise((ok) => AUD.ctx.decodeAudioData(b, ok, () => ok(null)))).catch(() => null);
+    voiceBufs.set(key, p); if (voiceBufs.size > 40) voiceBufs.delete(voiceBufs.keys().next().value);
+    return p;
+  }
+  let voiceSrcs = [], voiceSeq = 0;
+  function stopVoice() { voiceSeq++; voiceSrcs.forEach((s) => { try { s.stop(); } catch (e) {} }); voiceSrcs = []; }
+  async function playLine(raw) {
+    stopVoice(); const seq = voiceSeq;
+    const bufs = (await Promise.all(voicePieces(raw).map((p) => voiceClip(voiceKey(p))))).filter(Boolean);
+    if (seq !== voiceSeq || !AUD.ctx) return;
+    if (!bufs.length) return cubCry();
+    let t = AUD.ctx.currentTime + 0.03;
+    bufs.forEach((b) => { const s = AUD.ctx.createBufferSource(); s.buffer = b; s.connect(AUD.voice); s.start(t); voiceSrcs.push(s); t += b.duration + 0.1; });
   }
   let lastVoice = 0;
-  function chanduVoice(text) {
-    if (!AUD.ctx || !text) return;                 // nothing until the player has tapped once (browsers need a tap for sound)
+  function chanduVoice(text, raw) {
+    if (!AUD.ctx || !text || !prefs.voiceVol) return;   // nothing until the player has tapped once (browsers need a tap for sound)
     const now = Date.now(); if (now - lastVoice < 600) return; lastVoice = now;
-    cubCry(); setTimeout(() => speakLine(text), 380);
+    if (!prefs.talk) return cubCry();
+    playLine(raw != null ? raw : text);
   }
-  // BGM: maqam hijaz on D, a plucked oud-like melody over a soft drone and a darbuka pattern (doum / tek)
-  const HIJAZ = [0, 1, 4, 5, 7, 8, 10, 12, 13, 16];
-  const MELODY = [4, -1, 3, 2, 3, -1, 1, 2, 0, -1, -1, -1, 2, 3, 4, 5, 6, -1, 5, 4, 5, -1, 3, 4, 2, -1, -1, -1, 4, 3, 2, 1,
-                  4, 5, 7, 6, 5, -1, 4, 5, 3, -1, 2, 3, 4, -1, -1, -1, 6, 5, 4, 3, 2, -1, 3, 2, 1, 2, 3, 1, 0, -1, -1, -1];
-  const DRUM = ["D", "", "", "t", "D", "", "t", "", "D", "", "", "t", "", "t", "t", ""];
+  // BGM: ten original loops made from notes in the browser. Each song: tempo, key (MIDI note), scale, chords (one per bar,
+  // a scale degree or a list of semitones), melody in eighth notes (scale degrees, "." rest, "_" hold),
+  // and per-bar patterns in sixteenths for bass (r root, 3, 5, 8 octave) and drums (k kick, s snare, c clap, h hat, o open hat, t shaker, D/T darbuka).
+  const MAJ = [0, 2, 4, 5, 7, 9, 11], PENT = [0, 3, 5, 7, 10], HIJAZ = [0, 1, 4, 5, 7, 8, 10];
+  const SONGS = [
+    { name: "おさんぽ マーチ", bpm: 116, key: 60, lead: "bell", bass: "tri", comp: "piano",
+      chords: [0, 3, 4, 0, 5, 3, 4, 0],
+      mel: "4 _ 2 _ 0 _ 2 4 | 5 _ 5 _ 3 _ . . | 6 _ 4 _ 1 _ 4 _ | 2 _ 0 _ 0 _ . . | 5 _ 7 _ 5 4 2 _ | 3 _ 5 _ 3 2 0 _ | 1 2 4 _ 6 _ 4 _ | 7 _ _ _ . . . .",
+      bassPat: "r...5...r...5...", compPat: "....x.......x...", drums: ["k...s...k.k.s...", "k...s...k.k.s.ss"] },
+    { name: "ピコピコ アドベンチャー", bpm: 144, key: 67, lead: "square", bass: "sqb", comp: "",
+      chords: [0, 5, 3, 4, 0, 5, 3, 4],
+      mel: "0 2 4 7 4 2 4 _ | 5 _ 7 5 4 _ 2 _ | 3 5 7 5 3 _ 5 _ | 4 _ 6 _ 8 _ . . | 7 _ 4 _ 7 8 7 4 | 5 _ 2 _ 5 7 5 2 | 3 _ 5 _ 7 _ 6 _ | 4 _ 6 _ 4 _ . .",
+      bassPat: "r.8.r.8.r.8.r.8.", drums: ["k.h.s.h.k.k.s.h.", "k.h.s.h.k.k.s.ss"] },
+    { name: "バナナ サンバ", bpm: 100, key: 65, lead: "marimba", bass: "tri", comp: "marimba",
+      chords: [0, 3, 4, 0, 0, 3, 4, 0],
+      mel: "4 _ 4 5 _ 4 2 _ | 3 _ 5 _ 7 _ 5 3 | 6 _ 4 _ 1 _ 4 _ | 2 _ 0 _ 2 4 _ . | 7 _ 7 6 _ 4 2 _ | 3 _ 5 _ 3 _ 0 _ | 1 _ 4 _ 6 5 4 1 | 0 _ _ _ . . . .",
+      bassPat: "r..5r..5r..5r..5", compPat: "..x..x....x..x..", drums: ["k.tck.tck.tck.tc", "k.tck.tck.tcktcc"] },
+    { name: "ひなたぼっこ", bpm: 82, key: 62, lead: "piano", bass: "sine", comp: "pad", swing: 0.5,
+      chords: [0, 2, 3, 4, 0, 5, 1, 4],
+      mel: "4 _ _ 2 _ 0 _ . | 4 _ 6 _ 4 _ 2 . | 5 _ _ 3 _ 0 _ . | 4 _ _ _ 1 _ . . | 2 4 7 _ 6 _ 4 _ | 5 _ 7 _ 5 _ 2 _ | 3 _ 1 _ 3 5 _ . | 4 _ _ _ . . . .",
+      bassPat: "r.......5...r...", drums: ["k.......s.....k.", "k.....k.s......."] },
+    { name: "うみの カリプソ", bpm: 112, key: 58, lead: "pan", bass: "tri", comp: "piano",
+      chords: [0, 0, 4, 4, 4, 4, 0, 0],
+      mel: "0 _ 2 4 _ 2 4 _ | 7 _ 5 _ 4 _ 2 _ | 1 _ 4 6 _ 4 6 _ | 8 _ 6 _ 4 _ 1 _ | 1 _ 4 6 _ 4 6 _ | 8 _ 7 6 4 _ . . | 0 2 4 _ 7 _ 4 _ | 2 _ 0 _ . . . .",
+      bassPat: "r..5..r.r..5..8.", compPat: "..x...x...x...x.", drums: ["k..t..t.k.s...t.", "k..t..t.k.s.t.ss"] },
+    { name: "ほしぞら ワルツ", bpm: 132, key: 69, lead: "musicbox", bass: "sine", comp: "bell", beats: 3,
+      chords: [0, 3, 4, 0, 5, 3, 4, 0],
+      mel: "4 _ _ _ 2 3 | 5 _ _ _ 3 4 | 6 _ 4 _ 1 _ | 2 _ _ _ . . | 7 _ _ 5 4 2 | 5 _ _ 3 2 0 | 1 _ 4 _ 6 _ | 7 _ _ _ . .",
+      bassPat: "r...........", compPat: "....x...x...", drums: ["....h...h...", "....h...h..."] },
+    { name: "ジャングル ファンク", bpm: 104, key: 64, scale: PENT, lead: "brass", bass: "sqb", comp: "piano",
+      chords: [[0, 3, 7, 10], [0, 3, 7, 10], [5, 9, 12, 15], [5, 9, 12, 15], [0, 3, 7, 10], [0, 3, 7, 10], [-4, 0, 3, 7], [-2, 2, 5, 9]],
+      mel: "5 _ . 4 5 . 3 . | 4 . 3 2 _ . 1 . | 2 _ . 2 3 . 4 . | 5 . 4 _ 3 . . . | 3 3 . 5 _ 4 3 . | 1 . 2 _ 0 . . . | 5 . 6 _ 5 . 4 . | 3 _ 2 _ 0 _ . .",
+      bassPat: "r..r..8.r.5.r..3", compPat: "..x...x..x....x.", drums: ["k.h.s.hkh.k.s.h.", "k.h.s.hkh.k.s.so"] },
+    { name: "わくわく ポップ", bpm: 126, key: 69, lead: "saw", bass: "sqb", comp: "pad",
+      chords: [5, 3, 0, 4, 5, 3, 0, 4],
+      mel: "2 _ 2 _ 4 _ 2 1 | 0 _ 0 _ 2 _ 3 4 | 4 _ 4 _ 7 _ 6 4 | 4 _ 1 _ . . 1 2 | 2 _ 2 _ 4 _ 7 _ | 7 _ 5 _ 3 _ 5 _ | 4 _ 4 2 0 _ 2 _ | 1 _ _ _ . . . .",
+      bassPat: "r.r.r.r.r.r.r.5.", drums: ["k.o.c.o.k.o.c.o.", "k.o.c.o.k.o.c.cc"] },
+    { name: "ちいさな カウボーイ", bpm: 116, key: 67, lead: "flute", bass: "tri", comp: "piano", swing: 0.6,
+      chords: [0, 3, 0, 4, 0, 3, 4, 0],
+      mel: "0 _ 2 _ 4 _ 4 _ | 5 _ 3 _ 5 _ 7 _ | 4 _ 2 _ 0 _ 2 4 | 1 _ _ _ . . . . | 7 _ 7 _ 4 _ 2 _ | 5 _ 5 _ 3 _ 0 _ | 1 _ 4 _ 6 _ 1 _ | 0 _ _ _ . . . .",
+      bassPat: "r.......5.......", compPat: "....x.......x...", drums: ["k...s...k...s...", "k...s...k...s.s."] },
+    { name: "アラビアン ナイト", bpm: 96, key: 62, scale: HIJAZ, lead: "pluck", bass: "pluckb", comp: "", drone: true,
+      chords: [0, 0, 0, 0, 0, 0, 0, 0],
+      mel: "4 . 3 2 3 . 1 2 | 0 . . . 2 3 4 5 | 6 . 5 4 5 . 3 4 | 2 . . . 4 3 2 1 | 4 5 7 6 5 . 4 5 | 3 . 2 3 4 . . . | 6 5 4 3 2 . 3 2 | 1 2 3 1 0 . . .",
+      bassPat: "r...............", drums: ["D.....T.D...T...", "D.....T.D...T.T."] },
+  ].map((s) => {
+    const beats = s.beats || 4, toks = s.mel.replace(/\|/g, " ").trim().split(/\s+/), mel = [];
+    toks.forEach((tk, i) => {
+      if (tk === "_" || tk === ".") return;
+      let n = 1; while (toks[i + n] === "_") n++;
+      mel.push({ at: i, len: n, deg: +tk });
+    });
+    return Object.assign({ scale: MAJ, beats, bars: s.chords.length, steps: s.chords.length * beats * 4, melAt: mel }, s);
+  });
+  const midiHz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  const degMidi = (s, d) => { const n = s.scale.length, o = Math.floor(d / n); return s.key + s.scale[((d % n) + n) % n] + 12 * o; };
+  const chordMidi = (s, c) => (Array.isArray(c) ? c.map((x) => s.key + x) : [c, c + 2, c + 4].map((d) => degMidi(s, d)));
+  function env(g, t, a, peak, dur, rel) {
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a);
+    g.gain.exponentialRampToValueAtTime(peak * 0.5, t + Math.max(a + 0.01, dur * 0.7)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + rel);
+  }
+  function osc(type, f, t, end, dest, detune) {
+    const o = AUD.ctx.createOscillator(); o.type = type; o.frequency.value = f; if (detune) o.detune.value = detune;
+    o.connect(dest); o.start(t); o.stop(end); return o;
+  }
+  function voiceOut(t, cutoff) {
+    const g = AUD.ctx.createGain(), lp = AUD.ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = cutoff; g.connect(lp); lp.connect(AUD.bgm); return g;
+  }
+  function inst(kind, f, t, dur, vol) {
+    const c = AUD.ctx;
+    if (kind === "pluck") return pluck(f, t, dur, vol * 1.1);
+    if (kind === "pluckb") return pluck(f, t, dur * 2, vol * 0.35);
+    if (kind === "bell" || kind === "musicbox" || kind === "marimba" || kind === "pan") {
+      const parts = { bell: [[1, 1], [2, 0.3], [3, 0.12]], musicbox: [[2, 1], [6, 0.2], [8.6, 0.06]], marimba: [[1, 1], [4, 0.25], [9.8, 0.05]], pan: [[1, 1], [2, 0.5], [3, 0.2], [4.02, 0.1]] }[kind];
+      const len = { bell: 0.9, musicbox: 1.2, marimba: 0.35, pan: 0.7 }[kind] + dur * 0.3;
+      parts.forEach(([m, a]) => { const g = c.createGain(); g.connect(AUD.bgm); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol * a, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + len / Math.sqrt(m)); osc("sine", f * m, t, t + len + 0.05, g); });
+      return;
+    }
+    if (kind === "piano") { const g = voiceOut(t, 3000); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.006); g.gain.exponentialRampToValueAtTime(vol * 0.3, t + 0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.4); osc("triangle", f, t, t + dur + 0.5, g); const g2 = c.createGain(); g2.gain.value = 0.25; g2.connect(g); osc("sine", f * 2, t, t + dur + 0.5, g2); return; }
+    if (kind === "square" || kind === "sqb") { const g = voiceOut(t, kind === "sqb" ? 900 : 3500); env(g, t, 0.005, vol * (kind === "sqb" ? 0.5 : 0.45), dur * 0.9, 0.03); osc("square", kind === "sqb" ? f / 2 : f, t, t + dur + 0.1, g); return; }
+    if (kind === "saw" || kind === "brass") { const g = voiceOut(t, kind === "brass" ? 1800 : 2600); env(g, t, kind === "brass" ? 0.04 : 0.01, vol * 0.4, dur * 0.95, 0.06); osc("sawtooth", f, t, t + dur + 0.15, g, -7); osc("sawtooth", f, t, t + dur + 0.15, g, 7); return; }
+    if (kind === "flute") {
+      const g = voiceOut(t, 4000), v = c.createOscillator(), vg = c.createGain(); env(g, t, 0.05, vol * 0.8, dur, 0.08);
+      const o = osc("sine", f, t, t + dur + 0.15, g); v.frequency.value = 5; vg.gain.value = f * 0.006; v.connect(vg); vg.connect(o.frequency); v.start(t); v.stop(t + dur + 0.15);
+      const g2 = c.createGain(); g2.gain.value = 0.15; g2.connect(g); osc("triangle", f * 2, t, t + dur + 0.15, g2); return;
+    }
+    if (kind === "tri" || kind === "sine") { const g = voiceOut(t, 900); env(g, t, 0.01, vol, dur * 0.9, 0.05); osc(kind === "tri" ? "triangle" : "sine", f / 2, t, t + dur + 0.1, g); return; }
+    if (kind === "pad") { const g = voiceOut(t, 1200); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.3); g.gain.setValueAtTime(vol, t + dur - 0.2); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.3); osc("sawtooth", f, t, t + dur + 0.35, g, -5); osc("triangle", f, t, t + dur + 0.35, g, 5); }
+  }
+  function hit(kind, t) {
+    const c = AUD.ctx, g = c.createGain(); g.connect(AUD.bgm);
+    const noise = (type, freq, vol, len) => { const n = c.createBufferSource(), f = c.createBiquadFilter(); n.buffer = AUD.noise; f.type = type; f.frequency.value = freq; n.connect(f); f.connect(g); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + len); n.start(t, Math.random() * 0.5); n.stop(t + len + 0.02); };
+    if (kind === "k") { const o = c.createOscillator(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.15); o.connect(g); g.gain.setValueAtTime(0.7, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22); o.start(t); o.stop(t + 0.25); }
+    else if (kind === "s") { noise("bandpass", 1800, 0.28, 0.14); const g2 = c.createGain(); g2.connect(AUD.bgm); g2.gain.setValueAtTime(0.15, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.08); osc("triangle", 190, t, t + 0.1, g2); }
+    else if (kind === "c") { noise("bandpass", 1200, 0.3, 0.1); }
+    else if (kind === "h") noise("highpass", 7000, 0.07, 0.04);
+    else if (kind === "o") noise("highpass", 6000, 0.06, 0.18);
+    else if (kind === "t") noise("highpass", 5000, 0.05, 0.05);
+    else if (kind === "D" || kind === "T") drum(kind === "D" ? "D" : "t", t);
+  }
   function pluck(f, t, dur, vol) {
     const c = AUD.ctx, o = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain(), lp = c.createBiquadFilter();
     o.type = "triangle"; o2.type = "sawtooth"; o.frequency.value = f; o2.frequency.value = f * 1.003;
@@ -701,27 +808,43 @@ body {
       n.connect(hp); hp.connect(g); g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06); n.start(t, Math.random() * 0.5); n.stop(t + 0.08);
     }
   }
+  // "いろいろ" plays each song twice through, then moves on to another one
+  const songNow = () => SONGS[AUD.song] || SONGS[0];
+  function pickSong(first) {
+    if (prefs.bgmSong >= 0 && prefs.bgmSong < SONGS.length) AUD.song = prefs.bgmSong;
+    else if (first) AUD.song = (Math.floor(Date.now() / 864e5) * 7) % SONGS.length;
+    else { let n; do n = Math.floor(Math.random() * SONGS.length); while (n === AUD.song && SONGS.length > 1); AUD.song = n; }
+    AUD.step = 0; AUD.loops = 0;
+    if (drone && AUD.ctx) drone.gain.setTargetAtTime(songNow().drone ? 0.05 : 0, AUD.ctx.currentTime, 0.5);
+  }
   let drone = null;
   function bgmTick() {
     const c = AUD.ctx; if (!c || !AUD.bgmOn) return;
-    const eighth = 60 / 96 / 2;
     while (AUD.next < c.currentTime + 0.4) {
-      const i = AUD.step % MELODY.length, m = MELODY[i];
-      if (m >= 0) pluck(293.66 * Math.pow(2, HIJAZ[m] / 12), AUD.next, eighth * 2.2, 0.16);
-      if (i % 8 === 0) pluck(146.83, AUD.next, eighth * 6, 0.07);
-      const d = DRUM[AUD.step % DRUM.length]; if (d) drum(d, AUD.next);
-      AUD.next += eighth; AUD.step++;
+      const s = songNow(), six = 60 / s.bpm / 4, i = AUD.step, barLen = s.beats * 4, bar = Math.floor(i / barLen), inBar = i % barLen;
+      const t = AUD.next + (s.swing && i % 4 === 2 ? s.swing * six * 0.66 : 0);
+      if (i % 2 === 0) {
+        const m = s.melAt.find((x) => x.at === i / 2);
+        if (m) inst(s.lead, midiHz(degMidi(s, m.deg)), t, m.len * six * 2, s.lead === "musicbox" ? 0.22 : 0.16);
+      }
+      const ch = chordMidi(s, s.chords[bar]), bp = s.bassPat[inBar];
+      if (bp && bp !== ".") { let n = 1; while (inBar + n < barLen && s.bassPat[inBar + n] === ".") n++; inst(s.bass, midiHz(ch[0] - 12 + ({ r: 0, 3: ch[1] - ch[0], 5: ch[2] - ch[0], 8: 12 }[bp] || 0)), t, Math.min(n, 4) * six, 0.22); }
+      if (s.comp === "pad" && inBar === 0) ch.forEach((m) => inst("pad", midiHz(m), t, barLen * six, 0.025));
+      else if (s.comp && s.compPat && s.compPat[inBar] === "x") ch.forEach((m) => inst(s.comp, midiHz(m), t, six * 1.5, 0.05));
+      const d = s.drums[bar % 2 === 1 && bar === s.bars - 1 ? 1 : 0][inBar]; if (d && d !== ".") hit(d, t);
+      AUD.next += six; AUD.step++;
+      if (AUD.step >= s.steps) { AUD.step = 0; if (++AUD.loops >= 2 && !(prefs.bgmSong >= 0)) pickSong(false); }
     }
   }
   function startBgm() {
     const c = audioCtx(); if (!c || AUD.bgmOn || !prefs.bgmVol) return;
     AUD.bgmOn = true; AUD.next = c.currentTime + 0.1;
     if (!drone) {
-      drone = c.createGain(); drone.gain.value = 0.05; const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
+      drone = c.createGain(); drone.gain.value = 0; const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
       [73.42, 110, 146.83].forEach((f) => { const o = c.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.connect(lp); o.start(); });
       lp.connect(drone); drone.connect(AUD.bgm);
     }
-    drone.gain.setTargetAtTime(0.05, c.currentTime, 0.5);
+    if (AUD.song == null) pickSong(true); else drone.gain.setTargetAtTime(songNow().drone ? 0.05 : 0, c.currentTime, 0.5);
     clearInterval(AUD.timer); AUD.timer = setInterval(bgmTick, 120); bgmTick();
   }
   function stopBgm() { AUD.bgmOn = false; clearInterval(AUD.timer); if (drone && AUD.ctx) drone.gain.setTargetAtTime(0, AUD.ctx.currentTime, 0.2); }
@@ -729,7 +852,7 @@ body {
   document.addEventListener("pointerdown", () => { if (audioCtx()) { applyVolumes(); if (prefs.bgmVol) startBgm(); } }, true);
   document.addEventListener("visibilitychange", () => {
     if (!AUD.ctx) return;
-    if (document.hidden) { AUD.ctx.suspend().catch(() => {}); try { speechSynthesis.cancel(); } catch (e) {} }
+    if (document.hidden) { AUD.ctx.suspend().catch(() => {}); stopVoice(); }
     else AUD.ctx.resume().then(() => { AUD.next = AUD.ctx.currentTime + 0.1; }).catch(() => {});
   });
 
@@ -3478,7 +3601,7 @@ body {
     setPortrait(line ? line[0] : null, line ? line[1] : c.icon);
     $("storyTitle").textContent = line ? line[0] : c.title;
     $("storyText").textContent = fill(hideItem(c, line ? line[2] : "📍 " + c.place + "\n" + pg.narr));
-    if (line && line[0] === "チャンドゥ") { lastVoice = 0; chanduVoice($("storyText").textContent); } else try { speechSynthesis.cancel(); } catch (e) {}
+    if (line && line[0] === "チャンドゥ") { lastVoice = 0; chanduVoice($("storyText").textContent, hideItem(c, line[2])); } else stopVoice();
     $("storySay").textContent = "💬 " + fill(hideItem(c, c.say));
     $("storySay").hidden = !!(c.talkA || c.talkB) || !last || !part.includes("B");
     const showReward = last && part.includes("B") && c.reward;
@@ -3691,7 +3814,7 @@ body {
 
   // ---- walking (steps from iPhone Shortcuts via #s1234, or typed in) ----
   const STEPS_PER_BANANA = 500;
-  const DAILY_BANANAS = 3;
+  const DAILY_BANANAS = 4;
   function rollDay() {
     const t = today();
     if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); }
@@ -3731,7 +3854,7 @@ body {
     rollDay();
     if (S.hunger >= 95 && S.energy >= 95) { S.happy = clamp(S.happy - 5); say("バナナでも もう おなか いっぱい…"); }
     else if (S.bananas <= 0) { say("バナナが ない！ さんぽして とってこようね！"); }
-    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.energy = clamp(S.energy + 20); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすきだよ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.35) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
+    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.energy = clamp(S.energy + 20); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすきだよ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.2) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
     save(); render();
   }
   function sleepToggle() {
@@ -4098,6 +4221,7 @@ body {
     requestAnimationFrame(showHatPrev);   // once the dialog is showing, so the preview can measure Chandu
     $("setToon").checked = !!prefs.toon;
     $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
+    $("setSong").innerHTML = `<option value="-1">🔀 いろいろ（じゅんばんに かわる）</option>` + SONGS.map((x, i) => `<option value="${i}">${i + 1}. ${x.name}</option>`).join(""); $("setSong").value = String(prefs.bgmSong ?? -1);
     $("setVoice").value = prefs.voiceVol; $("setVoiceV").textContent = prefs.voiceVol;
     $("setTalk").checked = !!prefs.talk;
     $("setSheet").value = prefs.sheet || "";
@@ -4127,8 +4251,9 @@ body {
   $("hatFitReset").onclick = () => { if (S.hatFit) delete S.hatFit[wornHat()]; save(); showHatPrev(); };
   $("setBgm").oninput = () => { prefs.bgmVol = +$("setBgm").value; $("setBgmV").textContent = prefs.bgmVol; savePrefs(); audioCtx(); applyVolumes(); if (prefs.bgmVol) startBgm(); else stopBgm(); };
   $("setVoice").oninput = () => { prefs.voiceVol = +$("setVoice").value; $("setVoiceV").textContent = prefs.voiceVol; savePrefs(); audioCtx(); applyVolumes(); };
+  $("setSong").onchange = () => { prefs.bgmSong = +$("setSong").value; savePrefs(); if (!audioCtx()) return; pickSong(false); if (AUD.ctx) AUD.next = AUD.ctx.currentTime + 0.15; if (prefs.bgmVol) startBgm(); };
   $("setTalk").onchange = () => { prefs.talk = $("setTalk").checked; savePrefs(); };
-  $("setVoiceTry").onclick = () => { audioCtx(); applyVolumes(); lastVoice = 0; chanduVoice(fill("がおー！ ぼく、チャンドゥ！ {name}、きょうも いっしょに あるこうね！")); };
+  $("setVoiceTry").onclick = () => { audioCtx(); applyVolumes(); lastVoice = 0; const v = "がおー！ ぼく、チャンドゥ！ {name}、きょうも いっしょに あるこうね！"; chanduVoice(fill(v), v); };
   $("setToon").onchange = () => { prefs.toon = $("setToon").checked; savePrefs(); bgKey = ""; renderBg(); };
   $("setSheetOk").onclick = () => {
     const id = sheetId($("setSheet").value);
