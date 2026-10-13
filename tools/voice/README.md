@@ -9,3 +9,7 @@ which the settings screen shows. To regenerate after changing lines:
 3. `python gen.py pieces.json ../../docs/voice 0 1` makes the missing clips (run several parts in parallel, e.g. `0 4` … `3 4`).
    It needs the voicevox_core 0.17 wheel, VOICEVOX ONNX Runtime 1.23, the Open JTalk dictionary (all from GitHub releases)
    and `vvms/13.vvm` from github.com/VOICEVOX/voicevox_vvm, under `VV_DIR` (see the paths at the top), plus ffmpeg.
+
+Sentences with `{name}` are read as "きみ". To also have them read with a player's name, add `NAMES="金城=きんじょう"`
+(name as typed in the game = its reading, comma-separated for more) when running step 3; the game plays those clips
+when the saved name matches and falls back to the "きみ" clip otherwise. Bump `VOICE_VER` in src/chandu.html after regenerating.
