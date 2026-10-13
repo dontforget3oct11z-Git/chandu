@@ -472,6 +472,7 @@ body {
         <label class="row vol-row">🎵 BGM <input type="range" id="setBgm" min="0" max="100" step="5" aria-label="BGMの おおきさ"><output id="setBgmV"></output></label>
         <label class="row" style="font-size:13px">🎶 きょく <select id="setSong" aria-label="BGMの きょく" style="flex:1;min-width:0"></select></label>
         <label class="row vol-row">🐯 こえ <input type="range" id="setVoice" min="0" max="100" step="5" aria-label="チャンドゥの こえの おおきさ"><output id="setVoiceV"></output></label>
+        <label class="row vol-row">🔔 こうかおん <input type="range" id="setSfx" min="0" max="100" step="5" aria-label="ミニゲームの こうかおんの おおきさ"><output id="setSfxV"></output></label>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setTalk" style="flex:0"> チャンドゥの ことばを よみあげる</label>
         <div class="row"><button type="button" class="mini-btn" id="setVoiceTry">▶ こえを きいてみる</button></div>
         <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。<br>チャンドゥの こえ: VOICEVOX:猫使ビィ</p>
@@ -552,7 +553,7 @@ body {
   }
   // Settings that are not part of the game save: photo style and the linked spreadsheet.
   const PREF_KEY = "chandu-prefs-v1";
-  let prefs = { toon: true, sheet: "", bgmVol: 30, voiceVol: 70, talk: true, bgmSong: -1 };
+  let prefs = { toon: true, sheet: "", bgmVol: 30, voiceVol: 70, sfxVol: 60, talk: true, bgmSong: -1 };
   try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY))); } catch (e) {}
   const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
 
@@ -620,13 +621,14 @@ body {
   // ---- sound: Chandu's voice and the BGM ----
   // Chandu speaks with pre-made AI voice clips (below); when there is no clip he gives a little tiger-cub cry
   // (high, around 360 Hz, rising and falling, like the cub at the ride). The BGM songs are made from notes in the browser.
-  const AUD = { ctx: null, voice: null, bgm: null, bgmOn: false, next: 0, step: 0, timer: 0, noise: null, song: null, loops: 0 };
+  const AUD = { ctx: null, voice: null, bgm: null, sfx: null, gameSong: null, bgmOn: false, next: 0, step: 0, timer: 0, noise: null, song: null, loops: 0 };
   function audioCtx() {
     if (!AUD.ctx) {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
       try { AUD.ctx = new AC(); } catch (e) { return null; }
       AUD.voice = AUD.ctx.createGain(); AUD.voice.connect(AUD.ctx.destination);
       AUD.bgm = AUD.ctx.createGain(); AUD.bgm.connect(AUD.ctx.destination);
+      AUD.sfx = AUD.ctx.createGain(); AUD.sfx.connect(AUD.ctx.destination);
       const n = AUD.ctx.createBuffer(1, AUD.ctx.sampleRate, AUD.ctx.sampleRate), d = n.getChannelData(0);
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
       AUD.noise = n; applyVolumes();
@@ -639,6 +641,41 @@ body {
     const t = AUD.ctx.currentTime, v = (x) => Math.pow((x || 0) / 100, 1.6);   // sliders feel even to the ear
     AUD.voice.gain.setTargetAtTime(v(prefs.voiceVol), t, 0.05);
     AUD.bgm.gain.setTargetAtTime(v(prefs.bgmVol) * 0.5, t, 0.2);
+    AUD.sfx.gain.setTargetAtTime(v(prefs.sfxVol) * 0.6, t, 0.05);
+  }
+  // mini game sound effects, made from short notes and noise: sfx("tap"), sfx("good"), sfx("note", 2) …
+  function sfx(kind, n) {
+    const c = audioCtx(); if (!c || !prefs.sfxVol) return;
+    const t0 = c.currentTime + 0.01;
+    const tone = (type, f1, f2, at, len, vol) => {
+      const o = c.createOscillator(), g = c.createGain(), t = t0 + at; o.type = type;
+      o.frequency.setValueAtTime(f1, t); if (f2 !== f1) o.frequency.exponentialRampToValueAtTime(f2, t + len);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      o.connect(g); g.connect(AUD.sfx); o.start(t); o.stop(t + len + 0.02);
+    };
+    const hiss = (type, f, at, len, vol) => {
+      const b = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain(), t = t0 + at;
+      b.buffer = AUD.noise; fl.type = type; fl.frequency.value = f; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      b.connect(fl); fl.connect(g); g.connect(AUD.sfx); b.start(t, Math.random() * 0.5); b.stop(t + len + 0.02);
+    };
+    const notes = (list, type, step, len, vol) => list.forEach((m, i) => tone(type, midiHz(m), midiHz(m), i * step, len, vol));
+    ({
+      tap: () => tone("sine", 900, 600, 0, 0.07, 0.25),
+      good: () => notes([76, 84], "square", 0.08, 0.16, 0.12),
+      bad: () => { tone("sawtooth", 220, 150, 0, 0.18, 0.12); tone("sawtooth", 160, 110, 0.18, 0.28, 0.12); },
+      catch: () => { tone("sine", 600, 1400, 0, 0.09, 0.3); tone("triangle", 1760, 1760, 0.06, 0.12, 0.1); },
+      ouch: () => { tone("square", 500, 120, 0, 0.3, 0.12); hiss("bandpass", 900, 0, 0.25, 0.25); },
+      tick: () => tone("square", 1320, 1320, 0, 0.05, 0.08),
+      shake: () => [0, 0.12, 0.24, 0.36, 0.5, 0.62].forEach((at) => { hiss("bandpass", 2500, at, 0.06, 0.35); tone("triangle", 330, 300, at, 0.05, 0.12); }),
+      reveal: () => notes([72, 76, 79], "triangle", 0.05, 0.2, 0.18),
+      note: () => tone("triangle", midiHz([72, 76, 79, 84][n || 0]), midiHz([72, 76, 79, 84][n || 0]), 0, 0.35, 0.25),
+      go: () => { tone("square", 1568, 1568, 0, 0.12, 0.12); tone("square", 2093, 2093, 0.12, 0.2, 0.12); },
+      swish: () => hiss("bandpass", 1800, 0, 0.18, 0.3),
+      flip: () => { hiss("highpass", 3000, 0, 0.05, 0.3); tone("sine", 500, 900, 0.02, 0.08, 0.15); },
+      poof: () => { hiss("lowpass", 1200, 0, 0.3, 0.4); tone("sine", 300, 180, 0, 0.2, 0.12); },
+      fanfare: () => { notes([67, 72, 76, 79], "square", 0.11, 0.14, 0.1); tone("square", midiHz(84), midiHz(84), 0.44, 0.6, 0.1); },
+      jingle: () => notes([72, 67, 64, 60], "triangle", 0.14, 0.22, 0.2),
+    }[kind] || (() => {}))();
   }
   function cubCry() {
     const ctx = audioCtx(); if (!ctx || !prefs.voiceVol) return;
@@ -734,7 +771,39 @@ body {
       chords: [0, 0, 0, 0, 0, 0, 0, 0],
       mel: "4 . 3 2 3 . 1 2 | 0 . . . 2 3 4 5 | 6 . 5 4 5 . 3 4 | 2 . . . 4 3 2 1 | 4 5 7 6 5 . 4 5 | 3 . 2 3 4 . . . | 6 5 4 3 2 . 3 2 | 1 2 3 1 0 . . .",
       bassPat: "r...............", drums: ["D.....T.D...T...", "D.....T.D...T.T."] },
-  ].map((s) => {
+  ].map(parseSong);
+  // each mini game has its own short loop, played while the game is open (see gameMusic)
+  const GAME_SONGS = {
+    hoi: { name: "ホイ！ ホイ！", bpm: 150, key: 67, lead: "square", bass: "sqb", comp: "",
+      chords: [0, 4, 0, 4], mel: "4 _ 2 _ 4 _ 7 _ | 6 _ 4 _ 1 _ . . | 4 _ 2 _ 4 _ 7 _ | 8 _ 7 _ 4 _ . .",
+      bassPat: "r.5.r.5.r.5.r.5.", drums: ["k.h.s.h.k.h.s.h.", "k.h.s.h.k.k.s.ss"] },
+    rps: { name: "じゃんけん ポン", bpm: 132, key: 62, lead: "bell", bass: "tri", comp: "piano",
+      chords: [0, 3, 4, 0], mel: "0 _ 0 _ 4 _ . . | 3 _ 5 _ 3 _ . . | 1 _ 4 _ 6 _ 4 _ | 7 _ _ _ . . . .",
+      bassPat: "r...5...r...5...", compPat: "..x...x...x...x.", drums: ["k...c...k...c...", "k...c...k.k.c.cc"] },
+    catch: { name: "バナナ ラッシュ", bpm: 168, key: 65, lead: "marimba", bass: "sqb", comp: "",
+      chords: [0, 3, 4, 0], mel: "0 2 4 2 4 7 4 _ | 3 5 7 5 3 _ 5 _ | 1 4 6 4 1 4 6 _ | 7 6 4 2 0 _ . .",
+      bassPat: "r.8.r.8.r.8.r.8.", drums: ["k.tck.tck.tck.tc", "k.tck.tcktckcccc"] },
+    pots: { name: "まぜまぜ つぼ", bpm: 108, key: 62, scale: HIJAZ, lead: "pluck", bass: "pluckb", comp: "", drone: true,
+      chords: [0, 0, 0, 0], mel: "4 . 3 4 5 . 4 . | 3 . 2 1 0 . . . | 2 3 4 . 3 2 1 . | 2 . 1 . 0 . . .",
+      bassPat: "r.......r.......", drums: ["D...T.T.D...T...", "D...T.T.D.T.T.T."] },
+    memo: { name: "おぼえて オルゴール", bpm: 112, key: 72, lead: "musicbox", bass: "sine", comp: "bell", beats: 3,
+      chords: [0, 3, 4, 0], mel: "0 _ 2 _ 4 _ | 3 _ 5 _ 7 _ | 6 _ 4 _ 1 _ | 0 _ _ _ . .",
+      bassPat: "r...........", compPat: "....x...x...", drums: ["....h...h...", "....h...h..."] },
+    quick: { name: "ドキドキ まって", bpm: 120, key: 57, scale: PENT, lead: "bell", bass: "sqb", comp: "pad",
+      chords: [[0, 3, 7], [0, 3, 7], [-2, 2, 5], [-4, 0, 3]], mel: ". . . . . . . . | 4 . . . 3 . . . | . . . . . . . . | 2 . . . 1 . . .",
+      bassPat: "r...r...r...r...", drums: ["k.......k.......", "k.......k...k.k."] },
+    hilo: { name: "カードの ジャズ", bpm: 120, key: 65, lead: "piano", bass: "tri", comp: "piano", swing: 0.6,
+      chords: [[0, 4, 7, 11], [2, 5, 9, 12], [-5, -1, 2, 5], [0, 4, 7, 11]], mel: "4 _ 5 4 2 _ 0 _ | 1 _ 3 _ 5 _ . . | 4 3 1 _ 6 _ 4 _ | 2 _ _ _ . . . .",
+      bassPat: "r...3...5...3...", compPat: "....x.......x...", drums: ["k.h.s.h.k.h.s.h.", "k.h.s.h.k.h.s.hh"] },
+    hide: { name: "そーっと かくれんぼ", bpm: 96, key: 60, lead: "flute", bass: "tri", comp: "", swing: 0.4,
+      chords: [0, 5, 3, 4], mel: "4 . 4 . 2 . . . | 5 . 5 . 3 . . . | 6 . 4 . 3 . 1 . | 2 . . . . . . .",
+      bassPat: "r...r...r...r...", drums: ["t...t...t...t...", "t...t...t.t.t.t."] },
+    quiz: { name: "クイズ タイム", bpm: 126, key: 69, lead: "saw", bass: "sqb", comp: "pad",
+      chords: [0, 5, 3, 4], mel: "0 _ 4 _ 7 _ 4 _ | 5 _ 7 _ 9 _ . . | 3 _ 5 _ 7 _ 5 _ | 4 _ 6 _ 8 _ . .",
+      bassPat: "r.r.r.r.r.r.r.5.", drums: ["k.o.c.o.k.o.c.o.", "k.o.c.o.k.o.c.cc"] },
+  };
+  Object.keys(GAME_SONGS).forEach((k) => (GAME_SONGS[k] = parseSong(GAME_SONGS[k])));
+  function parseSong(s) {
     const beats = s.beats || 4, toks = s.mel.replace(/\|/g, " ").trim().split(/\s+/), mel = [];
     toks.forEach((tk, i) => {
       if (tk === "_" || tk === ".") return;
@@ -742,7 +811,7 @@ body {
       mel.push({ at: i, len: n, deg: +tk });
     });
     return Object.assign({ scale: MAJ, beats, bars: s.chords.length, steps: s.chords.length * beats * 4, melAt: mel }, s);
-  });
+  }
   const midiHz = (m) => 440 * Math.pow(2, (m - 69) / 12);
   const degMidi = (s, d) => { const n = s.scale.length, o = Math.floor(d / n); return s.key + s.scale[((d % n) + n) % n] + 12 * o; };
   const chordMidi = (s, c) => (Array.isArray(c) ? c.map((x) => s.key + x) : [c, c + 2, c + 4].map((d) => degMidi(s, d)));
@@ -808,7 +877,16 @@ body {
     }
   }
   // "いろいろ" plays each song twice through, then moves on to another one
-  const songNow = () => SONGS[AUD.song] || SONGS[0];
+  const songNow = () => AUD.gameSong || SONGS[AUD.song] || SONGS[0];
+  // switches to a mini game's loop (or back to the normal BGM with null), starting it from the top
+  function gameMusic(id) {
+    const s = (id && GAME_SONGS[id]) || null;
+    if (s === AUD.gameSong) return;
+    AUD.gameSong = s; AUD.step = 0; AUD.loops = 0;
+    if (!AUD.ctx) return;
+    AUD.next = Math.max(AUD.next, AUD.ctx.currentTime + 0.05);
+    if (drone) drone.gain.setTargetAtTime(songNow().drone ? 0.05 : 0, AUD.ctx.currentTime, 0.3);
+  }
   function pickSong(first) {
     if (prefs.bgmSong >= 0 && prefs.bgmSong < SONGS.length) AUD.song = prefs.bgmSong;
     else if (first) AUD.song = (Math.floor(Date.now() / 864e5) * 7) % SONGS.length;
@@ -832,7 +910,7 @@ body {
       else if (s.comp && s.compPat && s.compPat[inBar] === "x") ch.forEach((m) => inst(s.comp, midiHz(m), t, six * 1.5, 0.05));
       const d = s.drums[bar % 2 === 1 && bar === s.bars - 1 ? 1 : 0][inBar]; if (d && d !== ".") hit(d, t);
       AUD.next += six; AUD.step++;
-      if (AUD.step >= s.steps) { AUD.step = 0; if (++AUD.loops >= 2 && !(prefs.bgmSong >= 0)) pickSong(false); }
+      if (AUD.step >= s.steps) { AUD.step = 0; if (++AUD.loops >= 2 && !(prefs.bgmSong >= 0) && !AUD.gameSong) pickSong(false); }
     }
   }
   function startBgm() {
@@ -3884,14 +3962,14 @@ body {
       el.innerHTML = b.html || ""; if (!b.html) el.textContent = b.label;
       if (b.cls) el.className = b.cls;
       if (b.aria) el.setAttribute("aria-label", b.aria);
-      el.onclick = b.on; row.appendChild(el);
+      el.onclick = (e) => { if (b.sfx !== false) sfx(b.sfx || "tap"); b.on(e); }; row.appendChild(el);
     });
     const first = row.querySelector("button"); if (first) first.focus({ preventScroll: true });
   }
   const quitBtn = { label: "やめる", cls: "quit", on: () => quitGame() };
   function clearGame() { gameTimers.forEach(clearTimeout); gameTimers = []; $("fx").innerHTML = ""; $("petWrap").style.transform = ""; }
   function quitGame(silent) {
-    clearGame(); gameOn = false; $("game").hidden = true;
+    clearGame(); gameOn = false; $("game").hidden = true; gameMusic(null);
     if (!silent) say("また あそぼうね！");
     render();
   }
@@ -3903,7 +3981,7 @@ body {
     gameOn = true; $("game").hidden = false; showMenu(); render();
   }
   function showMenu() {
-    clearGame();
+    clearGame(); gameMusic(null);
     S.best = S.best || {};
     gameUI("なにして あそぶ？ ぼく、なんでも つよいよ！", GAMES.map((g) => ({
       html: `${g.icon} ${g.name}<small>${S.best[g.id] != null ? "さいこう " + g.best(S.best[g.id]) : "まだ やってない"}</small>`,
@@ -3921,6 +3999,7 @@ body {
     S.happy = clamp(S.happy + 6 + Math.round(rate * 18)); if (!TEST) { S.energy = clamp(S.energy - 10); S.hunger = clamp(S.hunger - 5); }
     const line = rate >= .99 ? "かんぺき！ きみ、すごいね！" : rate >= .6 ? "やったね！ たのしかった！" : rate > 0 ? "まあまあだね！ つぎは まけないよ！" : "えへへ、ぼくの かちだね！ また しょうぶしようね！";
     say((isBest && prev != null ? "しんきろく！ " : "") + line, 4000); cheer();
+    gameMusic(null); sfx(rate >= .6 ? "fanfare" : "jingle");
     save();
     gameUI(`${g.icon} ${g.name}: ${g.result(score, max)}`, [{ label: "もういっかい", on: () => { clearGame(); g.start(); } }, { label: "ほかの あそび", on: showMenu }, quitBtn]);
     render();
@@ -3932,8 +4011,8 @@ body {
       start() {
         let r = 0, win = 0;
         const turn = () => gameUI(`ゆびさして… あっちむいて ホイ！（${r + 1}/5）`, [["U", "↑"], ["L", "←"], ["R", "→"], ["D", "↓"]].map(([d, l]) => ({ label: l, cls: "big", aria: { U: "うえ", L: "ひだり", R: "みぎ", D: "した" }[d], on: () => {
-          const me = pick(["U", "D", "L", "R"]); look(me);
-          const hit = me === d; if (hit) win++; r++;
+          const me = pick(["U", "D", "L", "R"]); look(me); sfx("swish");
+          const hit = me === d; if (hit) win++; r++; later(() => sfx(hit ? "good" : "bad"), 250);
           say(hit ? "うわっ、つられた〜！" : "えへへ、そっちは むかないよ〜！", 1300);
           $("gameRow").innerHTML = "";
           later(() => (r >= 5 ? endGame("hoi", win, 5) : turn()), 900);
@@ -3947,8 +4026,8 @@ body {
         const turn = (aiko) => gameUI(`${aiko ? "あいこで…" : "じゃんけん…"}（${r + 1}/3）`, H.map(([e, n], i) => ({ label: e, cls: "big", aria: n, on: () => {
           const me = Math.floor(Math.random() * 3);
           $("gameRow").innerHTML = "";
-          if (me === i) { say(`ぼくも ${H[me][0]}！ あいこだ！`, 1300); return later(() => turn(true), 900); }
-          const hit = (i + 1) % 3 === me; if (hit) win++; r++;
+          if (me === i) { sfx("reveal"); say(`ぼくも ${H[me][0]}！ あいこだ！`, 1300); return later(() => turn(true), 900); }
+          const hit = (i + 1) % 3 === me; if (hit) win++; r++; sfx(hit ? "good" : "bad");
           say(`ぼくは ${H[me][0]}！ ` + (hit ? "まけた〜！" : "ぼくの かち！"), 1400);
           later(() => (r >= 3 ? endGame("rps", win, 3) : turn()), 1000);
         } })).concat(quitBtn));
@@ -3968,14 +4047,14 @@ body {
           b.onclick = () => {
             const r = b.getBoundingClientRect(), f = fx.getBoundingClientRect(), pop = document.createElement("span");
             pop.className = "pop"; pop.style.left = r.left - f.left + "px"; pop.style.top = r.top - f.top + "px";
-            if (hot) { got = Math.max(0, got - 2); pop.textContent = "-2"; say("からっ！ 🔥", 900); } else { got++; pop.textContent = "+1"; }
+            if (hot) { got = Math.max(0, got - 2); pop.textContent = "-2"; say("からっ！ 🔥", 900); sfx("ouch"); } else { got++; pop.textContent = "+1"; sfx("catch"); }
             fx.appendChild(pop); setTimeout(() => pop.remove(), 700); b.remove(); status();
           };
           b.addEventListener("animationend", () => b.remove());
           fx.appendChild(b);
           later(spawn, 380 + Math.random() * 320);
         };
-        const tick = () => { left--; status(); if (left <= 0) later(() => endGame("catch", got, 20), 600); else later(tick, 1000); };
+        const tick = () => { left--; status(); if (left > 0 && left <= 3) sfx("tick"); if (left <= 0) later(() => endGame("catch", got, 20), 600); else later(tick, 1000); };
         later(spawn, 300); later(tick, 1000);
       } },
     { id: "pots", icon: "🏺", name: "つぼあて", best: (v) => v + "/3", result: (v, m) => `${v} / ${m}かい あたり`,
@@ -3983,10 +4062,10 @@ body {
         let r = 0, win = 0;
         const turn = () => {
           const ans = Math.floor(Math.random() * 3);
-          gameUI(`バナナを つぼに かくしたよ… まぜまぜ〜！（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big shake", aria: `${i + 1}ばんめの つぼ`, on: () => {} })));
+          gameUI(`バナナを つぼに かくしたよ… まぜまぜ〜！（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big shake", sfx: false, aria: `${i + 1}ばんめの つぼ`, on: () => {} }))); sfx("shake");
           later(() => gameUI(`バナナは どの つぼだ？（${r + 1}/3）`, [0, 1, 2].map((i) => ({ label: "🏺", cls: "big", aria: `${i + 1}ばんめの つぼ`, on: () => {
-            const hit = i === ans; if (hit) win++; r++;
-            gameUI(hit ? "あたり！ よく みてたね！" : "ざんねん！ こっちだよ！", [0, 1, 2].map((j) => ({ label: j === ans ? "🍌" : "🏺", cls: "big", on: () => {} })));
+            const hit = i === ans; if (hit) win++; r++; sfx(hit ? "good" : "bad");
+            gameUI(hit ? "あたり！ よく みてたね！" : "ざんねん！ こっちだよ！", [0, 1, 2].map((j) => ({ label: j === ans ? "🍌" : "🏺", cls: "big", sfx: false, on: () => {} })));
             later(() => (r >= 3 ? endGame("pots", win, 3) : turn()), 1300);
           } })).concat(quitBtn)), 1000);
         };
@@ -4000,17 +4079,17 @@ body {
           seq.push(Math.floor(Math.random() * 4)); if (seq.length < 3) return show();
           gameUI(`ぼくが だす じゅんばんを おぼえてね！（レベル ${lv + 1}）`, [quitBtn]);
           seq.forEach((e, i) => {
-            later(() => { $("fx").innerHTML = `<div class="flash">${E[e][0]}</div>`; }, 500 + i * 800);
+            later(() => { $("fx").innerHTML = `<div class="flash">${E[e][0]}</div>`; sfx("note", e); }, 500 + i * 800);
             later(() => { $("fx").innerHTML = ""; }, 500 + i * 800 + 600);
           });
           later(ask, 500 + seq.length * 800);
         };
         const ask = () => {
           let pos = 0;
-          gameUI(`おなじ じゅんばんで おしてくれ！（${seq.length}こ）`, E.map(([e, n], i) => ({ label: e, cls: "big", aria: n, on: () => {
-            if (i !== seq[pos]) { say("ブッブー！ ちがうよ〜", 1500); $("gameRow").innerHTML = ""; return later(() => endGame("memo", lv, 5), 900); }
-            pos++;
-            if (pos === seq.length) { lv++; say("せいかい！ すごいね！", 1200); $("gameRow").innerHTML = ""; later(() => (lv >= 5 ? endGame("memo", lv, 5) : show()), 1000); }
+          gameUI(`おなじ じゅんばんで おしてくれ！（${seq.length}こ）`, E.map(([e, n], i) => ({ label: e, cls: "big", aria: n, sfx: false, on: () => {
+            if (i !== seq[pos]) { sfx("bad"); say("ブッブー！ ちがうよ〜", 1500); $("gameRow").innerHTML = ""; return later(() => endGame("memo", lv, 5), 900); }
+            pos++; sfx("note", i);
+            if (pos === seq.length) { lv++; later(() => sfx("good"), 300); say("せいかい！ すごいね！", 1200); $("gameRow").innerHTML = ""; later(() => (lv >= 5 ? endGame("memo", lv, 5) : show()), 1000); }
           } })).concat(quitBtn));
         };
         show();
@@ -4020,13 +4099,13 @@ body {
         let r = 0, best = null;
         const turn = () => {
           let ready = false, t0 = 0;
-          gameUI(`ぼくが「いまだ！」って いったら おしてね！（${r + 1}/3）`, [{ label: "まだだよ…", cls: "big", on: () => {
-            if (!ready) { say("フライング！ あせんなって！", 1400); r++; $("gameRow").innerHTML = ""; return later(next, 1000); }
-            const ms = Math.round(performance.now() - t0); if (best == null || ms < best) best = ms; r++;
+          gameUI(`ぼくが「いまだ！」って いったら おしてね！（${r + 1}/3）`, [{ label: "まだだよ…", cls: "big", sfx: false, on: () => {
+            if (!ready) { sfx("bad"); say("フライング！ あせんなって！", 1400); r++; $("gameRow").innerHTML = ""; return later(next, 1000); }
+            const ms = Math.round(performance.now() - t0); if (best == null || ms < best) best = ms; r++; sfx("good");
             say(`${(ms / 1000).toFixed(2)}びょう！ ` + (ms < 350 ? "はやーい！" : ms < 600 ? "なかなかだよ！" : "ちょっと おそいかな〜"), 1500);
             $("gameRow").innerHTML = ""; later(next, 1100);
           } }, quitBtn]);
-          later(() => { ready = true; t0 = performance.now(); const b = $("gameRow").querySelector(".big"); if (b) b.textContent = "いまだ！"; $("fx").innerHTML = `<div class="flash">❗</div>`; }, 1200 + Math.random() * 2500);
+          later(() => { ready = true; t0 = performance.now(); const b = $("gameRow").querySelector(".big"); if (b) b.textContent = "いまだ！"; $("fx").innerHTML = `<div class="flash">❗</div>`; sfx("go"); }, 1200 + Math.random() * 2500);
         };
         const next = () => { $("fx").innerHTML = ""; r >= 3 ? endGame("quick", best, 3) : turn(); };
         turn();
@@ -4037,7 +4116,7 @@ body {
         const turn = () => gameUI(`いまの カードは【${cur}】。つぎは おおきい？ ちいさい？（${streak}れんしょう中）`, [["hi", "⬆ おおきい"], ["lo", "⬇ ちいさい"]].map(([d, l]) => ({ label: l, on: () => {
           let nx; do { nx = 1 + Math.floor(Math.random() * 13); } while (nx === cur);
           const ok = d === "hi" ? nx > cur : nx < cur;
-          $("gameRow").innerHTML = ""; $("fx").innerHTML = `<div class="flash">${nx}</div>`;
+          $("gameRow").innerHTML = ""; $("fx").innerHTML = `<div class="flash">${nx}</div>`; sfx("flip"); later(() => sfx(ok ? "good" : "bad"), 200);
           cur = nx;
           if (ok) { streak++; say("あたり！ つぎも いけるか？", 1200); later(() => { $("fx").innerHTML = ""; streak >= 7 ? endGame("hilo", streak, 7) : turn(); }, 1000); }
           else { say(`【${nx}】でした〜！ ざんねん！`, 1500); later(() => endGame("hilo", streak, 7), 1100); }
@@ -4054,8 +4133,9 @@ body {
         const turn = (msg) => gameUI(msg, P.map(([e, n], i) => ({ label: opened.has(i) ? "💨" : e, cls: "big", aria: n, on: () => {
           if (opened.has(i)) return;
           tries++; opened.add(i);
-          if (i === ans) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say("みつかっちゃった〜！", 1500); return later(() => endGame("hide", tries, 3), 900); }
-          if (tries >= 3) { $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say(`へへっ、${P[ans][1]}の うしろでした〜！`, 1800); return later(() => endGame("hide", 0, 3), 1100); }
+          if (i === ans) { sfx("reveal"); $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say("みつかっちゃった〜！", 1500); return later(() => endGame("hide", tries, 3), 900); }
+          sfx("poof");
+          if (tries >= 3) { later(() => sfx("bad"), 250); $("gameRow").innerHTML = ""; $("petWrap").style.transform = ""; say(`へへっ、${P[ans][1]}の うしろでした〜！`, 1800); return later(() => endGame("hide", 0, 3), 1100); }
           turn(`${n}には いないよ〜！ あと ${3 - tries}かい！`);
         } })).concat(quitBtn));
         turn("ぼく、どこに かくれたでしょーか？ 3かいで みつけてみてね！");
@@ -4086,7 +4166,7 @@ body {
         const turn = () => {
           const [q, ch] = order[r];
           gameUI(`Q${r + 1}. ${q}`, shuffle(ch.map((t, i) => [t, i === 0])).map(([t, ok]) => ({ label: t, on: () => {
-            if (ok) win++; r++;
+            if (ok) win++; r++; sfx(ok ? "good" : "bad");
             say(ok ? "せいかい！ ぼくのこと よく わかってるね！" : `ブッブー！ こたえは「${ch[0]}」だよ！`, 1800);
             $("gameRow").innerHTML = "";
             later(() => (r >= order.length ? endGame("quiz", win, order.length) : turn()), 1300);
@@ -4095,6 +4175,8 @@ body {
         turn();
       } },
   ];
+
+  GAMES.forEach((g) => { const go = g.start; g.start = () => { gameMusic(g.id); go(); }; });   // each game plays its own BGM
 
   $("bFeed").onclick = feed;
   $("bPlay").onclick = play;
@@ -4222,6 +4304,7 @@ body {
     $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
     $("setSong").innerHTML = `<option value="-1">🔀 いろいろ（じゅんばんに かわる）</option>` + SONGS.map((x, i) => `<option value="${i}">${i + 1}. ${x.name}</option>`).join(""); $("setSong").value = String(prefs.bgmSong ?? -1);
     $("setVoice").value = prefs.voiceVol; $("setVoiceV").textContent = prefs.voiceVol;
+    $("setSfx").value = prefs.sfxVol; $("setSfxV").textContent = prefs.sfxVol;
     $("setTalk").checked = !!prefs.talk;
     $("setSheet").value = prefs.sheet || "";
     $("sheetStatus").textContent = sheetNote();
@@ -4249,6 +4332,7 @@ body {
   }));
   $("hatFitReset").onclick = () => { if (S.hatFit) delete S.hatFit[wornHat()]; save(); showHatPrev(); };
   $("setBgm").oninput = () => { prefs.bgmVol = +$("setBgm").value; $("setBgmV").textContent = prefs.bgmVol; savePrefs(); audioCtx(); applyVolumes(); if (prefs.bgmVol) startBgm(); else stopBgm(); };
+  $("setSfx").oninput = () => { prefs.sfxVol = +$("setSfx").value; $("setSfxV").textContent = prefs.sfxVol; savePrefs(); audioCtx(); applyVolumes(); sfx("good"); };
   $("setVoice").oninput = () => { prefs.voiceVol = +$("setVoice").value; $("setVoiceV").textContent = prefs.voiceVol; savePrefs(); audioCtx(); applyVolumes(); };
   $("setSong").onchange = () => { prefs.bgmSong = +$("setSong").value; savePrefs(); if (!audioCtx()) return; pickSong(false); if (AUD.ctx) AUD.next = AUD.ctx.currentTime + 0.15; if (prefs.bgmVol) startBgm(); };
   $("setTalk").onchange = () => { prefs.talk = $("setTalk").checked; savePrefs(); };
