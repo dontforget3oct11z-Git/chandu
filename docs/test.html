@@ -702,10 +702,11 @@ body {
   const voicePieces = (t) => (String(t).replace(/\s+/g, " ").match(/[^！？。!?…〜♪]*[！？。!?…〜♪]+|[^！？。!?…〜♪]+$/g) || [])
     .map((s) => s.trim()).filter((s) => s && !s.includes("${") && /[ぁ-んァ-ヶ一-龯]/.test(s));
   const voiceKey = (s) => { let h = 0x811c9dc5; for (const ch of s) { h ^= ch.codePointAt(0); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(16).padStart(8, "0"); };
+  const VOICE_VER = "bii";   // change when the clips are regenerated, so phones don't keep playing old cached ones
   const voiceBufs = new Map();   // the last few decoded clips
   function voiceClip(key) {
     if (voiceBufs.has(key)) { const p = voiceBufs.get(key); voiceBufs.delete(key); voiceBufs.set(key, p); return p; }
-    const p = fetch(VOICE_BASE + key + ".mp3").then((r) => (r.ok ? r.arrayBuffer() : null))
+    const p = fetch(VOICE_BASE + key + ".mp3?v=" + VOICE_VER).then((r) => (r.ok ? r.arrayBuffer() : null))
       .then((b) => b && new Promise((ok) => AUD.ctx.decodeAudioData(b, ok, () => ok(null)))).catch(() => null);
     voiceBufs.set(key, p); if (voiceBufs.size > 40) voiceBufs.delete(voiceBufs.keys().next().value);
     return p;
