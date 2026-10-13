@@ -475,7 +475,7 @@ body {
         <label class="row vol-row">🐯 こえ <input type="range" id="setVoice" min="0" max="100" step="5" aria-label="チャンドゥの こえの おおきさ"><output id="setVoiceV"></output></label>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setTalk" style="flex:0"> チャンドゥの ことばを よみあげる</label>
         <div class="row"><button type="button" class="mini-btn" id="setVoiceTry">▶ こえを きいてみる</button></div>
-        <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。</p>
+        <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。<br>チャンドゥの こえ: VOICEVOX:猫使ビィ</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -658,7 +658,7 @@ body {
     br.connect(bf); bf.connect(bg); bg.connect(g);
     [o, vib, br].forEach((x) => { x.start(t); x.stop(t + len + 0.05); });
   }
-  // Chandu's lines are read by an AI voice (Kokoro TTS, voice "jf_tebukuro"), made ahead of time: one small mp3 per
+  // Chandu's lines are read by an AI voice (VOICEVOX, voice "猫使ビィ"; credit shown in settings), made ahead of time: one small mp3 per
   // sentence in docs/voice/, named by a hash of the sentence as written in the game ({name} read as "きみ").
   // A sentence with no file (numbers, lines changed in the sheet) is skipped; a line with none at all gets the cub cry.
   const VOICE_BASE = /^https?:$/.test(location.protocol) && !/github\.io$/.test(location.hostname) ? "https://dontforget3oct11z-git.github.io/chandu/voice/" : "voice/";
