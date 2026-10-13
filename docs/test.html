@@ -697,6 +697,7 @@ body {
   }
   // Chandu's lines are read by an AI voice (VOICEVOX, voice "猫使ビィ"; credit shown in settings), made ahead of time: one small mp3 per
   // sentence in docs/voice/, named by a hash of the sentence as written in the game ({name} read as "きみ").
+  // Sentences with {name} also have clips for the player's name, named by the hash with the name filled in (tools/voice/README.md).
   // A sentence with no file (numbers, lines changed in the sheet) is skipped; a line with none at all gets the cub cry.
   const VOICE_BASE = /^https?:$/.test(location.protocol) && !/github\.io$/.test(location.hostname) ? "https://dontforget3oct11z-git.github.io/chandu/voice/" : "voice/";
   const voicePieces = (t) => (String(t).replace(/\s+/g, " ").match(/[^！？。!?…〜♪]*[！？。!?…〜♪]+|[^！？。!?…〜♪]+$/g) || [])
@@ -715,7 +716,9 @@ body {
   function stopVoice() { voiceSeq++; voiceSrcs.forEach((s) => { try { s.stop(); } catch (e) {} }); voiceSrcs = []; }
   async function playLine(raw) {
     stopVoice(); const seq = voiceSeq;
-    const bufs = (await Promise.all(voicePieces(raw).map((p) => voiceClip(voiceKey(p))))).filter(Boolean);
+    // a sentence with {name} first tries the clip made with the player's own name, then the one read as "きみ"
+    const nameClip = (p) => (p.includes("{name}") && S.userName ? voiceClip(voiceKey(p.replace(/\{name\}/g, S.userName))) : Promise.resolve(null));
+    const bufs = (await Promise.all(voicePieces(raw).map(async (p) => (await nameClip(p)) || voiceClip(voiceKey(p))))).filter(Boolean);
     if (seq !== voiceSeq || !AUD.ctx) return;
     if (!bufs.length) return cubCry();
     let t = AUD.ctx.currentTime + 0.03;
