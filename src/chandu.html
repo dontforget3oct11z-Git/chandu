@@ -224,6 +224,9 @@ body {
 .story-card.talking.me p { background: #ffe3cf; border-color: #f5b98f; }
 .story-card .reward { font-size: 13px; font-weight: 700; color: #6b3a1e; }
 .story-card button { align-self: center; font-family: var(--font-body); font-weight: 700; font-size: 15px; background: var(--shell); color: var(--cream); border: 0; border-radius: 999px; padding: 9px 28px; cursor: pointer; box-shadow: 0 3px 0 var(--shell-dark); }
+.vol-row { font-size: 13px; font-weight: 700; color: #6b3a1e; align-items: center; }
+.vol-row input[type=range] { flex: 1; accent-color: #e0703a; min-width: 0; }
+.vol-row output { width: 2.2em; text-align: right; font-weight: 400; }
 .hat-adj { display: flex; gap: 10px; align-items: center; margin: 6px 0; min-width: 0; }
 #hatPrev { width: 120px; height: 120px; flex: 0 0 auto; background: #fff3d6; border-radius: 14px; }
 .hat-btns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; flex: 1; min-width: 0; }
@@ -465,6 +468,12 @@ body {
           </div>
         </div>
         <p class="note">ボタンで ぼうしの いち・おおきさ・かたむきを かえられるよ（ぼうしごとに おぼえるよ）。「まいにち ランダム」に すると、あつめた お宝から まいにち ちがう ぼうしを かぶるよ。お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
+        <h4>🔊 おと</h4>
+        <label class="row vol-row">🎵 BGM <input type="range" id="setBgm" min="0" max="100" step="5" aria-label="BGMの おおきさ"><output id="setBgmV"></output></label>
+        <label class="row vol-row">🐯 こえ <input type="range" id="setVoice" min="0" max="100" step="5" aria-label="チャンドゥの こえの おおきさ"><output id="setVoiceV"></output></label>
+        <label class="row" style="font-size:13px"><input type="checkbox" id="setTalk" style="flex:0"> チャンドゥの ことばを よみあげる</label>
+        <div class="row"><button type="button" class="mini-btn" id="setVoiceTry">▶ こえを きいてみる</button></div>
+        <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -498,7 +507,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.28";
+  const VERSION = "1.29";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -542,7 +551,7 @@ body {
   }
   // Settings that are not part of the game save: photo style and the linked spreadsheet.
   const PREF_KEY = "chandu-prefs-v1";
-  let prefs = { toon: true, sheet: "" };
+  let prefs = { toon: true, sheet: "", bgmVol: 30, voiceVol: 70, talk: true };
   try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY))); } catch (e) {}
   const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
 
@@ -601,9 +610,127 @@ body {
   let sayTimer = 0;
   function say(t, ms = 3200) {
     $("bubble").textContent = String(t).replace(/\{name\}/g, S.userName || "きみ");
+    chanduVoice($("bubble").textContent);
     clearTimeout(sayTimer);
     sayTimer = setTimeout(() => ($("bubble").textContent = ""), ms);
   }
+
+
+  // ---- sound: Chandu's voice and the BGM, all made in the browser (no sound files) ----
+  // The voice is a little tiger-cub cry (high, around 360 Hz, rising and falling, like the cub at the ride)
+  // followed by the line read aloud in a high, childlike voice. The BGM is an original Arabian-style loop.
+  const AUD = { ctx: null, voice: null, bgm: null, bgmOn: false, next: 0, step: 0, timer: 0, noise: null };
+  function audioCtx() {
+    if (!AUD.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      try { AUD.ctx = new AC(); } catch (e) { return null; }
+      AUD.voice = AUD.ctx.createGain(); AUD.voice.connect(AUD.ctx.destination);
+      AUD.bgm = AUD.ctx.createGain(); AUD.bgm.connect(AUD.ctx.destination);
+      const n = AUD.ctx.createBuffer(1, AUD.ctx.sampleRate, AUD.ctx.sampleRate), d = n.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      AUD.noise = n; applyVolumes();
+    }
+    if (AUD.ctx.state === "suspended" && !document.hidden) AUD.ctx.resume().catch(() => {});
+    return AUD.ctx;
+  }
+  function applyVolumes() {
+    if (!AUD.ctx) return;
+    const t = AUD.ctx.currentTime, v = (x) => Math.pow((x || 0) / 100, 1.6);   // sliders feel even to the ear
+    AUD.voice.gain.setTargetAtTime(v(prefs.voiceVol), t, 0.05);
+    AUD.bgm.gain.setTargetAtTime(v(prefs.bgmVol) * 0.5, t, 0.2);
+  }
+  function cubCry() {
+    const ctx = audioCtx(); if (!ctx || !prefs.voiceVol) return;
+    const t = ctx.currentTime + 0.02, k = 0.9 + Math.random() * 0.25, len = 0.28 + Math.random() * 0.14;
+    const o = ctx.createOscillator(), vib = ctx.createOscillator(), vg = ctx.createGain(), g = ctx.createGain();
+    o.type = "sawtooth";
+    o.frequency.setValueAtTime(300 * k, t); o.frequency.linearRampToValueAtTime(520 * k, t + len * 0.35); o.frequency.exponentialRampToValueAtTime(330 * k, t + len);
+    vib.frequency.value = 7; vg.gain.value = 14; vib.connect(vg); vg.connect(o.frequency);
+    const f1 = ctx.createBiquadFilter(), f2 = ctx.createBiquadFilter(), lp = ctx.createBiquadFilter(), mix = ctx.createGain();
+    f1.type = f2.type = "bandpass"; f1.frequency.value = 950; f2.frequency.value = 2100; f1.Q.value = 4; f2.Q.value = 6;
+    lp.type = "lowpass"; lp.frequency.value = 3200; mix.gain.value = 1.6;
+    o.connect(f1); o.connect(f2); f1.connect(mix); f2.connect(mix); mix.connect(lp); lp.connect(g); g.connect(AUD.voice);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.5, t + 0.04); g.gain.setValueAtTime(0.5, t + len * 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+    const br = ctx.createBufferSource(), bf = ctx.createBiquadFilter(), bg = ctx.createGain();   // a little breath in the growl
+    br.buffer = AUD.noise; bf.type = "bandpass"; bf.frequency.value = 1500; bf.Q.value = 1; bg.gain.value = 0.05;
+    br.connect(bf); bf.connect(bg); bg.connect(g);
+    [o, vib, br].forEach((x) => { x.start(t); x.stop(t + len + 0.05); });
+  }
+  let jaVoice = null;
+  const pickVoice = () => { try { const vs = speechSynthesis.getVoices().filter((v) => /^ja/i.test(v.lang)); jaVoice = vs.find((v) => /kyoko|o-ren|female|女性|nanami|haruka/i.test(v.name)) || vs[0] || null; } catch (e) {} };
+  try { speechSynthesis.onvoiceschanged = pickVoice; pickVoice(); } catch (e) {}
+  function speakLine(text) {
+    if (!prefs.talk || !prefs.voiceVol || !window.speechSynthesis) return;
+    const t = String(text).replace(/\p{Extended_Pictographic}|️|‍/gu, "").replace(/[…⋯]+/g, "、").replace(/[〜～ー]{2,}/g, "ー").replace(/\s+/g, " ").trim();
+    if (!t || /^[、。！？!?\s]*$/.test(t) || /^z+/i.test(t)) return;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(t);
+      u.lang = "ja-JP"; if (jaVoice) u.voice = jaVoice;
+      u.pitch = 1.9; u.rate = 1.12; u.volume = Math.min(1, prefs.voiceVol / 100);
+      speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+  let lastVoice = 0;
+  function chanduVoice(text) {
+    if (!AUD.ctx || !text) return;                 // nothing until the player has tapped once (browsers need a tap for sound)
+    const now = Date.now(); if (now - lastVoice < 600) return; lastVoice = now;
+    cubCry(); setTimeout(() => speakLine(text), 380);
+  }
+  // BGM: maqam hijaz on D, a plucked oud-like melody over a soft drone and a darbuka pattern (doum / tek)
+  const HIJAZ = [0, 1, 4, 5, 7, 8, 10, 12, 13, 16];
+  const MELODY = [4, -1, 3, 2, 3, -1, 1, 2, 0, -1, -1, -1, 2, 3, 4, 5, 6, -1, 5, 4, 5, -1, 3, 4, 2, -1, -1, -1, 4, 3, 2, 1,
+                  4, 5, 7, 6, 5, -1, 4, 5, 3, -1, 2, 3, 4, -1, -1, -1, 6, 5, 4, 3, 2, -1, 3, 2, 1, 2, 3, 1, 0, -1, -1, -1];
+  const DRUM = ["D", "", "", "t", "D", "", "t", "", "D", "", "", "t", "", "t", "t", ""];
+  function pluck(f, t, dur, vol) {
+    const c = AUD.ctx, o = c.createOscillator(), o2 = c.createOscillator(), g = c.createGain(), lp = c.createBiquadFilter();
+    o.type = "triangle"; o2.type = "sawtooth"; o.frequency.value = f; o2.frequency.value = f * 1.003;
+    lp.type = "lowpass"; lp.frequency.setValueAtTime(2400, t); lp.frequency.exponentialRampToValueAtTime(600, t + dur);
+    const g2 = c.createGain(); g2.gain.value = 0.25; o2.connect(g2); g2.connect(lp); o.connect(lp); lp.connect(g); g.connect(AUD.bgm);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    [o, o2].forEach((x) => { x.start(t); x.stop(t + dur + 0.05); });
+  }
+  function drum(kind, t) {
+    const c = AUD.ctx, g = c.createGain(); g.connect(AUD.bgm);
+    if (kind === "D") {
+      const o = c.createOscillator(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.18);
+      o.connect(g); g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.25); o.start(t); o.stop(t + 0.3);
+    } else {
+      const n = c.createBufferSource(), hp = c.createBiquadFilter(); n.buffer = AUD.noise; hp.type = "highpass"; hp.frequency.value = 3500;
+      n.connect(hp); hp.connect(g); g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.06); n.start(t, Math.random() * 0.5); n.stop(t + 0.08);
+    }
+  }
+  let drone = null;
+  function bgmTick() {
+    const c = AUD.ctx; if (!c || !AUD.bgmOn) return;
+    const eighth = 60 / 96 / 2;
+    while (AUD.next < c.currentTime + 0.4) {
+      const i = AUD.step % MELODY.length, m = MELODY[i];
+      if (m >= 0) pluck(293.66 * Math.pow(2, HIJAZ[m] / 12), AUD.next, eighth * 2.2, 0.16);
+      if (i % 8 === 0) pluck(146.83, AUD.next, eighth * 6, 0.07);
+      const d = DRUM[AUD.step % DRUM.length]; if (d) drum(d, AUD.next);
+      AUD.next += eighth; AUD.step++;
+    }
+  }
+  function startBgm() {
+    const c = audioCtx(); if (!c || AUD.bgmOn || !prefs.bgmVol) return;
+    AUD.bgmOn = true; AUD.next = c.currentTime + 0.1;
+    if (!drone) {
+      drone = c.createGain(); drone.gain.value = 0.05; const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 500;
+      [73.42, 110, 146.83].forEach((f) => { const o = c.createOscillator(); o.type = "sawtooth"; o.frequency.value = f; o.connect(lp); o.start(); });
+      lp.connect(drone); drone.connect(AUD.bgm);
+    }
+    drone.gain.setTargetAtTime(0.05, c.currentTime, 0.5);
+    clearInterval(AUD.timer); AUD.timer = setInterval(bgmTick, 120); bgmTick();
+  }
+  function stopBgm() { AUD.bgmOn = false; clearInterval(AUD.timer); if (drone && AUD.ctx) drone.gain.setTargetAtTime(0, AUD.ctx.currentTime, 0.2); }
+  // browsers only allow sound after a tap: the first tap anywhere turns it on
+  document.addEventListener("pointerdown", () => { if (audioCtx()) { applyVolumes(); if (prefs.bgmVol) startBgm(); } }, true);
+  document.addEventListener("visibilitychange", () => {
+    if (!AUD.ctx) return;
+    if (document.hidden) { AUD.ctx.suspend().catch(() => {}); try { speechSynthesis.cancel(); } catch (e) {} }
+    else AUD.ctx.resume().then(() => { AUD.next = AUD.ctx.currentTime + 0.1; }).catch(() => {});
+  });
 
   // ---- drawing ----
   function mood() {
@@ -3350,6 +3477,7 @@ body {
     setPortrait(line ? line[0] : null, line ? line[1] : c.icon);
     $("storyTitle").textContent = line ? line[0] : c.title;
     $("storyText").textContent = fill(hideItem(c, line ? line[2] : "📍 " + c.place + "\n" + pg.narr));
+    if (line && line[0] === "チャンドゥ") { lastVoice = 0; chanduVoice($("storyText").textContent); } else try { speechSynthesis.cancel(); } catch (e) {}
     $("storySay").textContent = "💬 " + fill(hideItem(c, c.say));
     $("storySay").hidden = !!(c.talkA || c.talkB) || !last || !part.includes("B");
     const showReward = last && part.includes("B") && c.reward;
@@ -3966,8 +4094,11 @@ body {
     opt("@random", "🎲 まいにち ランダム" + (rndItem ? `（きょうは ${rndItem.name}）` : ""));
     sel.insertBefore(sel.lastChild, sel.children[1]);
     sel.value = S.hat === "@random" ? "@random" : ITEM_BY_KEY[S.hat] ? S.hat : "";
-    showHatPrev();
+    requestAnimationFrame(showHatPrev);   // once the dialog is showing, so the preview can measure Chandu
     $("setToon").checked = !!prefs.toon;
+    $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
+    $("setVoice").value = prefs.voiceVol; $("setVoiceV").textContent = prefs.voiceVol;
+    $("setTalk").checked = !!prefs.talk;
     $("setSheet").value = prefs.sheet || "";
     $("sheetStatus").textContent = sheetNote();
     renderFaceList();
@@ -3993,6 +4124,10 @@ body {
     save(); showHatPrev();
   }));
   $("hatFitReset").onclick = () => { if (S.hatFit) delete S.hatFit[wornHat()]; save(); showHatPrev(); };
+  $("setBgm").oninput = () => { prefs.bgmVol = +$("setBgm").value; $("setBgmV").textContent = prefs.bgmVol; savePrefs(); audioCtx(); applyVolumes(); if (prefs.bgmVol) startBgm(); else stopBgm(); };
+  $("setVoice").oninput = () => { prefs.voiceVol = +$("setVoice").value; $("setVoiceV").textContent = prefs.voiceVol; savePrefs(); audioCtx(); applyVolumes(); };
+  $("setTalk").onchange = () => { prefs.talk = $("setTalk").checked; savePrefs(); };
+  $("setVoiceTry").onclick = () => { audioCtx(); applyVolumes(); lastVoice = 0; chanduVoice(fill("がおー！ ぼく、チャンドゥ！ {name}、きょうも いっしょに あるこうね！")); };
   $("setToon").onchange = () => { prefs.toon = $("setToon").checked; savePrefs(); bgKey = ""; renderBg(); };
   $("setSheetOk").onclick = () => {
     const id = sheetId($("setSheet").value);
