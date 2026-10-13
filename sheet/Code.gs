@@ -8,6 +8,9 @@
 //          {op:"rows", tab, rows:[{No:…, 列名:値}]}  No が おなじ ぎょうを うわがき（なければ ついか）
 //          {op:"tab", tab, values:[[…],[…]]}     シートを まるごと いれかえる
 //          {op:"chanduImages", data:["data:image/jpeg;base64,…"]}  チャンドゥ シートの アイコン欄の あいている ところに じゅんに いれる
+//          {op:"itemArt", rows:[{No, key, data}]}  エリア シートの お宝アイコン欄に お宝の イラストを いれる（key は 代替テキスト）
+//          {op:"artTab", items:[{key, label, data}]}  「お宝イラスト」シートに イラストの いちらんを つくる（コピーして つかえる）
+//   お宝アイコン欄の がぞうは、代替テキスト（タイトル）が あれば それを、なければ がぞうの リンクを アプリに わたす
 const IMG = "がぞう";
 const ICONS = "アイコン";   // one row per character: put its picture in the アイコン column
 const CHANDU = "チャンドゥ";
@@ -32,6 +35,8 @@ function doPost(e) {
   lock.waitLock(20000);
   try {
     if (b.op === "image") return json(saveImage(ss, String(b.name || ""), String(b.data || "")));
+    if (b.op === "itemArt") return json(putItemArt(ss.getSheetByName(TABS.areas), b.rows || []));
+    if (b.op === "artTab") return json(makeArtTab(ss, b.items || []));
     if (b.op === "chanduImages") return json(addChanduImages(ss, b.data || []));
     if (b.op === "rows") return json(saveRows(ss.getSheetByName(b.tab), b.rows || [], b.key || "No"));
     if (b.op === "tab") {
@@ -102,7 +107,16 @@ function syncNow() {
 
 function readTab(sh) {
   if (!sh || sh.getLastRow() < 1) return [];
-  const v = sh.getDataRange().getDisplayValues(), h = v.shift().map(String);
+  const r = sh.getDataRange(), v = r.getDisplayValues(), h = v.shift().map(String);
+  // a picture in an お宝アイコン cell shows as nothing: send its alt text (the app's drawing name) or its link instead
+  const ai = h.indexOf("お宝アイコン");
+  if (ai >= 0 && v.length) {
+    const col = sh.getRange(2, ai + 1, v.length, 1), raw = col.getValues(), fx = col.getFormulas();
+    raw.forEach((x, i) => {
+      if (x[0] && typeof x[0] === "object" && x[0].getAltTextTitle) { let t = ""; try { t = x[0].getAltTextTitle() || ""; } catch (e) {} v[i][ai] = t || cellImageUrl(x[0], ""); }
+      else if (fx[i][0]) v[i][ai] = cellImageUrl("", fx[i][0]) || v[i][ai];
+    });
+  }
   return v.filter((r) => r.some((x) => x !== "")).map((r) => Object.fromEntries(h.map((k, i) => [k, r[i]])));
 }
 
@@ -210,6 +224,41 @@ function saveRows(sh, rows, key) {
     }
   });
   return { ok: true, rows: rows.length };
+}
+
+// Pictures for the お宝: each goes into the お宝アイコン cell of the エリア row with the same No, with the
+// drawing's name (an emoji) as its alt text so the app knows which drawing it is.
+function putItemArt(sh, rows) {
+  if (!sh) return { ok: false, error: "no エリア tab" };
+  const h = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String), ni = h.indexOf("No");
+  let ai = h.indexOf("お宝アイコン");
+  if (ni < 0) return { ok: false, error: "no No column" };
+  if (ai < 0) { ai = h.length; sh.getRange(1, ai + 1).setValue("お宝アイコン"); }
+  const nos = sh.getRange(2, ni + 1, Math.max(1, sh.getLastRow() - 1), 1).getValues().map((x) => String(x[0]));
+  let n = 0; const errors = [];
+  rows.forEach((r) => {
+    const i = nos.indexOf(String(r.No));
+    if (i < 0) { errors.push(r.No + ": no row"); return; }
+    try {
+      sh.getRange(i + 2, ai + 1).setValue(SpreadsheetApp.newCellImage().setSourceUrl(r.data).setAltTextTitle(String(r.key || "")).build()); n++;
+    } catch (e) { errors.push(r.No + ": " + e.message); }
+  });
+  return { ok: !errors.length, put: n, errors };
+}
+
+// The お宝イラスト tab: every drawing with its name, to copy into an お宝アイコン cell.
+function makeArtTab(ss, items) {
+  const sh = ss.getSheetByName("お宝イラスト") || ss.insertSheet("お宝イラスト");
+  sh.clear();
+  sh.getRange(1, 1, 1, 3).setValues([["イラスト", "なまえ（絵文字）", "なに"]]);
+  const errors = [];
+  items.forEach((it, k) => {
+    sh.getRange(k + 2, 2, 1, 2).setValues([[it.key, it.label || ""]]);
+    try { sh.getRange(k + 2, 1).setValue(SpreadsheetApp.newCellImage().setSourceUrl(it.data).setAltTextTitle(String(it.key)).build()); }
+    catch (e) { errors.push(it.key + ": " + e.message); }
+  });
+  sh.setRowHeights(2, Math.max(1, items.length), 56); sh.setColumnWidth(1, 64);
+  return { ok: !errors.length, items: items.length, errors };
 }
 
 function json(o) {

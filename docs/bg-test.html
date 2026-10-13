@@ -237,7 +237,7 @@ body {
 .zk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 6px; padding: 4px 0 8px; }
 .story-card .zk-item { align-self: stretch; box-shadow: none; display: flex; flex-direction: column; align-items: center; gap: 2px; background: #fff3d6; border: 2px solid #f0d9a8; border-radius: 12px; padding: 6px 2px; font-family: var(--font-body); font-size: 10px; line-height: 1.25; color: #3a2a22; cursor: pointer; min-width: 0; }
 .story-card .zk-item b { font-size: 26px; font-weight: 400; line-height: 1.1; }
-.story-card .zk-item b svg.art { width: 38px; height: 38px; display: block; }
+.story-card .zk-item b .art { width: 38px; height: 38px; display: block; object-fit: contain; }
 .story-card .zk-item span { overflow-wrap: anywhere; text-align: center; }
 .story-card .zk-item.locked { background: #efe6da; border-color: #e2d6c6; cursor: default; color: #9a8b7d; }
 .story-card .zk-item.locked b { filter: brightness(0); opacity: .28; }
@@ -469,7 +469,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.23";
+  const VERSION = "1.24";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -664,8 +664,15 @@ body {
     "🥞": "<ellipse cx=\"32\" cy=\"42\" rx=\"29\" ry=\"14\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><ellipse cx=\"32\" cy=\"38\" rx=\"23\" ry=\"11\" fill=\"#c8843f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M13 36l6-6 5 10 6-12 6 12 6-12 5 10 5-6\" fill=\"none\" stroke=\"#6b3f1f\" stroke-width=\"4\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M14 42c4-3 6 3 10 0s6 3 10 0 6 3 10 0 5 2 7 0\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><path d=\"M19 33c4-3 6 3 10 0s6 3 10 0 6 3 8 0\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><circle cx=\"22\" cy=\"44\" r=\"1.2\" fill=\"#6aa84f\"/><circle cx=\"38\" cy=\"45\" r=\"1.2\" fill=\"#6aa84f\"/><circle cx=\"30\" cy=\"31\" r=\"1.2\" fill=\"#6aa84f\"/><circle cx=\"44\" cy=\"35\" r=\"1.2\" fill=\"#6aa84f\"/><path d=\"M27 38l3-2 1 3zM40 41l3-1 0 3z\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1\"/><path d=\"M14 34c1-2 3-4 5-5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/>",
     "🍢": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"rotate(25 32 32)\"><path d=\"M32 3v58\" stroke=\"#2b1d14\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M32 3v58\" stroke=\"#e3b23c\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><circle cx=\"32\" cy=\"14\" r=\"9\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"32\" cy=\"30\" r=\"9\" fill=\"#fff1d6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"32\" cy=\"46\" r=\"9\" fill=\"#a0622d\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M27 11c1-2 2-3 4-3\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M27 27c1-2 2-3 4-3\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M27 43c1-2 2-3 4-3\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/></g>"
   };
+  // The sheet can also hold its own picture for an お宝 (an image in the お宝アイコン cell): that arrives as a link.
+  // the sheet may drop or add the emoji variation mark (🗝 / 🗝️), so either spelling finds the drawing
+  const artKey = (v) => { v = String(v || "").trim(); const b = v.replace(/\uFE0F/g, ""); return [v, b, b + "\uFE0F"].find((k) => ITEM_ART[k]) || ""; };
+  const isUrl = (icon) => /^https?:\/\//.test(icon || "");
   const itemArt = (icon) => ITEM_ART[icon] ? `<svg class="art" viewBox="0 0 64 64" aria-hidden="true">${ITEM_ART[icon]}</svg>` : "";
-  const setArt = (box, icon) => { const a = itemArt(icon); if (a) box.innerHTML = a; else box.textContent = icon; };
+  const setArt = (box, icon) => {
+    if (isUrl(icon)) { box.innerHTML = ""; const im = new Image(); im.alt = ""; im.className = "art"; im.src = icon; im.onerror = () => { box.innerHTML = itemArt("🎁"); }; box.appendChild(im); return; }
+    const a = itemArt(icon); if (a) box.innerHTML = a; else box.textContent = icon;
+  };
   function drawPet() {
     const st = stageOf().id;
     const svg = $("pet");
@@ -729,7 +736,8 @@ body {
         <ellipse cx="116" cy="52" rx="${gem - 2}" ry="${gem}" fill="#b0103a"/>
         <path d="M112 47 l4 -3 l4 3 l-4 9 z" fill="#ff6f8f" opacity=".8"/></g>`;
     const hatItem = S.hat && ITEM_BY_KEY[S.hat];
-    const hat = !hatItem ? turban : ITEM_ART[hatItem.icon] ? `<svg x="80" y="0" width="64" height="64" viewBox="0 0 64 64" transform="rotate(-8 112 36)">${ITEM_ART[hatItem.icon]}</svg>`
+    const hat = !hatItem ? turban : isUrl(hatItem.icon) ? `<image href="${hatItem.icon.replace(/"/g, "%22")}" x="80" y="0" width="64" height="64" transform="rotate(-8 112 36)"/>`
+      : ITEM_ART[hatItem.icon] ? `<svg x="80" y="0" width="64" height="64" viewBox="0 0 64 64" transform="rotate(-8 112 36)">${ITEM_ART[hatItem.icon]}</svg>`
       : `<text x="112" y="56" font-size="58" text-anchor="middle" transform="rotate(-8 112 36)">${hatItem.icon}</text>`;
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
@@ -3458,7 +3466,7 @@ body {
       set("アイコン", (v) => (c.icon = v));
       set("みどころ", (v) => (c.sight = v));
       const prize = c.item || c.grand;
-      if (prize) { set("お宝", (v) => (prize.name = v)); set("お宝アイコン", (v) => (prize.icon = v)); set("お宝せつめい", (v) => (prize.desc = v)); }
+      if (prize) { set("お宝", (v) => (prize.name = v)); set("お宝アイコン", (v) => { if (artKey(v) && artKey(v) !== "🎁") prize.icon = artKey(v); else if (isUrl(v)) prize.icon = v; }); set("お宝せつめい", (v) => (prize.desc = v)); }  // an お宝アイコン emoji with no drawing (or the old 🎁) keeps the app's drawing
       set("前編の文", (v) => (c.textA = v));
       set("後編の文", (v) => (c.textB = v));
       set("前編の会話", (v) => (c.talkA = parseTalk(v, icons)));
