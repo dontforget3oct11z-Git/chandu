@@ -468,7 +468,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.24";
+  const VERSION = "1.25";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -1978,15 +1978,15 @@ body {
 🇬🇱|グリーンランド|巨大な 氷山が うかぶ イルリサットを 見た|スアーサット
 `;
   const tourTexts = [
-    (w) => `${w.place}に とうちゃく！ ぼく、${w.sight}んだよ！ めいぶつの「${w.food}」も たべたよ！`,
-    (w) => `つぎは ${w.place}！ ${w.sight}んだ。おなかが すいたら「${w.food}」で きまりだね！`,
-    (w) => `${w.place}に やってきたよ！ ${w.sight}んだ。「${w.food}」、おいしかった〜！`,
+    (w) => `${w.place}に とうちゃく！ ぼく、${w.sight}んだよ！ 8,000歩 あるいたら、なにか いいこと あるかも…？`,
+    (w) => `つぎは ${w.place}！ ${w.sight}んだ。この まちの お宝、なにかなあ？`,
+    (w) => `${w.place}に やってきたよ！ ${w.sight}んだ。おなかも ぺこぺこ〜！`,
   ];
   const tourSays = [
-    (w) => `${w.food}、もう ひとくち ちょうだい〜！`,
+    () => "おなか すいてきちゃった〜！",
     (w) => `${w.name}、また こようね！`,
     () => "シンドバッド、みてみて！ すごーい！",
-    (w) => `${w.food}も いいけど… やっぱり バナナが いちばん！`,
+    () => "めいぶつも いいけど… やっぱり バナナが いちばん！",
     () => "スタンプ ゲット！ つぎは どこかな？",
     () => "たびって さいこーだよ！",
     () => "あしたも いっぱい あるこうね！",
@@ -2366,7 +2366,7 @@ body {
         ME(meGo[k % 3])],
       B: [c.mute ? [c.n, c.i, `（${c.n}は ${dest}の まえで とまって、うれしそうに こちらを みた）`]
           : same ? [c.n, c.i, `ついたよ！ ${q}の まちを ゆっくり あるいてみなよ。きっと すてきな はっけんが あるよ！`] : [c.n, c.i, placeLines[k % 3](q, w)],
-        ME(`ぼく、${w.sight}んだよ！ 「${w.food}」も たべてみるね！`), [c.n, c.i, pick(c.b)]],
+        ME(`ぼく、${w.sight}んだよ！ 8,000歩 あるいたら、なにが もらえるかな？`), [c.n, c.i, pick(c.b)]],
     };
   }
   const arriveTexts = [
@@ -2376,6 +2376,7 @@ body {
   ];
   let tourCount = 0;
   const ITEM_GOAL = 8000;
+  let justGot = "";   // the お宝 granted just now, before its page has been shown
   const ITEMS = [], ITEM_BY_KEY = {};
   const ITEM_ICONS = [
     [/ラーメン|そば|うどん|そうめん|麺|米線|米粉|フォー|ラグマン|トゥクパ|ラクサ|パスタ|カルボナーラ|モヒンガー|カオソーイ|カオラウ|ほうとう/, "🍜"],
@@ -2740,6 +2741,7 @@ body {
     if (here && here.item && S.stepsToday >= ITEM_GOAL && S.itemDay !== S.stepDay) {
       S.itemDay = S.stepDay;
       const dup = !!S.items[here.item.key];
+      if (!dup) justGot = here.item.key;   // still a secret in the 後編 that plays just before it
       S.items[here.item.key] = (S.items[here.item.key] || 0) + 1;
       if (dup) S.bananas = Math.min(99, S.bananas + 3);
       S.happy = clamp(S.happy + 10);
@@ -2780,6 +2782,8 @@ body {
     else sc.textContent = icon;
   }
   const fill = (t) => String(t).replace(/\{name\}/g, S.userName || "きみ");
+  // Until a tour area's お宝 is in the zukan its name stays a secret in that area's story (the sheet's text too).
+  const hideItem = (c, t) => !c || c.tn == null || !c.item || (S.items[c.item.key] && justGot !== c.item.key) ? t : String(t).split(c.item.name).join("？？？");
   function renderStoryPage() {
     const { c, eyebrow, n, pages, part } = storyPages, last = storyPage === n - 1, card = $("storyCard");
     const pg = pages[storyPage], line = pg.line;
@@ -2789,8 +2793,8 @@ body {
     $("storyEyebrow").textContent = eyebrow + ` · ${pg.tag}　${storyPage + 1}/${n}`;
     setPortrait(line ? line[0] : null, line ? line[1] : c.icon);
     $("storyTitle").textContent = line ? line[0] : c.title;
-    $("storyText").textContent = fill(line ? line[2] : "📍 " + c.place + "\n" + pg.narr);
-    $("storySay").textContent = "💬 " + fill(c.say);
+    $("storyText").textContent = fill(hideItem(c, line ? line[2] : "📍 " + c.place + "\n" + pg.narr));
+    $("storySay").textContent = "💬 " + fill(hideItem(c, c.say));
     $("storySay").hidden = !!(c.talkA || c.talkB) || !last || !part.includes("B");
     const showReward = last && part.includes("B") && c.reward;
     $("storyReward").textContent = c.reward ? `ゲットしたよ: バナナ ${c.reward.bananas}ぽん ・ ${c.reward.item}` : "";
@@ -2814,6 +2818,7 @@ body {
     return [[who, icon, give[0]], ME(thanks)];
   }
   function showItemGet({ item, dup, c }) {
+    if (justGot === item.key) justGot = "";   // the giving talk may name it
     const talk = (c && (c.talkC || autoItemTalk(c, item))) || [];
     if (talk.length) {
       storyPages = { c, part: "C", eyebrow: "やったよ！ 8,000歩 たっせい！", n: talk.length + 1, pages: talk.map((t) => ({ line: t, tag: "お宝" })).concat([{ item, dup }]) };
@@ -3015,7 +3020,7 @@ body {
   }
   function sleepToggle() {
     if (S.sleeping) { S.sleeping = false; S.happy = clamp(S.happy - (S.energy < 60 ? 8 : 0)); say(S.energy < 60 ? "まだ ねむいよ〜…" : "おはよ！ きょうも あそぼうよ！"); }
-    else { S.sleeping = true; say("おやすみ… また あしたな…"); }
+    else { S.sleeping = true; say("おやすみ… また あしたね…"); }
     save(); render();
   }
   function clean() {
