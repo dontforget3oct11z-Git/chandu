@@ -224,6 +224,12 @@ body {
 .story-card.talking.me p { background: #ffe3cf; border-color: #f5b98f; }
 .story-card .reward { font-size: 13px; font-weight: 700; color: #6b3a1e; }
 .story-card button { align-self: center; font-family: var(--font-body); font-weight: 700; font-size: 15px; background: var(--shell); color: var(--cream); border: 0; border-radius: 999px; padding: 9px 28px; cursor: pointer; box-shadow: 0 3px 0 var(--shell-dark); }
+.hat-adj { display: flex; gap: 10px; align-items: center; margin: 6px 0; min-width: 0; }
+#hatPrev { width: 120px; height: 120px; flex: 0 0 auto; background: #fff3d6; border-radius: 14px; }
+.hat-btns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; flex: 1; min-width: 0; }
+.hat-btns button { font-size: 18px; line-height: 1.2; padding: 6px 0; min-width: 0; color: #3a2a22; border: 2px solid #f0d9a8; background: #fffaf0; border-radius: 10px; cursor: pointer; box-shadow: none; }
+#setHat { width: 100%; min-width: 0; max-width: 100%; }
+.hat-btns .wide { grid-column: 1 / -1; font-size: 13px; font-weight: 700; color: #b6573a; font-family: var(--font-body); }
 .vbtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .vbtns button, .footer .help-btn, .footer .set-btn { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .voyage-item { font-size: 12px; text-align: center; opacity: .95; }
@@ -444,7 +450,21 @@ body {
         <div class="row"><input id="setName" maxlength="12" placeholder="なまえ" autocomplete="nickname" aria-label="なまえ"><button type="button" class="mini-btn" id="setNameOk">きめた！</button></div>
         <h4>🎩 チャンドゥの ぼうし</h4>
         <div class="row"><select id="setHat" aria-label="ぼうし"></select></div>
-        <p class="note">お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
+        <div class="hat-adj">
+          <svg id="hatPrev" viewBox="0 0 200 200" aria-hidden="true"></svg>
+          <div class="hat-btns" role="group" aria-label="ぼうしの いち">
+            <button type="button" data-fit="0,-2,0,0" aria-label="うえへ">⬆️</button>
+            <button type="button" data-fit="0,2,0,0" aria-label="したへ">⬇️</button>
+            <button type="button" data-fit="-2,0,0,0" aria-label="ひだりへ">⬅️</button>
+            <button type="button" data-fit="2,0,0,0" aria-label="みぎへ">➡️</button>
+            <button type="button" data-fit="0,0,0.05,0" aria-label="おおきく">＋</button>
+            <button type="button" data-fit="0,0,-0.05,0" aria-label="ちいさく">－</button>
+            <button type="button" data-fit="0,0,0,-4" aria-label="ひだりに かたむける">↺</button>
+            <button type="button" data-fit="0,0,0,4" aria-label="みぎに かたむける">↻</button>
+            <button type="button" class="wide" id="hatFitReset">もとに もどす</button>
+          </div>
+        </div>
+        <p class="note">ボタンで ぼうしの いち・おおきさ・かたむきを かえられるよ（ぼうしごとに おぼえるよ）。お宝ずかんで お宝を えらんでも かぶせられるよ。</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -478,7 +498,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.26";
+  const VERSION = "1.27";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -1187,6 +1207,8 @@ body {
     if (isUrl(icon)) { box.innerHTML = ""; const im = new Image(); im.alt = ""; im.className = "art"; im.src = icon; im.onerror = () => { box.innerHTML = itemArt("🎁"); }; box.appendChild(im); return; }
     const a = itemArt(icon); if (a) box.innerHTML = a; else box.textContent = icon;
   };
+  // how each hat sits: [right, down, size, tilt°], saved per hat ("" is the turban)
+  const hatFit = (key) => { const f = (S.hatFit || {})[key || ""]; return Array.isArray(f) && f.length === 4 ? f : [0, 0, 1, 0]; };
   function drawPet() {
     const st = stageOf().id;
     const svg = $("pet");
@@ -1253,6 +1275,9 @@ body {
     const hat = !hatItem ? turban : isUrl(hatItem.icon) ? `<image href="${hatItem.icon.replace(/"/g, "%22")}" x="80" y="0" width="64" height="64" transform="rotate(-8 112 36)"/>`
       : ITEM_ART[hatItem.icon] ? `<svg x="80" y="0" width="64" height="64" viewBox="0 0 64 64" transform="rotate(-8 112 36)">${ITEM_ART[hatItem.icon]}</svg>`
       : `<text x="112" y="56" font-size="58" text-anchor="middle" transform="rotate(-8 112 36)">${hatItem.icon}</text>`;
+    // the player's own fit for this hat (set in せってい): shift, size and tilt around the top of the head
+    const [hx, hy, hs, hr] = hatFit(S.hat);
+    const hatFitted = hx || hy || hs !== 1 || hr ? `<g transform="translate(${112 + hx} ${36 + hy}) rotate(${hr}) scale(${hs}) translate(-112 -36)">${hat}</g>` : hat;
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
       <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
@@ -1275,7 +1300,7 @@ body {
         <path d="M74 146 q26 10 52 0" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
         <circle cx="100" cy="158" r="10" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
         <path d="M91 157 h18 M100 160 v7" stroke="${K}" stroke-width="2"/><circle cx="96" cy="153" r="2.5" fill="#fff6c8"/>
-        ${hat}${sweat}
+        ${hatFitted}${sweat}
       </g>`);
   }
   const POOP = `<svg viewBox="0 0 28 24"><path d="M4 22 q-3 -6 4 -8 q-2 -6 6 -7 q0 -6 4 -6 q2 4 6 6 q4 2 0 7 q6 2 2 8 z" fill="#8a5a3a" stroke="#3b4a2a" stroke-width="1.5"/></svg>`;
@@ -3930,6 +3955,7 @@ body {
     opt("", "👳 ターバン（いつもの）");
     ITEMS.filter((it) => S.items[it.key]).forEach((it) => opt(it.key, `${it.name}（${it.place.replace(/（.*）/, "")}）`));
     sel.value = ITEM_BY_KEY[S.hat] ? S.hat : "";
+    showHatPrev();
     $("setToon").checked = !!prefs.toon;
     $("setSheet").value = prefs.sheet || "";
     $("sheetStatus").textContent = sheetNote();
@@ -3939,7 +3965,21 @@ body {
   $("bSet").onclick = openSettings;
   $("setClose").onclick = () => { $("settings").hidden = true; $("bSet").focus(); };
   $("setNameOk").onclick = () => setName($("setName").value);
-  $("setHat").onchange = () => { S.hat = $("setHat").value; save(); drawPet(); };
+  // the preview zooms in on Chandu's head and hat, whatever his size
+  const showHatPrev = () => {
+    drawPet(); const pv = $("hatPrev"); pv.innerHTML = $("pet").innerHTML;
+    try { const g = pv.querySelector("g"), bb = g.getBBox(), m = g.transform.baseVal.consolidate(), sc = m ? m.matrix.a : 1, ty = m ? m.matrix.f : 0, tx = m ? m.matrix.e : 0;
+      const x = tx + bb.x * sc, y = ty + bb.y * sc, w = bb.width * sc, side = Math.max(w, 90);
+      pv.setAttribute("viewBox", `${x + w / 2 - side / 2} ${y - 6} ${side} ${side}`); } catch (e) { pv.setAttribute("viewBox", "0 0 200 200"); }
+  };
+  $("setHat").onchange = () => { S.hat = $("setHat").value; save(); showHatPrev(); };
+  document.querySelectorAll(".hat-btns [data-fit]").forEach((b) => (b.onclick = () => {
+    const d = b.dataset.fit.split(",").map(Number), [x, y, sc, r] = hatFit(S.hat), clampN = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    S.hatFit = S.hatFit || {};
+    S.hatFit[S.hat || ""] = [clampN(x + d[0], -60, 60), clampN(y + d[1], -40, 80), Math.round(clampN(sc + d[2], 0.4, 2) * 100) / 100, clampN(r + d[3], -60, 60)];
+    save(); showHatPrev();
+  }));
+  $("hatFitReset").onclick = () => { if (S.hatFit) delete S.hatFit[S.hat || ""]; save(); showHatPrev(); };
   $("setToon").onchange = () => { prefs.toon = $("setToon").checked; savePrefs(); bgKey = ""; renderBg(); };
   $("setSheetOk").onclick = () => {
     const id = sheetId($("setSheet").value);
