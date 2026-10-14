@@ -11,6 +11,7 @@ struct GameWebView: UIViewRepresentable {
     static let pageURL = URL(string: "https://dontforget3oct11z-git.github.io/chandu/")!
 
     let steps: Int
+    let day: String
     /// Bumped by the parent when the app becomes active, to check for a newer page.
     let refreshToken: Int
 
@@ -39,15 +40,15 @@ struct GameWebView: UIViewRepresentable {
             context.coordinator.lastToken = refreshToken
             context.coordinator.refresh()
         }
-        context.coordinator.push(steps)
+        context.coordinator.push(steps, day: day)
     }
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         weak var webView: WKWebView?
         var lastToken = 0
         private var loaded = false
-        private var pending: Int?
-        private var lastSteps: Int?
+        private var pending: (Int, String)?
+        private var lastSteps: (Int, String)?
         private var currentHTML: String?
 
         private var cacheFile: URL {
@@ -90,16 +91,17 @@ struct GameWebView: UIViewRepresentable {
             webView.loadHTMLString(html, baseURL: GameWebView.pageURL)
         }
 
-        func push(_ steps: Int) {
-            pending = steps
+        func push(_ steps: Int, day: String) {
+            pending = (steps, day)
             flush()
         }
 
         private func flush() {
-            guard loaded, let steps = pending ?? lastSteps, let webView else { return }
+            guard loaded, let latest = pending ?? lastSteps, let webView else { return }
             pending = nil
-            lastSteps = steps
-            webView.evaluateJavaScript("window.chanduSetSteps && window.chanduSetSteps(\(steps))")
+            lastSteps = latest
+            let (steps, day) = latest
+            webView.evaluateJavaScript("window.chanduSetSteps && window.chanduSetSteps(\(steps), \"\(day)\")")
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {

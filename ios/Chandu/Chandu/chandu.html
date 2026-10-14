@@ -510,7 +510,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.30";
+  const VERSION = "1.31";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -3898,13 +3898,21 @@ body {
     const t = today();
     if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); }
   }
-  function applySteps(n, live) {
+  // live: the iPhone app's own count. It is today's true total, so it may also go down; bananas are still paid only once
+  // for steps beyond the most already paid today (S.paid). day: the date the app counted for ("2026-10-14"); an older
+  // app sends none and, just after midnight, may re-send yesterday's last total, which is skipped.
+  function applySteps(n, live, day) {
     rollDay();
     n = Math.floor(n);
     if (!(n >= 0) || n > 200000) return live ? undefined : say("その歩数、ぼく よめなかった…");
-    const delta = n - S.stepsToday;
-    if (delta <= 0) return live ? undefined : say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるよ！`);
-    const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(S.stepsToday / STEPS_PER_BANANA);
+    if (live && day && day !== S.stepDay) return;
+    if (live && !day && S.liveDay && S.liveDay !== S.stepDay && n === S.liveLast) return;
+    if (live) { S.liveDay = S.stepDay; S.liveLast = n; }
+    const paid = Math.max(S.stepsToday, S.paidDay === S.stepDay ? S.paid || 0 : 0);
+    if (live && n < S.stepsToday) { S.paid = paid; S.paidDay = S.stepDay; S.stepsToday = n; save(); render(); return; }
+    const delta = n - paid;
+    if (delta <= 0) { if (live) { S.stepsToday = n; save(); render(); return; } return say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるよ！`); }
+    const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(paid / STEPS_PER_BANANA);
     S.stepsToday = n; S.totalSteps += delta;
     setTimeout(checkVoyage, 1200);
     S.bananas = Math.min(99, S.bananas + got);
@@ -4204,7 +4212,7 @@ body {
   if (/github\.io$/.test(location.hostname)) $("wUrl").textContent = location.origin + location.pathname + "#s";
   $("ver").textContent = "ver " + VERSION;
   // Inside the iPhone app, the native side pushes today's step total as you walk.
-  window.chanduSetSteps = (n) => applySteps(n, true);
+  window.chanduSetSteps = (n, day) => applySteps(n, true, day);
   if (window.CHANDU_NATIVE) { $("wLink").closest("section").hidden = true; $("wNote").dataset.live = "1"; }
 
   if (TEST) { if (S.age < 100) S.age = 100; S.energy = 100; S.sleeping = false; $("ver").textContent += " · テスト"; }
@@ -4615,7 +4623,7 @@ body {
   }
   setInterval(() => {
     const now = Date.now(); const dt = Math.min(5, (now - S.last) / 60000); S.last = now;
-    step(dt); render(); save();
+    rollDay(); step(dt); render(); save();   // rollDay: the step count starts again at midnight even with the app open
   }, 1000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) { catchUp(); render(); } });
 })();

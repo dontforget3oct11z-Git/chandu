@@ -6,7 +6,7 @@ struct ContentView: View {
     @State private var refreshToken = 0
 
     var body: some View {
-        GameWebView(steps: pedometer.stepsToday, refreshToken: refreshToken)
+        GameWebView(steps: pedometer.stepsToday, day: pedometer.day, refreshToken: refreshToken)
             .background(Color(red: 0.953, green: 0.914, blue: 0.863))
             .ignoresSafeArea(edges: .bottom)
             .onAppear { pedometer.start() }
