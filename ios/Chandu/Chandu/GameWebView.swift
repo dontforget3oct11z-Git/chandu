@@ -12,6 +12,8 @@ struct GameWebView: UIViewRepresentable {
 
     let steps: Int
     let day: String
+    /// The ヘルスケア days as JSON (see HealthService), or "" before the first read.
+    let health: String
     /// Bumped by the parent when the app becomes active, to check for a newer page.
     let refreshToken: Int
 
@@ -41,6 +43,7 @@ struct GameWebView: UIViewRepresentable {
             context.coordinator.refresh()
         }
         context.coordinator.push(steps, day: day)
+        context.coordinator.pushHealth(health)
     }
 
     final class Coordinator: NSObject, WKNavigationDelegate {
@@ -50,6 +53,8 @@ struct GameWebView: UIViewRepresentable {
         private var pending: (Int, String)?
         private var lastSteps: (Int, String)?
         private var currentHTML: String?
+        private var health = ""
+        private var healthSent = false
 
         private var cacheFile: URL {
             FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -88,7 +93,19 @@ struct GameWebView: UIViewRepresentable {
             guard let webView else { return }
             currentHTML = html
             loaded = false
+            healthSent = false
             webView.loadHTMLString(html, baseURL: GameWebView.pageURL)
+        }
+
+        func pushHealth(_ json: String) {
+            if json != health { health = json; healthSent = false }
+            flushHealth()
+        }
+
+        private func flushHealth() {
+            guard loaded, !healthSent, !health.isEmpty, let webView else { return }
+            healthSent = true
+            webView.evaluateJavaScript("window.chanduSetHealth && window.chanduSetHealth(\(health))")
         }
 
         func push(_ steps: Int, day: String) {
@@ -107,6 +124,7 @@ struct GameWebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             loaded = true
             flush()   // a freshly loaded page gets the current step total right away
+            flushHealth()
         }
     }
 }

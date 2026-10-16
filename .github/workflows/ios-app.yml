@@ -1,0 +1,30 @@
+# Builds the iPhone app on GitHub's Mac (no Mac needed at home) and keeps the result as a downloadable
+# "Chandu-unsigned.ipa". It is not signed: install it with a sideloading tool (e.g. Sideloadly on Windows),
+# which signs it with your own Apple ID.
+name: iPhone app
+
+on:
+  push:
+    branches: [main]
+    paths: ["ios/**", ".github/workflows/ios-app.yml"]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: |
+          xcodebuild -project ios/Chandu/Chandu.xcodeproj -target Chandu -configuration Release -sdk iphoneos \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build SYMROOT="$PWD/build"
+      - name: Package
+        run: |
+          mkdir -p Payload
+          cp -R build/Release-iphoneos/Chandu.app Payload/
+          zip -qry Chandu-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Chandu-unsigned-ipa
+          path: Chandu-unsigned.ipa
+          retention-days: 90

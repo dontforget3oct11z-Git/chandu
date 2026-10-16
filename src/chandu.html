@@ -233,6 +233,53 @@ body {
 .hat-btns button { font-size: 18px; line-height: 1.2; padding: 6px 0; min-width: 0; color: #3a2a22; border: 2px solid #f0d9a8; background: #fffaf0; border-radius: 10px; cursor: pointer; box-shadow: none; }
 #setHat { width: 100%; min-width: 0; max-width: 100%; }
 .hat-btns .wide { grid-column: 1 / -1; font-size: 13px; font-weight: 700; color: #b6573a; font-family: var(--font-body); }
+.top-btns { gap: 6px; }
+.top-btns button { background: #fff3d6; border: 2px solid #f0d9a8; padding: 4px 12px; font-size: 12px; font-family: var(--font-body); font-weight: 700; color: #b6573a; border-radius: 999px; cursor: pointer; }
+#records .scroll > *, #gacha .scroll > * { flex-shrink: 0; }
+.rec-tabs { display: flex; gap: 6px; justify-content: center; }
+.story-card .rec-tabs button { box-shadow: none; font-size: 12px; padding: 5px 12px; background: #efe6da; color: #6b3a1e; }
+.story-card .rec-tabs button[aria-pressed="true"] { background: #b6573a; color: #fff8ef; }
+.rec-head { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; text-align: center; }
+.rec-head b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 17px; font-variant-numeric: tabular-nums; color: #3a2a22; }
+.rec-head span { font-size: 10px; color: #6b3a1e; }
+.rec-chart svg { width: 100%; height: auto; display: block; }
+.rec-grid { stroke: #ecdcc4; stroke-width: 1; }
+.rec-goal { stroke: #6b3a1e; stroke-width: 1.5; stroke-dasharray: 4 3; opacity: .7; }
+.rec-ax { font-size: 9px; fill: #7b6a5d; font-family: var(--font-body); }
+.rec-ax.goal { fill: #6b3a1e; font-weight: 700; paint-order: stroke; stroke: #fff8ef; stroke-width: 3px; stroke-linejoin: round; }
+.rec-bar { fill: #f4891f; }
+.rec-bar.sel { fill: #b6573a; }
+.rec-hit { fill: transparent; cursor: pointer; }
+.rec-hit:hover { fill: rgba(182,87,58,.08); }
+.rec-tip { font-size: 12px; text-align: center; color: #3a2a22; min-height: 1.4em; font-variant-numeric: tabular-nums; }
+.rec-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.story-card .rec-list { padding: 0; }
+.rec-list li { display: grid; grid-template-columns: 1.6em 1fr auto; gap: 6px; align-items: center; background: #fff3d6; border-radius: 10px; padding: 5px 10px; font-size: 12px; }
+.rec-list b { font-variant-numeric: tabular-nums; }
+.story-card h4 { margin: 4px 0 0; font-size: 14px; color: #6b3a1e; }
+.rec-note { font-size: 11px; color: #7b6a5d; line-height: 1.6; }
+.g-coins { text-align: center; font-size: 14px; font-weight: 700; color: #6b3a1e; }
+.g-coins b { font-family: var(--font-display); font-weight: 400; font-size: 22px; }
+.g-machine { width: 150px; height: 170px; margin: 0 auto; display: block; }
+.g-machine.spin .g-knob { animation: gknob 1.2s ease-in-out; transform-origin: 75px 128px; }
+.g-machine.spin .g-balls { animation: gshake .3s ease-in-out 4; transform-origin: 75px 60px; }
+.g-machine.spin .g-cap { animation: gdrop 1.3s ease-in forwards; }
+.g-machine.rare.spin .g-glow { animation: gglow 1.3s ease-in-out; }
+@keyframes gknob { to { transform: rotate(360deg); } }
+@keyframes gshake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-6deg); } 75% { transform: rotate(6deg); } }
+@keyframes gdrop { 0%, 70% { transform: translateY(-30px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+@keyframes gglow { 0%, 100% { opacity: 0; } 50% { opacity: .9; } }
+.g-result { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #fff3d6; border: 2px solid #f0d9a8; border-radius: 14px; padding: 10px; animation: pop .35s ease-out; }
+.g-result.rare { background: #fff6c9; border-color: #e3b23c; box-shadow: 0 0 0 3px rgba(227,178,60,.35); }
+.g-result .g-prize { font-size: 48px; line-height: 1; }
+.g-result .g-prize .art { width: 72px; height: 72px; display: block; }
+.story-card .g-result h4 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 20px; color: #3a2a22; }
+.story-card .g-result p { font-size: 13px; text-align: center; line-height: 1.6; }
+.g-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.g-mini { width: 30px; height: 30px; font-size: 20px; display: grid; place-items: center; }
+.g-mini .art { width: 28px; height: 28px; display: block; }
+.g-mini.locked { filter: brightness(0); opacity: .25; }
+@media (prefers-reduced-motion: reduce) { .g-machine.spin * { animation-duration: .01s !important; } }
 .vbtns { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .vbtns button, .footer .help-btn, .footer .set-btn { font-family: var(--font-body); font-weight: 700; font-size: 12px; background: var(--cream); color: #b6573a; border: 0; border-radius: 999px; padding: 6px 14px; cursor: pointer; }
 .voyage-item { font-size: 12px; text-align: center; opacity: .95; }
@@ -296,6 +343,7 @@ body {
     <div class="tgoal" id="gStory"><span class="tg-name">📖 5,000歩</span><span class="tg-bar"><i id="gStoryFill"></i></span><span class="tg-txt" id="gStoryTxt"></span></div>
     <div class="tgoal" id="gItem"><span class="tg-name">🎁 8,000歩</span><span class="tg-bar"><i id="gItemFill"></i></span><span class="tg-txt" id="gItemTxt"></span></div>
     <div class="tg-banana" id="wNote"></div>
+    <div class="vbtns top-btns"><button type="button" id="bRecords">📊 きろく</button><button type="button" id="bGacha">🎰 ガチャ · 🪙<span id="wCoins">0</span></button></div>
   </div>
 
   <div class="screen" id="screen">
@@ -364,6 +412,54 @@ body {
       <div class="zk-count" id="albumCount"></div>
       <div class="scroll" id="albumBody"></div>
       <button type="button" id="albumClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="records" hidden role="dialog" aria-modal="true" aria-labelledby="recTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">ぼくと きみの おさんぽ</div>
+      <h3 id="recTitle">📊 おさんぽ きろく</h3>
+      <div class="scroll">
+        <div class="rec-tabs" id="recTabs"><button type="button" data-r="week">1しゅうかん</button><button type="button" data-r="month">30にち</button><button type="button" data-r="year">1ねん</button></div>
+        <div class="rec-head" id="recHead"></div>
+        <div class="rec-chart" id="recChart"></div>
+        <div class="rec-tip" id="recTip" aria-live="polite"></div>
+        <ul class="rec-list" id="recStats"></ul>
+        <h4 id="recDayTitle"></h4>
+        <ul class="rec-list" id="recHealth"></ul>
+        <p class="rec-note" id="recNote"></p>
+      </div>
+      <button type="button" id="recClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="gacha" hidden role="dialog" aria-modal="true" aria-labelledby="gachaTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">まいにち 金貨 100まい</div>
+      <h3 id="gachaTitle">🎰 チャンドゥ ガチャ</h3>
+      <div class="scroll">
+        <div class="g-coins">🪙 <b id="gCoins">0</b> まい</div>
+        <svg class="g-machine" id="gMachine" viewBox="0 0 150 170" aria-hidden="true">
+          <circle class="g-glow" cx="75" cy="60" r="62" fill="#f6d36b" opacity="0"/>
+          <circle cx="75" cy="60" r="50" fill="#e8f4ff" stroke="#2b1d14" stroke-width="3"/>
+          <g class="g-balls" stroke="#2b1d14" stroke-width="2">
+            <circle cx="52" cy="78" r="11" fill="#d3123f"/><circle cx="75" cy="84" r="11" fill="#f6d36b"/><circle cx="98" cy="77" r="11" fill="#6aa84f"/>
+            <circle cx="62" cy="58" r="11" fill="#7fb6e8"/><circle cx="88" cy="57" r="11" fill="#ff9ab0"/><circle cx="75" cy="36" r="11" fill="#8e5bb5"/>
+          </g>
+          <path d="M44 28 q8 -12 22 -14" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+          <path d="M28 104 h94 l8 52 h-110 z" fill="#d3123f" stroke="#2b1d14" stroke-width="3" stroke-linejoin="round"/>
+          <rect x="22" y="152" width="106" height="12" rx="4" fill="#9c0c2e" stroke="#2b1d14" stroke-width="3"/>
+          <g class="g-knob"><circle cx="75" cy="128" r="13" fill="#e3b23c" stroke="#2b1d14" stroke-width="3"/><rect x="72" y="117" width="6" height="22" rx="3" fill="#fff1d6" stroke="#2b1d14" stroke-width="2"/></g>
+          <rect x="98" y="132" width="18" height="16" rx="3" fill="#6b3f1f" stroke="#2b1d14" stroke-width="2.5"/>
+          <circle class="g-cap" cx="107" cy="140" r="6" fill="#f6d36b" stroke="#2b1d14" stroke-width="2" opacity="0"/>
+        </svg>
+        <button type="button" id="gSpin">まわす（🪙100）</button>
+        <div class="g-result" id="gResult" hidden aria-live="polite"><div class="g-prize" id="gPrize"></div><h4 id="gPrizeName"></h4><p id="gPrizeText"></p></div>
+        <p class="rec-note" id="gNote"></p>
+        <div class="zk-count" id="gCount"></div>
+        <div class="g-items" id="gItems"></div>
+      </div>
+      <button type="button" id="gachaClose">とじる</button>
     </div>
   </div>
 
@@ -509,7 +605,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.31";
+  const VERSION = "1.32";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -3863,6 +3959,7 @@ body {
     $("stageName").textContent = st.id === "adult" ? adultForm().name : st.name + (S.sick ? "（びょうき）" : "");
     $("wSteps").textContent = S.stepsToday.toLocaleString();
     $("wBanana").textContent = S.bananas;
+    $("wCoins").textContent = (S.coins || 0).toLocaleString();
     $("wKm").textContent = (S.totalSteps * 0.0007).toFixed(1);
     const next = STEPS_PER_BANANA - (S.stepsToday % STEPS_PER_BANANA);
     $("wNote").textContent = ($("wNote").dataset.live ? "📡 " : "") + `🍌 あと ${next}歩で バナナ +1` + (S.bananas <= 0 ? "（バナナ ないよ〜！）" : "");
@@ -3893,9 +3990,164 @@ body {
   // ---- walking (steps from iPhone Shortcuts via #s1234, or typed in) ----
   const STEPS_PER_BANANA = 500;
   const DAILY_BANANAS = 4;
+  // ---- きろく: every day's steps (and the iPhone ヘルスケア numbers, when the app sends them) ----
+  // S.log["2026-10-16"] = { steps, km, flights, kcal, exMin, standH, hr, restHr, sleepMin, kg, speed, stride }
+  const HEALTH_ROWS = [
+    ["km", "🚶", "あるいた きょり", (v) => v.toFixed(2) + " km"], ["flights", "🪜", "のぼった かいだん", (v) => Math.round(v) + " かい"],
+    ["kcal", "🔥", "アクティブ カロリー", (v) => Math.round(v) + " kcal"], ["exMin", "🏃", "エクササイズ", (v) => Math.round(v) + " ふん"],
+    ["standH", "🧍", "スタンド", (v) => Math.round(v) + " じかん"], ["hr", "💓", "しんぱくすう（へいきん）", (v) => Math.round(v) + " bpm"],
+    ["restHr", "💤", "あんせいじ しんぱくすう", (v) => Math.round(v) + " bpm"], ["sleepMin", "🛌", "すいみん", (v) => Math.floor(v / 60) + "じかん " + Math.round(v % 60) + "ふん"],
+    ["speed", "⏩", "あるく はやさ", (v) => v.toFixed(1) + " km/h"], ["stride", "👣", "ほはば", (v) => Math.round(v) + " cm"], ["kg", "⚖️", "たいじゅう", (v) => v.toFixed(1) + " kg"],
+  ];
+  const WDAY = ["にち", "げつ", "か", "すい", "もく", "きん", "ど"];
+  const dayKey = (d) => d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+  const keyDate = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+  function logDay(day, data) {
+    S.log = S.log || {};
+    const e = S.log[day] = Object.assign(S.log[day] || {}, data);
+    const keys = Object.keys(S.log); if (keys.length > 800) keys.sort((a, b) => keyDate(a) - keyDate(b)).slice(0, keys.length - 800).forEach((k) => delete S.log[k]);
+    return e;
+  }
+  // The iPhone app sends a list of days read from ヘルスケア: [{ day: "2026-10-16", steps, km, ... }]
+  window.chanduSetHealth = (list) => {
+    try { if (typeof list === "string") list = JSON.parse(list); } catch (e) { return; }
+    if (!Array.isArray(list)) return;
+    rollDay();
+    list.forEach((d) => {
+      if (!d || typeof d.day !== "string" || !/^\d{4}-\d{1,2}-\d{1,2}$/.test(d.day)) return;
+      const v = {};
+      ["steps", ...HEALTH_ROWS.map((r) => r[0])].forEach((k) => { if (typeof d[k] === "number" && isFinite(d[k]) && d[k] >= 0) v[k] = d[k]; });
+      if (d.day === S.stepDay && v.steps != null) { applySteps(v.steps, true, d.day); delete v.steps; }
+      else if (v.steps != null) v.steps = Math.max(v.steps, (S.log && S.log[d.day] && S.log[d.day].steps) || 0);
+      logDay(d.day, v);
+    });
+    S.healthAt = Date.now(); save();
+    if (!$("records").hidden) renderRecords();
+  };
+  let recRange = "week", recSel = null;
+  function openRecords() { recSel = S.stepDay; renderRecords(); $("records").hidden = false; $("recClose").focus(); }
+  function renderRecords() {
+    logDay(S.stepDay, { steps: S.stepsToday });
+    const log = S.log, now = keyDate(S.stepDay), body = $("recBody");
+    document.querySelectorAll("#recTabs button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.r === recRange)));
+    // bars: last 7 or 30 days, or the last 12 months (a month's bar = its daily average)
+    let bars = [];
+    if (recRange === "year") {
+      for (let i = 11; i >= 0; i--) {
+        const m = new Date(now.getFullYear(), now.getMonth() - i, 1), days = Object.keys(log).filter((k) => { const d = keyDate(k); return d.getFullYear() === m.getFullYear() && d.getMonth() === m.getMonth() && log[k].steps != null; });
+        const sum = days.reduce((a, k) => a + log[k].steps, 0);
+        bars.push({ key: "m" + m.getFullYear() + "-" + (m.getMonth() + 1), label: m.getMonth() + 1 + "", tip: `${m.getMonth() + 1}がつ: へいきん ${days.length ? Math.round(sum / days.length).toLocaleString() : 0}歩 · ごうけい ${sum.toLocaleString()}歩`, v: days.length ? sum / days.length : 0, n: days.length, sum });
+      }
+    } else {
+      const n = recRange === "week" ? 7 : 30;
+      for (let i = n - 1; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i), k = dayKey(d), e = log[k];
+        bars.push({ key: k, label: n === 7 ? WDAY[d.getDay()] : (d.getDate() === 1 || i === n - 1 || d.getDate() % 5 === 0 ? d.getDate() + "" : ""), tip: `${d.getMonth() + 1}/${d.getDate()}（${WDAY[d.getDay()]}）: ${e && e.steps != null ? e.steps.toLocaleString() + "歩" : "きろく なし"}`, v: e && e.steps != null ? e.steps : 0, n: e && e.steps != null ? 1 : 0, sum: e && e.steps != null ? e.steps : 0 });
+      }
+    }
+    const withData = bars.filter((b) => b.n), total = bars.reduce((a, b) => a + b.sum, 0), days = bars.reduce((a, b) => a + b.n, 0);
+    const best = withData.reduce((m, b) => (b.v > m ? b.v : m), 0);
+    $("recHead").innerHTML = "";
+    [["ごうけい", total.toLocaleString() + "歩"], ["1にち へいきん", (days ? Math.round(total / days) : 0).toLocaleString() + "歩"], [recRange === "year" ? "いちばん いい つき" : "さいこう", Math.round(best).toLocaleString() + "歩"]]
+      .forEach(([a, b]) => { const d = document.createElement("div"); d.innerHTML = "<b></b><span></span>"; d.querySelector("b").textContent = b; d.querySelector("span").textContent = a; $("recHead").appendChild(d); });
+    // the chart (plain SVG): one orange bar per day, a dashed line at the 5,000-step story goal
+    const W = 320, H = 150, padL = 34, padB = 20, top = 8, maxV = Math.max(DAILY_GOAL * 1.2, best * 1.1, 1000), bw = (W - padL) / bars.length;
+    const y = (v) => top + (H - padB - top) * (1 - v / maxV);
+    const step = maxV > 20000 ? 10000 : maxV > 10000 ? 5000 : 2500;
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="歩数の グラフ">`;
+    for (let v = 0; v <= maxV; v += step) svg += `<line x1="${padL}" x2="${W}" y1="${y(v)}" y2="${y(v)}" class="rec-grid"/><text x="${padL - 4}" y="${y(v) + 3}" class="rec-ax" text-anchor="end">${v >= 1000 ? v / 1000 + "k" : v}</text>`;
+    bars.forEach((b, i) => {
+      const x = padL + i * bw + Math.max(1, bw * 0.15), w = Math.max(2, bw * 0.7), h = Math.max(0, H - padB - y(b.v)), sel = recSel === b.key;
+      if (b.n) svg += `<path class="rec-bar${sel ? " sel" : ""}" d="M${x},${H - padB} v${-Math.max(0, h - 3)} q0,-3 3,-3 h${w - 6} q3,0 3,3 v${Math.max(0, h - 3)} z"/>`;
+      svg += `<rect class="rec-hit" data-i="${i}" x="${padL + i * bw}" y="${top}" width="${bw}" height="${H - top}" tabindex="-1"><title>${b.tip}</title></rect>`;
+      if (b.label) svg += `<text x="${padL + i * bw + bw / 2}" y="${H - 6}" class="rec-ax" text-anchor="middle">${b.label}</text>`;
+    });
+    svg += `<line x1="${padL}" x2="${W}" y1="${y(DAILY_GOAL)}" y2="${y(DAILY_GOAL)}" class="rec-goal"/><text x="${padL + 3}" y="${y(DAILY_GOAL) - 4}" class="rec-ax goal">5,000歩</text>`;
+    $("recChart").innerHTML = svg + "</svg>";
+    const selBar = bars.find((b) => b.key === recSel) || bars[bars.length - 1];
+    $("recTip").textContent = selBar ? selBar.tip : "";
+    $("recChart").querySelectorAll(".rec-hit").forEach((r) => (r.onclick = () => { const b = bars[+r.dataset.i]; recSel = b.key; if (b.key[0] !== "m") recDay = b.key; renderRecords(); }));
+    // streaks and lifetime records
+    const keys = Object.keys(log).filter((k) => log[k].steps != null), bestDay = keys.reduce((m, k) => (!m || log[k].steps > log[m].steps ? k : m), null);
+    let cur = 0, longest = 0, run = 0;
+    // the current run of 5,000-step days; today not reached yet does not break it
+    for (let i = 0; i <= 800; i++) { const k = dayKey(new Date(now.getFullYear(), now.getMonth(), now.getDate() - i)); const ok = log[k] && log[k].steps >= DAILY_GOAL; if (ok) cur++; else if (i > 0) break; }
+    keys.sort((a, b) => keyDate(a) - keyDate(b)).forEach((k, i, arr) => { const ok = log[k].steps >= DAILY_GOAL, prev = i && (keyDate(k) - keyDate(arr[i - 1])) < 1.5 * 864e5; run = ok ? (prev && log[arr[i - 1]].steps >= DAILY_GOAL ? run + 1 : 1) : 0; longest = Math.max(longest, run); });
+    const goals = keys.filter((k) => log[k].steps >= ITEM_GOAL).length;
+    $("recStats").innerHTML = "";
+    [["🔥", "5,000歩 れんぞく", cur + "にち"], ["🏅", "さいちょう れんぞく", longest + "にち"], ["🏆", "じこベスト", bestDay ? `${log[bestDay].steps.toLocaleString()}歩（${keyDate(bestDay).getMonth() + 1}/${keyDate(bestDay).getDate()}）` : "-"],
+     ["🎁", "8,000歩 たっせい", goals + "にち"], ["👣", "いままでの ごうけい", S.totalSteps.toLocaleString() + "歩"], ["📅", "きろくした ひ", keys.length + "にち"]]
+      .forEach(([ic, a, b]) => { const li = document.createElement("li"); li.innerHTML = `<span aria-hidden="true">${ic}</span><span></span><b></b>`; li.children[1].textContent = a; li.children[2].textContent = b; $("recStats").appendChild(li); });
+    // one day's ヘルスケア numbers
+    const dk = recDay || S.stepDay, e = log[dk] || {}, dd = keyDate(dk);
+    $("recDayTitle").textContent = (dk === S.stepDay ? "きょう" : `${dd.getMonth() + 1}がつ ${dd.getDate()}にち`) + "の ヘルスケア";
+    $("recHealth").innerHTML = "";
+    const rows = [["steps", "👟", "歩数", (v) => v.toLocaleString() + " 歩"], ...HEALTH_ROWS].filter(([k]) => e[k] != null);
+    rows.forEach(([k, ic, name, f]) => { const li = document.createElement("li"); li.innerHTML = `<span aria-hidden="true">${ic}</span><span></span><b></b>`; li.children[1].textContent = name; li.children[2].textContent = f(e[k]); $("recHealth").appendChild(li); });
+    $("recNote").textContent = S.healthAt ? `ヘルスケアから よみこんだよ（${new Date(S.healthAt).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}）` :
+      "いまは 歩数だけ きろくしているよ。iPhoneアプリを あたらしく すると、ヘルスケアの きょり・カロリー・しんぱくすう・すいみん なども ここに でるよ。";
+  }
+  let recDay = null;
+
+  Object.assign(ITEM_ART, { "ガチャ|きんの バナナ": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M12.5 15L11 6L19 5L20.5 14\" fill=\"#a0622d\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M12 14C6 40 26 58 54 48C56 47 54 42 51 42C33 42 24 31 21 13Z\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M18 20C18 34 28 44 44 45\" fill=\"none\" stroke=\"#f6d36b\" stroke-width=\"4\" stroke-linecap=\"round\"/><path d=\"M13 26C13 38 20 46 30 50\" fill=\"none\" stroke=\"#a0622d\" stroke-width=\"1.5\" stroke-linecap=\"round\" opacity=\".6\"/><circle cx=\"54.5\" cy=\"45\" r=\"2.2\" fill=\"#6b3f1f\" stroke=\"#2b1d14\" stroke-width=\"1.5\"/><path d=\"M16 20C15 27 16 32 18 36\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M40 12Q41.32 16.68 46 18Q41.32 19.32 40 24Q38.68 19.32 34 18Q38.68 16.68 40 12Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M54 25.5Q54.99 29.01 58.5 30Q54.99 30.99 54 34.5Q53.01 30.99 49.5 30Q53.01 29.01 54 25.5Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M30 3Q30.88 6.12 34 7Q30.88 7.88 30 11Q29.12 7.88 26 7Q29.12 6.12 30 3Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|にじいろ バナナ": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M12.5 15L11 6L19 5L20.5 14\" fill=\"#a0622d\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M12 14C6 40 26 58 54 48C56 47 54 42 51 42C33 42 24 31 21 13Z\" fill=\"#f6d36b\"/><polygon points=\"12,14 11.4,17.2 11,20.3 10.9,23.3 11.1,26.2 23,21.4 22.4,19.4 21.9,17.4 21.4,15.2 21,13\" fill=\"#d3123f\" stroke=\"#d3123f\" stroke-width=\".6\"/><polygon points=\"11.1,26.2 11.5,29 12.1,31.7 12.9,34.2 14,36.6 26.1,28.5 25.2,26.9 24.4,25.1 23.7,23.3 23,21.4\" fill=\"#f4891f\" stroke=\"#f4891f\" stroke-width=\".6\"/><polygon points=\"14,36.6 15.3,38.8 16.7,40.9 18.4,42.8 20.2,44.5 30.4,34.2 29.2,33 28.1,31.6 27.1,30.1 26.1,28.5\" fill=\"#f6d36b\" stroke=\"#f6d36b\" stroke-width=\".6\"/><polygon points=\"20.2,44.5 22.3,46 24.5,47.4 26.8,48.5 29.3,49.4 35.9,38.5 34.4,37.6 33,36.6 31.6,35.5 30.4,34.2\" fill=\"#8cc152\" stroke=\"#8cc152\" stroke-width=\".6\"/><polygon points=\"29.3,49.4 32,50.1 34.8,50.6 37.7,50.8 40.8,50.8 42.7,41.1 40.9,40.6 39.1,40 37.5,39.3 35.9,38.5\" fill=\"#7fb6e8\" stroke=\"#7fb6e8\" stroke-width=\".6\"/><polygon points=\"40.8,50.8 43.9,50.5 47.2,49.9 50.5,49.1 54,48 51,42 48.8,41.9 46.7,41.8 44.7,41.5 42.7,41.1\" fill=\"#8e5bb5\" stroke=\"#8e5bb5\" stroke-width=\".6\"/><path d=\"M12 14C6 40 26 58 54 48C56 47 54 42 51 42C33 42 24 31 21 13Z\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"54.5\" cy=\"45\" r=\"2.2\" fill=\"#6b3f1f\" stroke=\"#2b1d14\" stroke-width=\"1.5\"/><path d=\"M16 20C15 27 16 32 18 36\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M40 12.5Q41.21 16.79 45.5 18Q41.21 19.21 40 23.5Q38.79 19.21 34.5 18Q38.79 16.79 40 12.5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M54 26Q54.88 29.12 58 30Q54.88 30.88 54 34Q53.12 30.88 50 30Q53.12 29.12 54 26Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|まほうの ランプ": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M17 37C7 33 6 47 17 45\" fill=\"none\" stroke-width=\"6\"/><path d=\"M17 37C7 33 6 47 17 45\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"2.5\"/><path d=\"M25 46L22 54H42L39 46Z\" fill=\"#e3b23c\" stroke-width=\"2.5\"/><path d=\"M14 39C14 31 24 29 32 29C40 29 45 32 48 35L57 29C58.5 28 60.5 29 59.5 31L52 41C48 46 40 48 32 48C22 48 14 46 14 39Z\" fill=\"#e3b23c\" stroke-width=\"2.5\"/><path d=\"M17 41C24 44 40 44 49 39\" fill=\"none\" stroke=\"#a0622d\" stroke-width=\"1.5\"/><path d=\"M22 29C22 22 38 22 38 29Z\" fill=\"#f6d36b\" stroke-width=\"2.2\"/><ellipse cx=\"30\" cy=\"29.5\" rx=\"10\" ry=\"2.5\" fill=\"#e3b23c\" stroke-width=\"2\"/><circle cx=\"30\" cy=\"20.5\" r=\"2.5\" fill=\"#d3123f\" stroke-width=\"1.5\"/><circle cx=\"57\" cy=\"22\" r=\"3.2\" fill=\"#b98ad8\" stroke-width=\"1.6\"/><circle cx=\"53\" cy=\"14\" r=\"4.6\" fill=\"#8e5bb5\" stroke-width=\"1.8\"/><circle cx=\"58\" cy=\"7\" r=\"3.3\" fill=\"#b98ad8\" stroke-width=\"1.6\"/></g><path d=\"M19 35C22 32 27 31 31 31\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M10 19.5Q10.99 23.01 14.5 24Q10.99 24.99 10 28.5Q9.01 24.99 5.5 24Q9.01 23.01 10 19.5Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M42 9Q42.88 12.12 46 13Q42.88 13.88 42 17Q41.12 13.88 38 13Q41.12 12.12 42 9Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|そらとぶ じゅうたん": "<ellipse cx=\"33\" cy=\"59\" rx=\"16\" ry=\"2.8\" fill=\"rgba(59,74,42,.12)\"/><g transform=\"translate(33 33) scale(1.05) translate(-33 -33)\"><path d=\"M8 30Q17 21 24 25T40 18L58 34Q49 45 42 41Q35 37 26 46Z\" transform=\"translate(0 4)\" fill=\"#9c0c2e\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M8 30l-3 4\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"5\" cy=\"34\" r=\"2.2\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-width=\"1.4\"/><path d=\"M26 46l-2 6\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"24\" cy=\"52\" r=\"2.2\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-width=\"1.4\"/><path d=\"M58 34l1 6\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"59\" cy=\"40\" r=\"2.2\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-width=\"1.4\"/><path d=\"M40 18l4 2\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"44\" cy=\"20\" r=\"2.2\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-width=\"1.4\"/><path d=\"M8 30Q17 21 24 25T40 18L58 34Q49 45 42 41Q35 37 26 46Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M8 30Q17 21 24 25T40 18L58 34Q49 45 42 41Q35 37 26 46Z\" transform=\"translate(33 32) scale(.68) translate(-33 -32)\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"3.5\" stroke-linejoin=\"round\"/><path d=\"M8 30Q17 21 24 25T40 18L58 34Q49 45 42 41Q35 37 26 46Z\" transform=\"translate(33 32) scale(.38) translate(-33 -32)\" fill=\"#9c0c2e\" stroke=\"#e3b23c\" stroke-width=\"4\" stroke-linejoin=\"round\"/><polygon points=\"33,28 37,32 33,36 29,32\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M13 28Q18 24 22 25\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/></g><path d=\"M10 5Q11.1 8.9 15 10Q11.1 11.1 10 15Q8.9 11.1 5 10Q8.9 8.9 10 5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M52 10Q52.88 13.12 56 14Q52.88 14.88 52 18Q51.12 14.88 48 14Q51.12 13.12 52 10Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|ほしの かけら": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M40.9 17.2L43.7 11.9\" stroke=\"#f6d36b\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M50.7 37.3L56.6 38.3\" stroke=\"#f6d36b\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M34.6 52.8L35.5 58.8\" stroke=\"#f6d36b\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M14.9 42.3L9.5 45\" stroke=\"#f6d36b\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M18.8 20.3L14.6 16\" stroke=\"#f6d36b\" stroke-width=\"3\" stroke-linecap=\"round\"/><polygon points=\"28.7,10.2 37.4,23.8 53.6,23.5 43.3,36 48.7,51.3 33.6,45.4 20.7,55.2 21.7,39 8.4,29.8 24,25.7\" fill=\"#fff1d6\"/><polygon points=\"32,34 28.7,10.2 37.4,23.8\" fill=\"#f6d36b\"/><polygon points=\"32,34 53.6,23.5 43.3,36\" fill=\"#f6d36b\"/><polygon points=\"32,34 48.7,51.3 33.6,45.4\" fill=\"#f6d36b\"/><polygon points=\"32,34 20.7,55.2 21.7,39\" fill=\"#f6d36b\"/><polygon points=\"32,34 8.4,29.8 24,25.7\" fill=\"#f6d36b\"/><path d=\"M32 34L28.7 10.2\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L37.4 23.8\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L53.6 23.5\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L43.3 36\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L48.7 51.3\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L33.6 45.4\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L20.7 55.2\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L21.7 39\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L8.4 29.8\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M32 34L24 25.7\" stroke=\"#e3b23c\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><polygon points=\"28.7,10.2 37.4,23.8 53.6,23.5 43.3,36 48.7,51.3 33.6,45.4 20.7,55.2 21.7,39 8.4,29.8 24,25.7\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M26 22L29 16\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".9\"/><path d=\"M52 7.5Q52.99 11.01 56.5 12Q52.99 12.99 52 16.5Q51.01 12.99 47.5 12Q51.01 11.01 52 7.5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M12 46Q12.88 49.12 16 50Q12.88 50.88 12 54Q11.12 50.88 8 50Q11.12 49.12 12 46Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|つきの しずく": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M32 5C40 19 51 29 51 40A19 18 0 0 1 13 40C13 29 24 19 32 5Z\" fill=\"#a9d3f2\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M32 12C36 22 44 30 44 40A12 11 0 0 1 20 40C20 30 28 22 32 12Z\" fill=\"#cfe6f8\"/><path d=\"M32 5V58M13 40H51M32 12L20 40L32 51L44 40Z\" fill=\"none\" stroke=\"#7fb6e8\" stroke-width=\"1.5\" stroke-linejoin=\"round\" opacity=\".9\"/><path d=\"M32 5C40 19 51 29 51 40A19 18 0 0 1 13 40C13 29 24 19 32 5Z\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M30 30A8 8 0 1 0 38 41A6.3 6.3 0 1 1 30 30Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/><path d=\"M19 36C19 30 22 25 25 21\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".9\"/><path d=\"M50 7Q51.1 10.9 55 12Q51.1 13.1 50 17Q48.9 13.1 45 12Q48.9 10.9 50 7Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M12 12Q12.88 15.12 16 16Q12.88 16.88 12 20Q11.12 16.88 8 16Q11.12 15.12 12 12Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|トラの おまもり": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M32 18C22 2 42 2 32 18\" fill=\"none\" stroke-width=\"6\"/><path d=\"M32 18C22 2 42 2 32 18\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"2.6\"/><path d=\"M15 25L22 17H42L49 25V53Q49 56 46 56H18Q15 56 15 53Z\" fill=\"#f4891f\" stroke-width=\"2.5\"/><g fill=\"#2b1d14\" stroke=\"none\"><path d=\"M15 31L24 33L15 36Z\"/><path d=\"M15 42L22 44L15 47Z\"/><path d=\"M49 31L40 33L49 36Z\"/><path d=\"M49 42L42 44L49 47Z\"/><path d=\"M27 17L29 22L31 17Z\"/><path d=\"M33 17L35 22L37 17Z\"/></g><rect x=\"24\" y=\"27\" width=\"16\" height=\"22\" rx=\"2\" fill=\"#fff1d6\" stroke-width=\"2\"/><circle cx=\"32\" cy=\"38\" r=\"5\" fill=\"#e3b23c\" stroke-width=\"1.6\"/><path d=\"M29.5 38H34.5M32 35.5V40.5\" stroke=\"#9c0c2e\" stroke-width=\"1.5\"/><path d=\"M15 23.5H49\" stroke=\"#d3123f\" stroke-width=\"2.5\"/><circle cx=\"32\" cy=\"18.5\" r=\"3\" fill=\"#d3123f\" stroke-width=\"1.6\"/></g><path d=\"M18 30V44\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".8\"/><path d=\"M54 7.5Q54.99 11.01 58.5 12Q54.99 12.99 54 16.5Q53.01 12.99 49.5 12Q53.01 11.01 54 7.5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M10 10Q10.88 13.12 14 14Q10.88 14.88 10 18Q9.12 14.88 6 14Q9.12 13.12 10 10Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|まほうの つぼ": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M24 52L22 56H42L40 52Z\" fill=\"#e3b23c\" stroke-width=\"2\"/><path d=\"M22 27C8 32 9 54 32 54C55 54 56 32 42 27Z\" fill=\"#3d6fb6\" stroke-width=\"2.5\"/><path d=\"M12 40Q17 44 22 40T32 40T42 40T52 40\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"3\"/><path d=\"M24 20H40V28H24Z\" fill=\"#3d6fb6\" stroke-width=\"2.2\"/><ellipse cx=\"32\" cy=\"20\" rx=\"12\" ry=\"3.6\" fill=\"#e3b23c\" stroke-width=\"2.2\"/><ellipse cx=\"32\" cy=\"20\" rx=\"6.5\" ry=\"1.6\" fill=\"#2b1d14\" stroke=\"none\"/><path d=\"M23 28H41\" stroke=\"#e3b23c\" stroke-width=\"2.5\"/></g><path d=\"M17 36C16 41 18 46 22 49\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><g fill=\"#f6d36b\"><circle cx=\"31\" cy=\"12\" r=\"1.3\"/><circle cx=\"36\" cy=\"14\" r=\"1\"/></g><path d=\"M25 4Q26.1 7.9 30 9Q26.1 10.1 25 14Q23.9 10.1 20 9Q23.9 7.9 25 4Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M39 1.5Q39.99 5.01 43.5 6Q39.99 6.99 39 10.5Q38.01 6.99 34.5 6Q38.01 5.01 39 1.5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M47 11Q47.88 14.12 51 15Q47.88 15.88 47 19Q46.12 15.88 43 15Q46.12 14.12 47 11Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|ドラゴンの うろこ": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M32 6C42 9 51 13 54 20C55 37 45 50 32 58C19 50 9 37 10 20C13 13 22 9 32 6Z\" fill=\"#3f8a3a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M32 12C40 14 46 17 48 22C48 35 41 45 32 51C23 45 16 35 16 22C18 17 24 14 32 12Z\" fill=\"#6aa84f\"/><path d=\"M32 14V48\" stroke=\"#3f8a3a\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M20 26Q32 34 44 26M23 37Q32 43 41 37\" fill=\"none\" stroke=\"#8cc152\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M20 20C21 26 22 30 24 33\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.8\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M38 16L42 17\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".7\"/><path d=\"M52 3.5Q52.99 7.01 56.5 8Q52.99 8.99 52 12.5Q51.01 8.99 47.5 8Q51.01 7.01 52 3.5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M10 42Q10.88 45.12 14 46Q10.88 46.88 10 50Q9.12 46.88 6 46Q9.12 45.12 10 42Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|ふしぎな たまご": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M32 5C45 5 52 28 52 39C52 51 43 57 32 57C21 57 12 51 12 39C12 28 19 5 32 5Z\" fill=\"#fff1d6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><g stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"24\" cy=\"30\" r=\"4.5\" fill=\"#8e5bb5\"/><circle cx=\"40\" cy=\"38\" r=\"5.5\" fill=\"#7fb6e8\"/><circle cx=\"27\" cy=\"47\" r=\"3.5\" fill=\"#7fb6e8\"/><circle cx=\"41\" cy=\"23\" r=\"3\" fill=\"#8e5bb5\"/><circle cx=\"18\" cy=\"41\" r=\"2.4\" fill=\"#8e5bb5\"/><circle cx=\"44\" cy=\"50\" r=\"2.2\" fill=\"#8e5bb5\"/><circle cx=\"33\" cy=\"30\" r=\"2\" fill=\"#7fb6e8\"/></g><path d=\"M24 15L28 19L31 14L35 19L38 15\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/><path d=\"M21 18C18 24 17 28 17 32\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".9\"/><path d=\"M54 5.5Q54.99 9.01 58.5 10Q54.99 10.99 54 14.5Q53.01 10.99 49.5 10Q53.01 9.01 54 5.5Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M9 14Q9.88 17.12 13 18Q9.88 18.88 9 22Q8.12 18.88 5 18Q8.12 17.12 9 14Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|おうごんの ターバン": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M37 27C30 20 30 8 40 3C44 11 42 21 37 27Z\" fill=\"#fffdf8\" stroke-width=\"2\"/><path d=\"M38 24C38 16 39 10 40 5\" fill=\"none\" stroke=\"#ff9ab0\" stroke-width=\"1.5\"/><path d=\"M9 44C7 28 18 19 32 19C46 19 57 28 55 44Z\" fill=\"#e3b23c\" stroke-width=\"2.5\"/><path d=\"M12 33C22 26 40 26 52 34M10 39C24 31 42 32 54 40M18 23C26 30 40 32 54 30\" fill=\"none\" stroke=\"#a0622d\" stroke-width=\"1.6\"/><path d=\"M9 44C18 50 46 50 55 44L54 50C44 56 20 56 10 50Z\" fill=\"#f6d36b\" stroke-width=\"2.5\"/><ellipse cx=\"34\" cy=\"35\" rx=\"6\" ry=\"7\" fill=\"#f6d36b\" stroke-width=\"2\"/><ellipse cx=\"34\" cy=\"35\" rx=\"3.4\" ry=\"4.4\" fill=\"#d3123f\" stroke-width=\"1.5\"/></g><circle cx=\"33\" cy=\"33.5\" r=\"1\" fill=\"#fff\"/><path d=\"M14 31C17 26 21 24 25 23\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M12 7.5Q12.99 11.01 16.5 12Q12.99 12.99 12 16.5Q11.01 12.99 7.5 12Q11.01 11.01 12 7.5Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M54 12Q54.88 15.12 58 16Q54.88 16.88 54 20Q53.12 16.88 50 16Q53.12 15.12 54 12Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>", "ガチャ|ジニーの うでわ": "<ellipse cx=\"32\" cy=\"58\" rx=\"20\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M8 32V40A24 14 0 0 0 56 40V32Z\" fill=\"#e3b23c\" stroke-width=\"2.5\"/><path d=\"M8 32A24 14 0 0 1 56 32A24 14 0 0 1 8 32ZM16 32A16 8 0 0 0 48 32A16 8 0 0 0 16 32Z\" fill=\"#f6d36b\" fill-rule=\"evenodd\" stroke-width=\"2.5\"/><path d=\"M18.1 36A16 8 0 1 1 45.9 36A16 8 0 0 0 18.1 36Z\" fill=\"#c08a2a\" stroke-width=\"1.5\"/><path d=\"M16 32A16 8 0 0 0 48 32A16 8 0 0 0 16 32Z\" fill=\"none\" stroke-width=\"2.2\"/></g><ellipse cx=\"20\" cy=\"48.5\" rx=\"3\" ry=\"3.2\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-width=\"1.5\"/><circle cx=\"19\" cy=\"47.3\" r=\".9\" fill=\"#fff\"/><ellipse cx=\"32\" cy=\"51\" rx=\"3\" ry=\"3.2\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-width=\"1.5\"/><circle cx=\"31\" cy=\"49.8\" r=\".9\" fill=\"#fff\"/><ellipse cx=\"44\" cy=\"48.5\" rx=\"3\" ry=\"3.2\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-width=\"1.5\"/><circle cx=\"43\" cy=\"47.3\" r=\".9\" fill=\"#fff\"/><ellipse cx=\"32\" cy=\"22\" rx=\"3\" ry=\"2.2\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-width=\"1.5\"/><path d=\"M12 28C15 24 20 21 26 20\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M54 7Q55.1 10.9 59 12Q55.1 13.1 54 17Q52.9 13.1 49 12Q52.9 10.9 54 7Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/><path d=\"M10 10Q10.88 13.12 14 14Q10.88 14.88 10 18Q9.12 14.88 6 14Q9.12 13.12 10 10Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-width=\"1.3\" stroke-linejoin=\"round\"/>" });
+  // ---- ガチャ: 100 gold coins a day, 100 a turn; bananas mostly, now and then a お宝 found only in the capsules ----
+  const GACHA_ITEMS = [
+    ["きんの バナナ", "ぴかぴか ひかる 金の バナナ。たべるのが もったいない！"], ["にじいろ バナナ", "なないろの しまもようの バナナ。あじも 7つ あるんだって。"],
+    ["まほうの ランプ", "こすると けむりが もくもく…。なにが でてくるのかな？"], ["そらとぶ じゅうたん", "ふわっと うかぶ まほうの じゅうたん。シンドバッドと そらの たびへ！"],
+    ["ほしの かけら", "よぞらから おちてきた ほしの かけら。くらい ところで きらきら ひかるよ。"], ["つきの しずく", "まんげつの よるに だけ とれる、あおい しずく。"],
+    ["トラの おまもり", "しましまの おまもり。ぼくと おそろいだね！"], ["まほうの つぼ", "ふたを あけると きらきらが あふれだす ふしぎな つぼ。"],
+    ["ドラゴンの うろこ", "とおい しまの ドラゴンが おとした うろこ。とっても かたいよ。"], ["ふしぎな たまご", "なにが うまれるか わからない たまご。ときどき うごくよ…！"],
+    ["おうごんの ターバン", "王さまも うらやむ 金の ターバン。ぼくの いちばんの たからもの！"], ["ジニーの うでわ", "ランプの せいれいが つけていた うでわ。ねがいが かなうかも？"],
+  ].map(([name, desc]) => {
+    const it = { key: "ガチャ|" + name, name, desc, region: "ガチャ げんてい", place: "ガチャの カプセル", icon: "ガチャ|" + name, gacha: true };
+    if (!ITEM_ART[it.icon]) it.icon = "🎁";
+    ITEMS.push(it); ITEM_BY_KEY[it.key] = it; return it;
+  });
+  const GACHA_COST = 100, DAILY_COINS = 100;
+  // chances out of 100
+  const GACHA_TABLE = [[40, { bananas: 1 }], [27, { bananas: 2 }], [15, { bananas: 3 }], [8, { bananas: 5 }], [7, { coins: 150 }], [3, { rare: true }]];
+  const bananaWord = (n) => n + ({ 1: "ぽん", 3: "ぼん" }[n] || "ほん");
+  function openGacha() { renderGacha(); $("gResult").hidden = true; $("gacha").hidden = false; $("gSpin").focus(); }
+  function renderGacha() {
+    $("gCoins").textContent = (S.coins || 0).toLocaleString();
+    $("gSpin").disabled = (S.coins || 0) < GACHA_COST || gachaBusy;
+    const own = GACHA_ITEMS.filter((it) => S.items[it.key]).length;
+    $("gCount").textContent = `ガチャ げんていの お宝 ${own} / ${GACHA_ITEMS.length}`;
+    const grid = $("gItems"); grid.innerHTML = "";
+    GACHA_ITEMS.forEach((it) => { const b = document.createElement("span"); b.className = "g-mini" + (S.items[it.key] ? "" : " locked"); setArt(b, it.icon); b.title = S.items[it.key] ? it.name : "？？？"; grid.appendChild(b); });
+    $("gNote").textContent = (S.coins || 0) < GACHA_COST ? "金貨が たりないよ。まいにち 100まい もらえるし、ミニゲームでも もらえるよ！" : "1かい 金貨 100まい。バナナが よく でるよ。ときどき ここでしか てに はいらない お宝も！";
+  }
+  let gachaBusy = false;
+  function spinGacha() {
+    if (gachaBusy || (S.coins || 0) < GACHA_COST) return;
+    gachaBusy = true; S.coins -= GACHA_COST; save(); renderGacha(); $("gResult").hidden = true;
+    let r = Math.random() * 100, prize = GACHA_TABLE[0][1];
+    for (const [p, w] of GACHA_TABLE) { if (r < p) { prize = w; break; } r -= p; }
+    const m = $("gMachine"); m.classList.remove("spin", "rare"); void m.offsetWidth; m.classList.add("spin"); if (prize.rare) m.classList.add("rare");
+    sfx("shake");
+    setTimeout(() => {
+      let icon = "🍌", title, text, dup = false;
+      if (prize.bananas) { S.bananas = Math.min(99, S.bananas + prize.bananas); title = `バナナ ${bananaWord(prize.bananas)}`; text = prize.bananas >= 5 ? "バナナが いっぱい！ やったー！" : "バナナ ゲット！ おいしく たべてね。"; }
+      else if (prize.coins) { S.coins += prize.coins; icon = "🪙"; title = `金貨 ${prize.coins}まい`; text = "あたり！ 金貨が ふえたよ！"; }
+      else {
+        const it = GACHA_ITEMS[Math.floor(Math.random() * GACHA_ITEMS.length)];
+        dup = !!S.items[it.key]; S.items[it.key] = (S.items[it.key] || 0) + 1; icon = it.icon; title = it.name;
+        text = "✨ レア！ ガチャ げんていの お宝！\n" + it.desc + (dup ? "\n（もう もってたから バナナ 3ぼんも おまけ）" : "");
+        if (dup) S.bananas = Math.min(99, S.bananas + 3);
+        S.happy = clamp(S.happy + 10);
+      }
+      save(); render(); renderGacha();
+      setArt($("gPrize"), icon); $("gPrizeName").textContent = title; $("gPrizeText").textContent = text;
+      $("gResult").hidden = false; $("gResult").classList.toggle("rare", !!prize.rare);
+      sfx(prize.rare ? "fanfare" : "reveal"); if (prize.rare) { cheer(); say("すごーい！ レアな お宝だよ！"); }
+      m.classList.remove("spin");
+      gachaBusy = false; renderGacha();
+    }, 1400);
+  }
   function rollDay() {
     const t = today();
-    if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); }
+    if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); S.coins = (S.coins || 0) + DAILY_COINS; }
+    if (S.coins == null) S.coins = DAILY_COINS;   // the first day's coins for a save from before ガチャ
   }
   // live: the iPhone app's own count. It is today's true total, so it may also go down; bananas are still paid only once
   // for steps beyond the most already paid today (S.paid). day: the date the app counted for ("2026-10-14"); an older
@@ -3908,11 +4160,11 @@ body {
     if (live && !day && S.liveDay && S.liveDay !== S.stepDay && n === S.liveLast) return;
     if (live) { S.liveDay = S.stepDay; S.liveLast = n; }
     const paid = Math.max(S.stepsToday, S.paidDay === S.stepDay ? S.paid || 0 : 0);
-    if (live && n < S.stepsToday) { S.paid = paid; S.paidDay = S.stepDay; S.stepsToday = n; save(); render(); return; }
+    if (live && n < S.stepsToday) { S.paid = paid; S.paidDay = S.stepDay; S.stepsToday = n; logDay(S.stepDay, { steps: n }); save(); render(); return; }
     const delta = n - paid;
     if (delta <= 0) { if (live) { S.stepsToday = n; save(); render(); return; } return say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるよ！`); }
     const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(paid / STEPS_PER_BANANA);
-    S.stepsToday = n; S.totalSteps += delta;
+    S.stepsToday = n; S.totalSteps += delta; logDay(S.stepDay, { steps: n });
     setTimeout(checkVoyage, 1200);
     S.bananas = Math.min(99, S.bananas + got);
     if (stageOf().id !== "egg") {
@@ -4007,7 +4259,8 @@ body {
     if (isBest) S.best[id] = score;
     S.happy = clamp(S.happy + 6 + Math.round(rate * 18)); if (!TEST) { S.energy = clamp(S.energy - 10); S.hunger = clamp(S.hunger - 5); }
     const line = rate >= .99 ? "かんぺき！ きみ、すごいね！" : rate >= .6 ? "やったね！ たのしかった！" : rate > 0 ? "まあまあだね！ つぎは まけないよ！" : "えへへ、ぼくの かちだね！ また しょうぶしようね！";
-    say((isBest && prev != null ? "しんきろく！ " : "") + line, 4000); cheer();
+    const coins = Math.round(5 + rate * 15); S.coins = (S.coins || 0) + coins;   // 5 to 20 gold coins a game
+    say((isBest && prev != null ? "しんきろく！ " : "") + line + ` 🪙金貨 ${coins}まい！`, 4000); cheer();
     gameMusic(null); sfx(rate >= .6 ? "fanfare" : "jingle");
     save();
     gameUI(`${g.icon} ${g.name}: ${g.result(score, max)}`, [{ label: "もういっかい", on: () => { clearGame(); g.start(); } }, { label: "ほかの あそび", on: showMenu }, quitBtn]);
@@ -4221,6 +4474,12 @@ body {
   render();
   readHash();
   $("bZukan").onclick = openZukan;
+  $("bRecords").onclick = openRecords;
+  $("recClose").onclick = () => { $("records").hidden = true; recDay = null; $("bRecords").focus(); };
+  document.querySelectorAll("#recTabs button").forEach((b) => (b.onclick = () => { recRange = b.dataset.r; renderRecords(); }));
+  $("bGacha").onclick = openGacha;
+  $("gSpin").onclick = spinGacha;
+  $("gachaClose").onclick = () => { if (gachaBusy) return; $("gacha").hidden = true; $("bGacha").focus(); };
   $("bAlbum").onclick = openAlbum;
   $("albumClose").onclick = () => { $("album").hidden = true; $("bAlbum").focus(); };
   $("zukanClose").onclick = () => { $("zukan").hidden = true; $("bZukan").focus(); };

@@ -10,6 +10,7 @@
 		A10000000000000000000001 /* ChanduApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* ChanduApp.swift */; };
 		A10000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* ContentView.swift */; };
 		A10000000000000000000003 /* PedometerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* PedometerService.swift */; };
+		A10000000000000000000091 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000091 /* HealthService.swift */; };
 		A10000000000000000000004 /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* GameWebView.swift */; };
 		A10000000000000000000005 /* chandu.html in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* chandu.html */; };
 		A10000000000000000000006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* Assets.xcassets */; };
@@ -19,6 +20,8 @@
 		A20000000000000000000001 /* ChanduApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChanduApp.swift; sourceTree = "<group>"; };
 		A20000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A20000000000000000000003 /* PedometerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PedometerService.swift; sourceTree = "<group>"; };
+		A20000000000000000000091 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
+		A20000000000000000000092 /* Chandu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Chandu.entitlements; sourceTree = "<group>"; };
 		A20000000000000000000004 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
 		A20000000000000000000005 /* chandu.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = chandu.html; sourceTree = "<group>"; };
 		A20000000000000000000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -50,6 +53,8 @@
 				A20000000000000000000001 /* ChanduApp.swift */,
 				A20000000000000000000002 /* ContentView.swift */,
 				A20000000000000000000003 /* PedometerService.swift */,
+				A20000000000000000000091 /* HealthService.swift */,
+				A20000000000000000000092 /* Chandu.entitlements */,
 				A20000000000000000000004 /* GameWebView.swift */,
 				A20000000000000000000005 /* chandu.html */,
 				A20000000000000000000006 /* Assets.xcassets */,
@@ -139,6 +144,7 @@
 				A10000000000000000000001 /* ChanduApp.swift in Sources */,
 				A10000000000000000000002 /* ContentView.swift in Sources */,
 				A10000000000000000000003 /* PedometerService.swift in Sources */,
+				A10000000000000000000091 /* HealthService.swift in Sources */,
 				A10000000000000000000004 /* GameWebView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -193,6 +199,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "ヘルスケアの歩数・距離・カロリー・心拍数・睡眠などを、ゲームの「きろく」画面に表示するために読み取ります。";
+				CODE_SIGN_ENTITLEMENTS = Chandu/Chandu.entitlements;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -219,6 +227,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "ヘルスケアの歩数・距離・カロリー・心拍数・睡眠などを、ゲームの「きろく」画面に表示するために読み取ります。";
+				CODE_SIGN_ENTITLEMENTS = Chandu/Chandu.entitlements;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
