@@ -227,6 +227,8 @@ body {
 .story-card .boss-dex .zk-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
 .boss-dex .zk-item b { font-size: 30px; }
 .boss-dex .zk-item b img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; }
+.boss-dex .zk-item.locked { background: #e6e1da; border-color: #cfc7bc; color: #9a9188; }
+.boss-dex .zk-item.locked b { font-size: 28px; font-weight: 700; color: #b3aaa0; }
 .boss-dex .zk-item.now { border-color: #e0344f; background: #ffe0e4; }
 .boss-dex .zk-item small { display: block; font-size: 9px; color: #b6573a; font-weight: 700; }
 .boss-art img { width: 150px; height: 150px; object-fit: contain; display: block; border-radius: 18px; }
@@ -539,7 +541,7 @@ body {
         <p class="note" id="bossReward"></p>
         <button type="button" id="bossClaim" hidden>ごほうびを うけとる</button>
         <p class="note" id="bossLast"></p>
-        <details class="zk-region boss-dex" id="bossDex"><summary>👿 ボス ずかん</summary><p class="note">うえから じゅんばんに、まいしゅう げつようびに 1たいずつ くるよ。え と ひとことは スプレッドシートの「ボス」タブで かえられるよ。</p><div class="zk-grid" id="bossDexGrid"></div></details>
+        <details class="zk-region boss-dex" id="bossDex"><summary>👿 ボス ずかん</summary><p class="note">まいしゅう げつようびに 1たいずつ くるよ。やっつけると、どんな ボスだったか ここに のるよ！</p><div class="zk-grid" id="bossDexGrid"></div></details>
       </div>
       <button type="button" id="bossClose">とじる</button>
     </div>
@@ -799,7 +801,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.38";
+  const VERSION = "1.39";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4823,9 +4825,10 @@ body {
     const beat = S.bossBeat || {}, n = bossList.filter((x) => beat[x.name]).length;
     $("bossDex").querySelector("summary").textContent = `👿 ボス ずかん（やっつけた ${n} / ${bossList.length}）`;
     bossList.forEach((x, i) => {
-      const d = document.createElement("div"); d.className = "zk-item" + (x.name === now ? " now" : "");
+      const seen = !!beat[x.name], d = document.createElement("div"); d.className = "zk-item" + (seen ? "" : " locked") + (x.name === now ? " now" : "");
       d.innerHTML = `<b aria-hidden="true"></b><span></span><small></small>`;
       const pic = bossPic(x.name), box = d.querySelector("b");
+      if (!seen) { box.textContent = "？"; d.querySelector("span").textContent = `${i + 1}. ？？？`; d.querySelector("small").textContent = x.name === now ? "こんしゅう" : ""; g.appendChild(d); return; }
       if (pic) { const im = new Image(); im.alt = ""; im.loading = "lazy"; im.src = pic; im.onerror = () => { box.textContent = x.icon; }; box.appendChild(im); } else box.textContent = x.icon;
       d.querySelector("span").textContent = `${i + 1}. ${x.name}`;
       d.querySelector("small").textContent = x.name === now ? "こんしゅう" : beat[x.name] ? "やっつけた！" : "";
