@@ -203,6 +203,13 @@ body {
 .stop[disabled] { cursor: default; }
 .stop:focus-visible i { outline: 3px solid var(--cream); outline-offset: 2px; }
 .voyage-next { font-size: 12px; text-align: center; }
+.vbtns .pick-btn { background: #f4891f; color: #fff; }
+#pickList summary { margin: 8px 0 4px; font-size: 13px; font-weight: 700; color: #b6573a; cursor: pointer; }
+.story-card .pick-row { display: grid; grid-template-columns: 1.8em 1fr 34px; gap: 8px; align-items: center; width: 100%; text-align: left; background: #fff3d6; border: 0; border-radius: 12px; padding: 6px 10px; margin: 3px 0; font-family: var(--font-body); font-size: 13px; color: inherit; cursor: pointer; }
+.story-card .pick-row.on { outline: 3px solid #f4891f; }
+.pick-row small { display: block; font-size: 11px; opacity: .75; }
+.pick-row .pick-art { width: 34px; height: 34px; }
+#pickDlg .scroll > * { flex-shrink: 0; }
 .voyage-place { font-size: 12px; margin-top: -4px; }
 .goal { height: 8px; border-radius: 5px; background: rgba(60,20,10,.28); overflow: hidden; }
 .goal > i { display: block; height: 100%; width: 0; background: #ffd166; border-radius: 5px; transition: width .6s; }
@@ -402,6 +409,7 @@ body {
     <div class="voyage-place" id="vPlace"></div>
     <div class="route" id="route"><div class="route-fill" id="routeFill"></div></div>
     <div class="voyage-next" id="vNext"></div>
+    <div class="vbtns"><button type="button" id="bPick" class="pick-btn" hidden>🧭 きょうの ぼうけんを えらぶ</button></div>
     <div class="treasures" id="treasures"></div>
     <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bAlbum">📚 おもいで</button></div>
   </section>
@@ -416,6 +424,17 @@ body {
     </div>
   </div>
 
+  <div class="story" id="pickDlg" hidden role="dialog" aria-modal="true" aria-labelledby="pickTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">せかいりょこう クリア の ごほうび</div>
+      <h3 id="pickTitle">🧭 ぼうけんを えらぶ</h3>
+      <div class="scroll">
+        <p class="rec-note" id="pickNote"></p>
+        <div id="pickList"></div>
+      </div>
+      <button type="button" id="pickClose">とじる</button>
+    </div>
+  </div>
   <div class="story" id="records" hidden role="dialog" aria-modal="true" aria-labelledby="recTitle">
     <div class="story-card wide">
       <div class="eyebrow">ぼくと きみの おさんぽ</div>
@@ -606,7 +625,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.33";
+  const VERSION = "1.34";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -3576,6 +3595,7 @@ body {
   const GEO = "24.45,122.94;24.45,124.14;24.32,123.83;24.33,124.09;24.82,125.20;26.35,126.86;26.23,127.30;26.22,127.72;27.03,128.45;27.37,128.56;27.77,128.97;28.38,129.49;28.32,129.96;30.36,130.53;30.38,130.97;31.59,130.66;32.70,131.30;32.81,130.71;32.45,130.20;32.63,129.74;32.70,128.84;33.81,129.67;34.42,129.33;33.19,129.88;33.52,130.53;33.32,131.48;33.85,132.79;34.25,133;33.50,133.57;34.24,134.65;34.18,133.81;34.50,134.24;34.46,133.99;34.60,133.77;34.40,132.45;34.30,132.32;34.17,132.18;34.35,130.86;35.40,132.69;36.28,133.21;35.54,134.23;34.84,134.69;34.43,134.82;34.69,135.53;33.67,135.89;34.69,135.84;34.97,135.77;35.25,136.08;34.46,136.73;34.52,136.89;35.19,136.90;34.70,137;36.26,136.91;36.08,136.51;36.56,136.66;36.59,137.60;37.91,139.05;38.04,138.37;36.73,138.46;35.50,138.76;35.36,138.73;35.32,139.54;35.30,139.48;35.71,139.81;34.72,139.40;33.11,139.79;27.09,142.19;35.79,140.32;35.92,139.48;36.40,140.59;36.76,139.60;36.62,138.60;37.49,139.93;38.37,141.06;38.31,140.44;39.19,139.55;39.88,139.85;38.99,141.10;40.82,140.74;41.76,140.70;42.07,139.48;43.20,141;43.06,141.35;43.49,142.61;43.77,142.48;42.92,143.20;43.10,144.38;44.12,145.09;45.52,141.94;45.18,141.24;45.37,141.03;33.31,44.37;32.66,51.68;29.39,47.99;25.99,50.58;25.29,51.53;25.20,55.27;24.35,56.71;15.93,48.63;26.62,37.92;30.33,35.44;33.51,36.29;38.64,34.83;34.66,32.63;33.94,35.64;31.50,35.50;31.70,35.20;29.98,31.13;16.94,33.75;7.50,30.50;15.32,38.93;11.65,42.42;12.03,39.04;2.05,45.32;-1.50,35.15;-1,33;-1.48,29.53;-6,29.50;-3.07,37.35;-4.33,55.74;-11.70,43.26;-20.25,44.42;-20.45,57.31;-15.03,40.73;-12,34.50;-17.92,25.86;-20.27,30.93;-19.50,22.80;-24.73,15.29;-33.96,18.40;-29.31,27.48;-26.31,31.14;-9.07,16;-1.50,17;0.75,15.50;-2.30,9.60;3.60,8.75;0.25,6.60;4.20,9.17;2.85,16.20;19.05,20.50;9.25,7.24;16.97,7.99;6.42,2.38;6.13,1.22;5.10,-1.24;6.81,-5.30;10.62,-4.90;13.91,-4.56;6.30,-10.80;8.43,-13.17;11,-12;11.25,-16;13.45,-15.50;14.84,-17.23;14.92,-23.51;21.12,-11.40;35.17,-5.27;25.50,8.50;36.87,10.35;32.64,14.29;35.90,14.51;37.75,14.99;40.75,14.49;41.89,12.49;41.90,12.45;43.77,11.26;43.94,12.45;45.44,12.33;45.46,9.19;43.74,7.42;43.70,7.27;43.84,5.98;42.51,1.52;41.40,2.17;40.41,-3.69;37.18,-3.59;37.39,-5.98;38.71,-9.13;41.14,-8.61;44.84,-0.57;48.64,-1.51;48.86,2.29;51.51,-0.08;53.28,-3.83;52.97,-9.43;55.24,-6.51;55.95,-3.20;64.31,-20.30;51.88,4.64;50.85,4.35;49.61,6.13;45.98,7.66;47.14,9.52;48.18,16.31;46.36,14.09;42.64,18.11;43.34,17.82;42.45,18.70;40.71,19.95;37.97,23.73;36.46,25.38;41,20.80;42.21,20.74;44.82,20.45;42.13,23.34;45.52,25.37;47.30,28.98;49.84,24.03;47.50,19.04;49,20.77;50.09,14.41;47.56,10.75;50.94,6.96;52.52,13.38;53.54,9.99;55.68,12.59;62.10,7.10;59.33,18.07;66.54,25.85;59.44,24.75;56.95,24.11;54.67,25.29;50.06,19.94;52.70,23.90;59.94,30.31;55.75,37.62;55.80,49.11;43.60,39.73;42.66,44.64;39.70,44.30;40.36,49.83;40.25,58.44;39.65,66.98;51.13,71.43;42.45,77.25;38.50,73.50;36.71,67.11;36.32,74.65;31.62,74.88;33.75,78.67;31.10,77.17;29.97,76.88;28.66,77.24;30.09,78.27;27.18,78.04;26.91,75.79;21.84,73.72;18.92,72.83;15.50,73.91;15.34,76.46;9.50,76.35;9.92,78.12;7.96,80.76;4.18,73.51;13.68,79.35;17.36,78.47;24.85,79.92;19.21,81.70;19.89,86.09;23.42,85.45;24.70,84.99;22.59,88.35;27.70,88.15;26.58,93.17;25.25,91.67;27.59,91.86;25.67,94.11;24.55,93.80;23.73,92.72;23.47,91.40;21.95,89.18;27.49,89.36;27.99,86.93;29.66,91.12;24.82,103.32;30.73,104.15;29.56,106.58;25.99,105.67;25.27,110.29;18.25,109.51;23.11,113.32;22.27,114.15;22.20,113.54;24.66,117.07;29.27,117.18;29.35,110.55;30.82,110.98;30.13,118.17;30.25,120.14;31.24,121.49;31.32,120.63;35.60,116.99;34.51,112.94;34.38,109.27;37.20,112.18;40.01,119.75;39.15,117.18;39.92,116.39;41.80,123.45;42,128.06;45.80,126.53;49.21,119.74;37.45,104.98;40.04,94.81;36.70,99.08;39.47,75.99;47.92,106.92;53.50,108;63.46,142.79;56.06,160.64;43.11,131.88;37.58,126.98;35.10,129.01;33.46,126.94;25.03,121.56;25.11,121.84;16.92,121.06;9.80,124.17;7.07,125.61;20.91,107.18;15.88,108.33;10.10,105.90;19.89,102.13;13.41,103.87;13.74,100.49;18.79,98.98;21.17,94.86;5.41,100.33;3.16,101.71;1.28,103.86;3.75,97.50;-7.61,110.20;-8.37,115.13;-8.55,119.45;-8.25,125.60;-3.05,119.85;-1,114;4.89,114.94;-0.50,130.50;-9.44,147.18;-18.29,147.70;-25.34,131.04;-32,115.52;-35.80,137.25;-38.66,143.10;-42.88,147.33;-35.31,149.12;-33.86,151.22;-38.14,176.25;-44.64,167.90;-20.94,164.66;-19.53,169.45;-9.43,159.95;7.16,134.38;6.84,158.33;-0.53,166.92;7.09,171.38;1.45,173.03;-8.52,179.20;-18.14,178.44;-21.14,-175.20;-14.05,-171.44;-27.13,-109.29;-33.45,-70.67;-22.92,-68.27;-51,-73;-54.87,-68.22;-50.47,-73.05;-32.65,-70.01;-34.60,-58.38;-34.47,-57.85;-30.03,-51.23;-26.92,-49.07;-25.69,-54.44;-23.55,-46.63;-22.95,-43.21;-20.39,-43.51;-20.43,-41.01;-12.97,-38.51;-10.50,-36.70;-9,-35.22;-3.85,-32.42;-7.15,-34.79;-5.70,-35.21;-2.80,-40.51;-4.10,-41.71;-2.53,-43.12;-10.55,-46.60;-17.74,-48.63;-15.80,-47.86;-21.13,-56.48;-17,-57;-8.76,-63.90;-9.97,-67.81;-3.14,-59.90;5.14,-60.76;-1.45,-48.50;0,-51.07;5.24,-52.77;5.85,-55.20;5.18,-59.48;5.97,-62.54;10.39,-75.51;-0.95,-90.97;-13.16,-72.55;-20.13,-67.49;-27.13,-55.70;10.65,-61.51;12.06,-61.75;13.10,-59.62;13.01,-61.24;13.81,-61.06;15.32,-61.29;17.07,-61.80;17.35,-62.84;18.47,-66.12;18.47,-69.89;19.57,-72.24;24.18,-76.46;23.14,-82.35;18.41,-77.10;9.08,-79.68;10.30,-84.80;11.98,-86.16;14.84,-89.14;13.87,-89.55;17.22,-89.62;17.32,-87.53;20.63,-87.07;20.68,-88.57;16.85,-93.08;17.06,-96.73;19.69,-98.84;20.67,-103.35;27.50,-107.75;27.75,-114.10;37.82,-122.48;19.41,-155.29;60.02,-139.49;47.62,-122.35;42.94,-122.11;36.12,-115.17;36.11,-112.11;32.78,-106.17;29.43,-98.49;35.54,-97.48;38.50,-98;40.34,-105.69;38.74,-109.50;43.42,-113.52;48.70,-113.72;44.46,-110.83;43.88,-103.46;46.97,-103.54;42.14,-102.86;42.50,-91.06;48,-91.50;43.07,-89.40;47.20,-91.37;41.88,-87.62;39.80,-86.23;38.62,-90.18;34.03,-93.67;29.96,-90.06;32.35,-90.88;34.71,-86.65;25.29,-80.90;32.08,-81.09;32.78,-79.93;36.01,-75.67;36.16,-86.78;38.20,-85.77;38.07,-81.08;41.51,-81.70;39.95,-75.15;37.27,-76.70;38.89,-77.05;39.29,-76.61;39.66,-75.57;39.36,-74.42;40.69,-74.04;41.36,-71.97;41.47,-71.30;42.36,-71.06;44.26,-72.58;44.27,-71.30;43.62,-70.21;45,-65;44.49,-63.92;46.49,-63.38;48.95,-54.60;46.81,-71.21;43.08,-79.07;58.77,-94.17;50.45,-104.61;51.32,-116.19;49.30,-123.14;64.06,-139.43;62.45,-114.37;63.75,-68.52;69.13,-50.01".split(";").map((p) => p.split(",").map(Number));
    // after the world tour, Japan and the world start again
   function chapterAt(k) {
+    if (S.pickK != null && k === S.pickSlot && CHAPTERS[S.pickK]) return { c: CHAPTERS[S.pickK], lap: 2 + Math.floor((k - CHAPTERS.length) / (CHAPTERS.length - LOOP_FROM)) };
     if (k < CHAPTERS.length) return { c: CHAPTERS[k], lap: 1 };
     const span = CHAPTERS.length - LOOP_FROM, r = k - CHAPTERS.length;
     return { c: CHAPTERS[LOOP_FROM + (r % span)], lap: 2 + Math.floor(r / span) };
@@ -3696,7 +3716,7 @@ body {
   // One area per day: arriving plays 前編; walking DAILY_GOAL steps that day plays 後編 and gives the reward;
   // the move to the next area waits until the next day.
   function reach(k) {
-    S.chapter = k + 1;
+    S.chapter = k + 1; S.pickK = null; S.pickSlot = null;
     storyQueue.push({ k, part: "A" });
   }
   function finish(k) {
@@ -3709,6 +3729,43 @@ body {
       S.happy = clamp(S.happy + 15);
     }
     storyQueue.push({ k, part: "B" });
+  }
+  // After the whole world tour has been walked once, each day's story can be chosen from the
+  // places whose 8,000-step treasure is still missing (before that day's 5,000 steps are reached).
+  const worldDone = () => (S.doneChapter ?? -1) >= CHAPTERS.length - 1;
+  const canPick = () => worldDone() && S.chapter > CHAPTERS.length && S.doneDay !== S.stepDay;
+  const pickable = () => CHAPTERS.map((c, i) => ({ c, i })).filter(({ c }) => (c.item && !S.items[c.item.key]) || (c.grand && !grandLeft(c.grand) && !S.items[c.grand.key]));
+  function openPick() {
+    if (!canPick()) return;
+    const list = $("pickList"), all = pickable(), cur = CHAPTERS.indexOf(chapterAt(S.chapter - 1).c);
+    list.innerHTML = "";
+    $("pickNote").textContent = all.length ? `まだ 8,000歩の お宝を もらっていない ばしょ（${all.length}か所）から、きょう いく ところを えらんでね。5,000歩で 後編、8,000歩で お宝だよ。`
+      : "ぜんぶの お宝を あつめたよ！ すごい！ いつもどおり たびを つづけよう。";
+    HEN.forEach(([name, a, b]) => {
+      const rows = all.filter(({ i }) => i >= a && i < b);
+      if (!rows.length) return;
+      const det = document.createElement("details"), h = document.createElement("summary");
+      h.textContent = `${name}（${rows.length}）`; det.appendChild(h); det.open = !list.children.length || rows.some(({ i }) => i === cur); list.appendChild(det);
+      rows.forEach(({ c, i }) => {
+        const btn = document.createElement("button"), prize = c.item || c.grand;
+        btn.type = "button"; btn.className = "pick-row" + (i === cur ? " on" : "");
+        btn.innerHTML = `<i></i><span><b></b><small></small></span><span class="pick-art"></span>`;
+        btn.querySelector("i").textContent = c.icon; btn.querySelector("b").textContent = c.title;
+        btn.querySelector("small").textContent = (c.place && c.place !== c.title ? c.place : GROUPS[c.gi].name) + (c.grand ? " · 👑 ごうかな お宝" : "");
+        setArt(btn.querySelector(".pick-art"), S.items[prize.key] ? prize.icon : "🎁");
+        btn.onclick = () => choosePick(i);
+        det.appendChild(btn);
+      });
+    });
+    $("pickDlg").hidden = false; $("pickClose").focus();
+  }
+  function choosePick(i) {
+    if (!canPick()) return;
+    $("pickDlg").hidden = true;
+    if (i === CHAPTERS.indexOf(chapterAt(S.chapter - 1).c)) return;
+    S.pickK = i; S.pickSlot = S.chapter - 1;
+    bgKey = ""; save(); render(); renderBg();
+    showStory({ k: S.chapter - 1, part: "A" }, true);
   }
   function checkVoyage() {
     if (stageOf().id === "egg") return;
@@ -3745,7 +3802,7 @@ body {
   // entry: { k, part: "A" | "B" | "AB" } for a chapter, or { item } for a treasure
   function showStory(e, isNew) {
     if (e.item) return showItemGet(e);
-    const { k, part } = e, { c, lap } = chapterAt(k), g = GROUPS[c.gi];
+    const { k, part } = e, { c, lap } = e.ci != null ? { c: CHAPTERS[e.ci], lap: 1 } : chapterAt(k), g = GROUPS[c.gi];
     const pages = [];
     if (part.includes("A")) { pages.push({ narr: c.textA, tag: "前編" }); (c.talkA || []).forEach((t) => pages.push({ line: t, tag: "前編" })); }
     if (part.includes("B")) { pages.push({ narr: c.textB, tag: "後編" }); (c.talkB || []).forEach((t) => pages.push({ line: t, tag: "後編" })); }
@@ -3912,7 +3969,7 @@ body {
         b.innerHTML = `<i>${ch.icon}</i><span>${ch.short}</span>`;
         b.onclick = () => {
           const kk = Math.max(S.chapter, 1) - 1, cur = chapterAt(kk).c.ci;
-          if (i < cur) showStory({ k: kk - (cur - i), part: "AB" }, false);
+          if (i < cur) showStory(S.pickK != null && kk === S.pickSlot ? { ci: CHAPTERS.indexOf(g.chapters[i]), part: "AB" } : { k: kk - (cur - i), part: "AB" }, false);
           else if (i === cur) showStory({ k: kk, part: S.doneChapter === kk ? "AB" : "A" }, false);
         };
         route.appendChild(b);
@@ -3932,8 +3989,9 @@ body {
     $("routeFill").style.width = (n > 1 ? ((last ? c.ci : c.ci + frac) / (n - 1)) * (100 - 100 / n) : 0) + "%";
     const next = chapterAt(k + 1).c;
     $("vNext").textContent = stageOf().id === "egg" ? "ぼくが たまごから でたら、しゅっこうだよ！"
-      : doneToday ? `${c.title}の おはなしは おしまい！ あしたは「${next.title}」へ しゅっぱつだよ！`
+      : doneToday ? `${c.title}の おはなしは おしまい！ あしたは「${next.title}」へ しゅっぱつだよ！` + (worldDone() ? "（えらぶ ことも できるよ）" : "")
       : `5,000歩で「${c.title}」の 後編が はじまるよ！`;
+    $("bPick").hidden = !(reachedAny && stageOf().id !== "egg" && canPick());
     // today's goals, shown in the box at the top
     const gs = $("gStory"), egg = stageOf().id === "egg";
     gs.hidden = egg; gs.classList.toggle("done", doneToday);
@@ -4837,6 +4895,8 @@ body {
   $("mapIn").onclick = () => zoomMap(Math.min(8, mapZoom * 2));
   $("mapOut").onclick = () => zoomMap(Math.max(1, mapZoom / 2));
   $("bMap").onclick = openMap;
+  $("bPick").onclick = openPick;
+  $("pickClose").onclick = () => { $("pickDlg").hidden = true; $("bPick").focus(); };
   $("mapClose").onclick = () => { $("mapDlg").hidden = true; $("bMap").focus(); };
   $("mapDlg").addEventListener("click", (e) => { if (e.target.id === "mapDlg") $("mapDlg").hidden = true; });
 
