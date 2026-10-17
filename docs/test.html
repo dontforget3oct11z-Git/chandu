@@ -203,6 +203,64 @@ body {
 .stop.here i { box-shadow: 0 0 0 3px #ffd166; filter: none; opacity: 1; background: #fff3d6; }
 .stop[disabled] { cursor: default; }
 .stop:focus-visible i { outline: 3px solid var(--cream); outline-offset: 2px; }
+.top-btns .ad-btn { position: relative; }
+.top-btns .ad-btn i { font-style: normal; }
+.top-btns .ad-btn.ping::after { content: ""; position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: 50%; background: #e0344f; border: 2px solid #fff8ef; }
+.top-btns .ad-btn i:not(:empty) { margin-left: 3px; background: #e0344f; color: #fff; border-radius: 999px; padding: 0 5px; font-size: 10px; }
+.ev-banner { font-size: 11px; text-align: center; background: #fff1d6; border: 2px dashed #f0b85a; border-radius: 10px; padding: 3px 8px; color: #8a4b12; cursor: pointer; }
+.ad-bar { display: block; height: 8px; border-radius: 999px; background: #efe2cc; overflow: hidden; margin: 3px 0; }
+.ad-bar i { display: block; height: 100%; background: linear-gradient(90deg, #f4a23a, #f4891f); border-radius: 999px; }
+.ad-bar.hp { height: 14px; border: 2px solid #2b1d14; background: #fff; }
+.ad-bar.hp i { background: linear-gradient(90deg, #e0344f, #ff7a59); }
+.ad-row { display: grid; grid-template-columns: 34px 1fr auto; gap: 8px; align-items: center; background: #fff3d6; border-radius: 12px; padding: 6px 10px; margin: 4px 0; }
+.ad-row.got { opacity: .65; }
+.ad-row .ad-ic { font-size: 22px; text-align: center; }
+.ad-row .art-ic .art { width: 32px; height: 32px; display: block; }
+.ad-row b { font-size: 13px; display: block; }
+.ad-row small { font-size: 11px; opacity: .8; }
+.story-card .ad-row button { font-size: 12px; padding: 5px 12px; box-shadow: none; }
+.story-card .ad-row button:disabled { opacity: .35; }
+.ad-bonus { font-size: 12px; font-weight: 700; color: #6b3a1e; text-align: center; margin: 0; }
+.boss-art { width: 150px; height: 150px; margin: 0 auto; font-size: 96px; text-align: center; line-height: 150px; }
+.boss-art .art { width: 150px; height: 150px; display: block; }
+#bossDlg h3 { text-align: center; }
+.ad-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; height: 70px; align-items: end; }
+.ad-days .bd { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 2px; }
+.ad-days .bd i { display: block; width: 70%; min-height: 2px; background: #f4a23a; border-radius: 4px 4px 0 0; }
+.ad-days .bd.now i { background: #e0344f; }
+.ad-days .bd.later i { background: #e2d6c6; }
+.ad-days .bd.ok i { background: #6aa84f; }
+.ad-days .bd small { font-size: 10px; }
+.cr-result { background: #fff6c9; border: 2px solid #e3b23c; border-radius: 12px; padding: 8px; text-align: center; font-size: 13px; animation: pop .35s ease-out; }
+.cr-result b { display: block; margin-bottom: 4px; }
+.cr-got, .cr-mats { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.cr-mat { display: inline-flex; align-items: center; gap: 3px; background: #fff3d6; border-radius: 999px; padding: 2px 8px 2px 3px; font-size: 11px; }
+.cr-mat.none { opacity: .45; }
+.cr-mat .art-ic { width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; }
+.cr-mat .art-ic .art { width: 24px; height: 24px; display: block; }
+.cr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+.cr-card { background: #efe6da; border: 2px solid #e2d6c6; border-radius: 12px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.cr-card.own { background: #fff3d6; border-color: #f0d9a8; }
+.cr-card.worn { border-color: #f4891f; box-shadow: 0 0 0 2px rgba(244,137,31,.3); }
+.cr-card .cr-art { font-size: 34px; line-height: 1; font-weight: 400; }
+.cr-card .cr-art .art { width: 52px; height: 52px; display: block; }
+.cr-card:not(.own) .cr-art { filter: grayscale(.7); opacity: .6; }
+.cr-card .cr-name { font-size: 12px; font-weight: 700; }
+.cr-card .cr-rec { font-size: 10px; opacity: .8; line-height: 1.4; }
+.story-card .cr-card button { font-size: 11px; padding: 4px 12px; box-shadow: none; }
+.story-card .cr-card button:disabled { opacity: .35; }
+.med-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+.med-card { background: #fff3d6; border-radius: 12px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1px; }
+.med-card .art { width: 52px; height: 52px; }
+.med-card b { font-size: 11px; line-height: 1.35; }
+.med-card small { font-size: 10px; opacity: .8; }
+.rev-list li { grid-template-columns: 1.6em 1fr auto; }
+.ad-days.rev { height: 80px; }
+.hat-grid { flex-shrink: 0; min-height: 120px; max-height: 260px; overflow-y: auto; border: 2px solid #f0d9a8; border-radius: 12px; padding: 4px 6px; background: #fffaf0; }
+.story-card .hat-grid .zk-item.on { border-color: #f4891f; background: #ffe3cf; box-shadow: 0 0 0 2px rgba(244,137,31,.35); }
+.story-card .hat-grid .zk-grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+.top-btns.ad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.top-btns.ad-grid button { padding: 4px 4px; font-size: 11px; white-space: nowrap; }
 .voyage-next { font-size: 12px; text-align: center; }
 .vbtns .pick-btn { background: #f4891f; color: #fff; }
 #pickList summary { margin: 8px 0 4px; font-size: 13px; font-weight: 700; color: #b6573a; cursor: pointer; }
@@ -359,7 +417,9 @@ body {
     <div class="tgoal" id="gStory"><span class="tg-name">📖 5,000歩</span><span class="tg-bar"><i id="gStoryFill"></i></span><span class="tg-txt" id="gStoryTxt"></span></div>
     <div class="tgoal" id="gItem"><span class="tg-name">🎁 8,000歩</span><span class="tg-bar"><i id="gItemFill"></i></span><span class="tg-txt" id="gItemTxt"></span></div>
     <div class="tg-banana" id="wNote"></div>
-    <div class="vbtns top-btns"><button type="button" id="bRecords">📊 きろく</button><button type="button" id="bGacha">🎰 ガチャ · <i class="coin" aria-label="金貨"></i><span id="wCoins">0</span></button></div>
+    <div class="tg-banana" id="wBag"></div>
+    <div class="ev-banner" id="evBanner" hidden role="button" tabindex="0"></div>
+    <div class="vbtns top-btns ad-grid"><button type="button" class="ad-btn" id="bMissions">📋 ミッション<i></i></button><button type="button" class="ad-btn" id="bBoss">⚔️ ボス</button><button type="button" class="ad-btn" id="bCraft">🧵 いしょう</button><button type="button" id="bMedals">🏅 メダル</button><button type="button" id="bRecords">📊 きろく</button><button type="button" id="bGacha">🎰 ガチャ · <i class="coin" aria-label="金貨"></i><span id="wCoins">0</span></button></div>
   </div>
 
   <div class="screen" id="screen">
@@ -429,6 +489,79 @@ body {
       <div class="zk-count" id="albumCount"></div>
       <div class="scroll" id="albumBody"></div>
       <button type="button" id="albumClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="missions" hidden role="dialog" aria-modal="true" aria-labelledby="misTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">まいにちの ぼうけん</div>
+      <h3 id="misTitle">📋 ミッション</h3>
+      <div class="rec-tabs" id="misTabs"><button type="button" data-p="d">きょう</button><button type="button" data-p="w">しゅう</button><button type="button" data-p="m">つき</button></div>
+      <div class="scroll">
+        <p class="note" id="misHead"></p>
+        <div id="misList"></div>
+        <p class="ad-bonus" id="misBonus"></p>
+        <button type="button" class="mini-btn" id="misReview" hidden>📅 せんしゅうの ふりかえりを みる</button>
+      </div>
+      <button type="button" id="misClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="bossDlg" hidden role="dialog" aria-modal="true" aria-labelledby="bossName">
+    <div class="story-card wide">
+      <div class="eyebrow">しゅうまつ ボス</div>
+      <div class="scroll">
+        <div class="boss-art" id="bossArt" aria-hidden="true"></div>
+        <h3 id="bossName"></h3>
+        <div id="bossHp"></div>
+        <div class="zk-count" id="bossHpTxt"></div>
+        <div class="ad-days" id="bossDays"></div>
+        <p id="bossTxt"></p>
+        <p class="note" id="bossReward"></p>
+        <button type="button" id="bossClaim" hidden>ごほうびを うけとる</button>
+        <p class="note" id="bossLast"></p>
+      </div>
+      <button type="button" id="bossClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="craft" hidden role="dialog" aria-modal="true" aria-labelledby="craftTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">あるいて あつめて つくろう</div>
+      <h3 id="craftTitle">🧵 いしょうづくり</h3>
+      <div class="scroll">
+        <h4>👜 そざいぶくろ</h4>
+        <div id="crBags"></div>
+        <div class="cr-result" id="crResult" hidden aria-live="polite"></div>
+        <h4>🧶 そざい</h4>
+        <div class="cr-mats" id="crMats"></div>
+        <h4>👕 いしょう</h4>
+        <p class="note" id="crWear"></p>
+        <div class="cr-grid" id="crCostumes"></div>
+      </div>
+      <button type="button" id="craftClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="medals" hidden role="dialog" aria-modal="true" aria-labelledby="medTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">がんばりの しるし</div>
+      <h3 id="medTitle">🏅 メダル</h3>
+      <div class="zk-count" id="medCount"></div>
+      <div class="scroll"><div class="med-grid" id="medList"></div></div>
+      <button type="button" id="medClose">とじる</button>
+    </div>
+  </div>
+
+  <div class="story" id="review" hidden role="dialog" aria-modal="true" aria-labelledby="revTitle">
+    <div class="story-card">
+      <div class="eyebrow">しゅうの ふりかえり</div>
+      <h3 id="revTitle"></h3>
+      <div class="ad-days rev" id="revChart"></div>
+      <ul class="rec-list rev-list" id="revRows"></ul>
+      <p class="say" id="revSay"></p>
+      <p class="reward" id="revBonus"></p>
+      <button type="button" id="revClose">オッケー！</button>
     </div>
   </div>
 
@@ -581,7 +714,7 @@ body {
         <h4>👤 きみの なまえ</h4>
         <div class="row"><input id="setName" maxlength="12" placeholder="なまえ" autocomplete="nickname" aria-label="なまえ"><button type="button" class="mini-btn" id="setNameOk">きめた！</button></div>
         <h4>🎩 チャンドゥの ぼうし</h4>
-        <div class="row"><select id="setHat" aria-label="ぼうし"></select></div>
+        <div class="hat-grid" id="hatGrid" aria-label="ぼうし"></div>
         <div class="hat-adj">
           <svg id="hatPrev" viewBox="0 0 200 200" aria-hidden="true"></svg>
           <div class="hat-btns" role="group" aria-label="ぼうしの いち">
@@ -638,7 +771,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.35";
+  const VERSION = "1.36";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -1812,11 +1945,14 @@ body {
     // the player's own fit for this hat (set in せってい): shift, size and tilt around the top of the head
     const [hx, hy, hs, hr] = hatFit(hatKey);
     const hatFitted = hx || hy || hs !== 1 || hr ? `<g transform="translate(${112 + hx} ${36 + hy}) rotate(${hr}) scale(${hs}) translate(-112 -36)">${hat}</g>` : hat;
+    const fit = S.outfit && ITEM_ART[S.outfit] ? ITEM_ART[S.outfit] : "", fitBack = fit && /マント/.test(S.outfit);
+    const outfitBack = fitBack ? `<svg x="36" y="100" width="128" height="128" viewBox="0 0 64 64">${fit}</svg>` : "";
+    const outfitFront = fit && !fitBack ? `<svg x="68" y="126" width="64" height="64" viewBox="0 0 64 64">${fit}</svg>` : "";
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
       <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
       <g transform="translate(100 192) scale(${sc}) translate(-100 -192)">
-        ${sparkle}${tail}
+        ${sparkle}${tail}${outfitBack}
         <ellipse cx="100" cy="162" rx="40" ry="30" fill="${OR}" stroke="${K}" stroke-width="3.5"/>
         ${stripes([[61, 152, 13, 3, 6], [62, 166, 12, 0, 5], [139, 152, -13, 3, 6], [138, 166, -12, 0, 5]])}
         <ellipse cx="100" cy="166" rx="20" ry="22" fill="${W}"/>
@@ -1834,7 +1970,7 @@ body {
         <path d="M74 146 q26 10 52 0" stroke="${RED}" stroke-width="7" fill="none" stroke-linecap="round"/>
         <circle cx="100" cy="158" r="10" fill="${GOLD}" stroke="${K}" stroke-width="2.5"/>
         <path d="M91 157 h18 M100 160 v7" stroke="${K}" stroke-width="2"/><circle cx="96" cy="153" r="2.5" fill="#fff6c8"/>
-        ${hatFitted}${sweat}
+        ${outfitFront}${hatFitted}${sweat}
       </g>`);
   }
   const POOP = `<svg viewBox="0 0 28 24"><path d="M4 22 q-3 -6 4 -8 q-2 -6 6 -7 q0 -6 4 -6 q2 4 6 6 q4 2 0 7 q6 2 2 8 z" fill="#8a5a3a" stroke="#3b4a2a" stroke-width="1.5"/></svg>`;
@@ -4266,7 +4402,7 @@ body {
   let gachaBusy = false;
   function spinGacha() {
     if (gachaBusy || (S.coins || 0) < GACHA_COST) return;
-    gachaBusy = true; S.coins -= GACHA_COST; save(); renderGacha(); $("gResult").hidden = true;
+    gachaBusy = true; S.coins -= GACHA_COST; bump("gacha"); save(); renderGacha(); $("gResult").hidden = true;
     let r = Math.random() * 100, prize = GACHA_TABLE[0][1];
     for (const [p, w] of GACHA_TABLE) { if (r < p) { prize = w; break; } r -= p; }
     const m = $("gMachine"); m.classList.remove("spin", "rare"); void m.offsetWidth; m.classList.add("spin"); if (prize.rare) m.classList.add("rare");
@@ -4290,6 +4426,477 @@ body {
       gachaBusy = false; renderGacha();
     }, 1400);
   }
+  // ===== まいにちの ぼうけん: missions, weekend boss, material bags, costumes, medals, weekly review, seasonal events =====
+  Object.assign(ITEM_ART, {"そざい|ぬの": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><rect x=\"9\" y=\"43\" width=\"46\" height=\"12\" rx=\"6\" fill=\"#d9502b\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M15 49L45 49\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 3\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M49 45.5C51.5 48 51.5 50 49 52.5\" fill=\"none\" stroke=\"rgba(43,29,20,.35)\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><rect x=\"11\" y=\"32\" width=\"44\" height=\"12\" rx=\"6\" fill=\"#f26a3d\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M17 38L45 38\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 3\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M49 34.5C51.5 37 51.5 39 49 41.5\" fill=\"none\" stroke=\"rgba(43,29,20,.35)\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><rect x=\"10\" y=\"21\" width=\"44\" height=\"12\" rx=\"6\" fill=\"#ff8a5c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M16 27L44 27\" stroke=\"#fff\" stroke-width=\"1.5\" stroke-dasharray=\"2.5 3\" stroke-linecap=\"round\" opacity=\".75\"/><path d=\"M48 23.5C50.5 26 50.5 28 48 30.5\" fill=\"none\" stroke=\"rgba(43,29,20,.35)\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M15 25C18 23.5 22 23.5 25 23.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/>", "そざい|いと": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><rect x=\"19\" y=\"15\" width=\"26\" height=\"34\" fill=\"#4a7fd0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M19 21L45 19M19 27L45 25M19 33L45 31M19 39L45 37M19 45L45 43\" stroke=\"#2f5fae\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><rect x=\"13\" y=\"9\" width=\"38\" height=\"8\" rx=\"3.5\" fill=\"#d8a05f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><rect x=\"13\" y=\"47\" width=\"38\" height=\"8\" rx=\"3.5\" fill=\"#d8a05f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M45 38C52 40 56 44 54 49C52 53 56 56 59 54\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"4\"/><path d=\"M45 38C52 40 56 44 54 49C52 53 56 56 59 54\" fill=\"none\" stroke=\"#4a7fd0\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M24 21L24 40\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M18 12L26 12\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "そざい|ボタン": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><circle cx=\"25\" cy=\"30\" r=\"18\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"25\" cy=\"30\" r=\"13\" fill=\"none\" stroke=\"#e3a92c\" stroke-width=\"2\"/><circle cx=\"21\" cy=\"26\" r=\"2.3\" fill=\"#8a5a12\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><circle cx=\"29\" cy=\"26\" r=\"2.3\" fill=\"#8a5a12\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><circle cx=\"21\" cy=\"34\" r=\"2.3\" fill=\"#8a5a12\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><circle cx=\"29\" cy=\"34\" r=\"2.3\" fill=\"#8a5a12\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><path d=\"M21 26L29 34M29 26L21 34\" stroke=\"#d3123f\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><path d=\"M13 22C15 18 18 16 21 15\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><circle cx=\"46\" cy=\"46\" r=\"11\" fill=\"#e8453c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"46\" cy=\"46\" r=\"7.5\" fill=\"none\" stroke=\"#b52a24\" stroke-width=\"1.6\"/><circle cx=\"43\" cy=\"46\" r=\"1.8\" fill=\"#6e1410\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1\"/><circle cx=\"49\" cy=\"46\" r=\"1.8\" fill=\"#6e1410\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1\"/><path d=\"M39 41C40 39 42 38 43 38\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "そざい|はね": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M14 52C10 38 18 20 36 11C42 8 48 7 53 8C55 16 51 28 44 36C36 45 24 51 14 52Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M53 8C48 7 42 8 36 11C31 20 36 29 44 31C49 25 53 17 53 8Z\" fill=\"#3fb8b0\" stroke=\"#2b1d14\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><path d=\"M32 33C35 36 39 37 41 37\" fill=\"none\" stroke=\"#7fd6cf\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M14 52C10 38 18 20 36 11C42 8 48 7 53 8C55 16 51 28 44 36C36 45 24 51 14 52Z\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M8 58L50 12\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.5\"/><path d=\"M8 58L50 12\" stroke=\"#f3e6cf\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M22 33L26 37M17 41L21 45\" stroke=\"#c9d6d4\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M17 36C19 28 24 22 29 18\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "そざい|ほうせき": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M20 14L44 14L55 27L32 54L9 27Z\" fill=\"#4f8fe6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M20 14L26 27L32 14Z M32 14L38 27L44 14Z\" fill=\"#8fc3ff\"/><path d=\"M9 27L26 27L32 54Z M38 27L55 27L32 54Z\" fill=\"#3566b8\"/><path d=\"M26 27L38 27L32 54Z\" fill=\"#6aa6f2\"/><path d=\"M9 27L55 27M20 14L26 27L32 14L38 27L44 14M26 27L32 54L38 27\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"1.6\" stroke-linejoin=\"round\"/><path d=\"M20 14L44 14L55 27L32 54L9 27Z\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M17 22L21 17\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M53 8Q53 12 57 12Q53 12 53 16Q53 12 49 12Q53 12 53 8Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M12 41Q12 44 15 44Q12 44 12 47Q12 44 9 44Q12 44 12 41Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/>", "そざい|きんの いと": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><ellipse cx=\"20\" cy=\"36\" rx=\"13\" ry=\"12\" fill=\"#f6c94a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M11 30C17 27 24 28 29 31M9 36C16 33 24 34 31 37M11 42C17 40 24 41 29 44\" fill=\"none\" stroke=\"#d79a1e\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><ellipse cx=\"44\" cy=\"36\" rx=\"13\" ry=\"12\" fill=\"#f6c94a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M35 30C41 27 48 28 53 31M33 36C40 33 48 34 55 37M35 42C41 40 48 41 53 44\" fill=\"none\" stroke=\"#d79a1e\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><rect x=\"27\" y=\"25\" width=\"10\" height=\"22\" rx=\"2.5\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M27 36L37 36\" stroke=\"#f6d36b\" stroke-width=\"1.6\"/><path d=\"M48 47C52 52 50 55 55 56\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.5\"/><path d=\"M48 47C52 52 50 55 55 56\" fill=\"none\" stroke=\"#f6c94a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M12 32C13 29 15 27 18 26\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M36 31C37 29 39 27 41 26\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M12 9Q12 14 17 14Q12 14 12 19Q12 14 7 14Q12 14 12 9Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M52 10.5Q52 14 55.5 14Q52 14 52 17.5Q52 14 48.5 14Q52 14 52 10.5Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M31 9.5Q31 12 33.5 12Q31 12 31 14.5Q31 12 28.5 12Q31 12 31 9.5Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/>", "そざい|はなびら": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"translate(23 38) rotate(-40) scale(1)\"><path d=\"M0 0C-9 -5 -10 -18 0 -24C10 -18 9 -5 0 0Z\" fill=\"#ff8fb1\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.30\"/><path d=\"M0 -3L0 -15\" stroke=\"#e2557f\" stroke-width=\"1.60\" stroke-linecap=\"round\"/><path d=\"M-4 -15C-4 -18 -2 -20 0 -21\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.00\" stroke-linecap=\"round\" opacity=\".85\"/></g><g transform=\"translate(41 34) rotate(35) scale(1)\"><path d=\"M0 0C-9 -5 -10 -18 0 -24C10 -18 9 -5 0 0Z\" fill=\"#ff7aa2\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.30\"/><path d=\"M0 -3L0 -15\" stroke=\"#d9446f\" stroke-width=\"1.60\" stroke-linecap=\"round\"/><path d=\"M-4 -15C-4 -18 -2 -20 0 -21\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.00\" stroke-linecap=\"round\" opacity=\".85\"/></g><g transform=\"translate(32 56) rotate(-3) scale(1.1)\"><path d=\"M0 0C-9 -5 -10 -18 0 -24C10 -18 9 -5 0 0Z\" fill=\"#ffa6c1\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.09\"/><path d=\"M0 -3L0 -15\" stroke=\"#e2557f\" stroke-width=\"1.45\" stroke-linecap=\"round\"/><path d=\"M-4 -15C-4 -18 -2 -20 0 -21\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.82\" stroke-linecap=\"round\" opacity=\".85\"/></g>", "そざい|ほしの すな": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M25 22L25 27C15 31 12 40 13 46C15 54 22 56 32 56C42 56 49 54 51 46C52 40 49 31 39 27L39 22Z\" fill=\"#e6f5ff\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M14 43C21 39 27 45 34 41C41 37 46 40 50.5 43C50 51 45 55 32 55C19 55 14 50 14 43Z\" fill=\"#ffd27a\"/><path d=\"M23.0 44.0L24.1 46.5L26.8 46.8L24.7 48.6L25.4 51.2L23.0 49.8L20.6 51.2L21.3 48.6L19.2 46.8L21.9 46.5Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><path d=\"M37.0 43.5L37.9 45.7L40.3 45.9L38.5 47.5L39.1 49.8L37.0 48.6L34.9 49.8L35.5 47.5L33.7 45.9L36.1 45.7Z\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><path d=\"M30.0 49.5L30.7 51.1L32.4 51.2L31.1 52.3L31.5 54.0L30.0 53.1L28.5 54.0L28.9 52.3L27.6 51.2L29.3 51.1Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1\"/><path d=\"M44.0 47.5L44.7 49.1L46.4 49.2L45.1 50.3L45.5 52.0L44.0 51.1L42.5 52.0L42.9 50.3L41.6 49.2L43.3 49.1Z\" fill=\"#9fd3ea\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1\"/><circle cx=\"18\" cy=\"49\" r=\"1\" fill=\"#e39a2c\"/><circle cx=\"41\" cy=\"44\" r=\"1\" fill=\"#e39a2c\"/><circle cx=\"33\" cy=\"46\" r=\"1\" fill=\"#e39a2c\"/><path d=\"M25 22L25 27C15 31 12 40 13 46C15 54 22 56 32 56C42 56 49 54 51 46C52 40 49 31 39 27L39 22Z\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><rect x=\"23\" y=\"11\" width=\"18\" height=\"11\" rx=\"3\" fill=\"#c98a4b\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.3\"/><path d=\"M27 15L37 15\" stroke=\"#a0622d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/><path d=\"M25 25L39 25\" stroke=\"#ff7aa2\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M18 37C19 34 21 32 23 31\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><path d=\"M54 13.5Q54 18 58.5 18Q54 18 54 22.5Q54 18 49.5 18Q54 18 54 13.5Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M10 21Q10 24 13 24Q10 24 10 27Q10 24 7 24Q10 24 10 21Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/>", "そざい|おばけの ぬの": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M14 50L14 30C14 16 22 8 32 8C42 8 50 16 50 30L50 50C47 54 44 48 41 52C38 56 35 49 32 53C29 57 26 49 23 53C20 56 17 48 14 50Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M14 30C10 32 8 36 10 39C12 37 14 36 15 36M50 30C54 32 56 36 54 39C52 37 50 36 49 36\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><ellipse cx=\"26\" cy=\"28\" rx=\"2.6\" ry=\"3.4\" fill=\"#2b1d14\"/><ellipse cx=\"38\" cy=\"28\" rx=\"2.6\" ry=\"3.4\" fill=\"#2b1d14\"/><circle cx=\"25.2\" cy=\"26.8\" r=\"1\" fill=\"#fff\"/><circle cx=\"37.2\" cy=\"26.8\" r=\"1\" fill=\"#fff\"/><path d=\"M29 34C31 36 33 36 35 34\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><ellipse cx=\"21\" cy=\"34\" rx=\"3\" ry=\"2\" fill=\"#ff9ab0\" opacity=\".8\"/><ellipse cx=\"43\" cy=\"34\" rx=\"3\" ry=\"2\" fill=\"#ff9ab0\" opacity=\".8\"/><path d=\"M19 22C20 17 23 14 27 12\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><ellipse cx=\"48\" cy=\"50\" rx=\"10\" ry=\"8\" fill=\"#f4891f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.3\"/><path d=\"M44 43C42 47 42 53 44 57M52 43C54 47 54 53 52 57\" fill=\"none\" stroke=\"#c9610c\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M48 42L49 38C51 37 53 38 53 38\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><path d=\"M48 42L49 38C51 37 53 38 53 38\" fill=\"none\" stroke=\"#6aa84f\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M42 47C42.5 45 43.5 44 45 43.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" opacity=\".85\"/>", "そざい|ひいらぎの は": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"translate(30 38) rotate(-155)\"><path d=\"M0 0Q5 -2 5 -8Q8 -4 12 -10Q14 -5 20 -9Q20 -4 28 0Q20 4 20 9Q14 5 12 10Q8 4 5 8Q5 2 0 0Z\" fill=\"#4f9a3c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M2 0L24 0\" stroke=\"#2f6b25\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M7 -3C11 -5 15 -5 18 -4\" fill=\"none\" stroke=\"#a8dc8a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></g><g transform=\"translate(34 38) rotate(-25)\"><path d=\"M0 0Q5 -2 5 -8Q8 -4 12 -10Q14 -5 20 -9Q20 -4 28 0Q20 4 20 9Q14 5 12 10Q8 4 5 8Q5 2 0 0Z\" fill=\"#4f9a3c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M2 0L24 0\" stroke=\"#2f6b25\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M7 -3C11 -5 15 -5 18 -4\" fill=\"none\" stroke=\"#a8dc8a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></g><g transform=\"translate(32 40) rotate(95)\"><path d=\"M0 0Q5 -2 5 -8Q8 -4 12 -10Q14 -5 20 -9Q20 -4 28 0Q20 4 20 9Q14 5 12 10Q8 4 5 8Q5 2 0 0Z\" fill=\"#4f9a3c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M2 0L24 0\" stroke=\"#2f6b25\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M7 -3C11 -5 15 -5 18 -4\" fill=\"none\" stroke=\"#a8dc8a\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></g><circle cx=\"27\" cy=\"34\" r=\"5.5\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><circle cx=\"25.2\" cy=\"32.2\" r=\"1.5\" fill=\"#fff\" opacity=\".85\"/><circle cx=\"37\" cy=\"34\" r=\"5.5\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><circle cx=\"35.2\" cy=\"32.2\" r=\"1.5\" fill=\"#fff\" opacity=\".85\"/><circle cx=\"32\" cy=\"42\" r=\"5.5\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><circle cx=\"30.2\" cy=\"40.2\" r=\"1.5\" fill=\"#fff\" opacity=\".85\"/>", "そざい|えんぎの ひも": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M22 55L30 36\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M22 55L30 36\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M22 55L30 36\" fill=\"none\" stroke=\"#ff6b7f\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M42 55L34 36\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M42 55L34 36\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M42 55L34 36\" fill=\"none\" stroke=\"#d9d2c6\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M32 30C26 22 25 12 32 10\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M32 30C26 22 25 12 32 10\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M32 30C26 22 25 12 32 10\" fill=\"none\" stroke=\"#ff6b7f\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M32 10C39 12 38 22 32 30\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M32 10C39 12 38 22 32 30\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M32 10C39 12 38 22 32 30\" fill=\"none\" stroke=\"#d9d2c6\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 36C20 44 7 40 9 31C11 23 22 25 32 32\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 36C20 44 7 40 9 31C11 23 22 25 32 32\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M30 36C20 44 7 40 9 31C11 23 22 25 32 32\" fill=\"none\" stroke=\"#ff6b7f\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 36C44 44 57 40 55 31C53 23 42 25 32 32\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 36C44 44 57 40 55 31C53 23 42 25 32 32\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><path d=\"M34 36C44 44 57 40 55 31C53 23 42 25 32 32\" fill=\"none\" stroke=\"#d9d2c6\" stroke-width=\"1.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"32\" cy=\"33\" r=\"3.5\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/>", "そざい|さくらの はなびら": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"translate(25 27) rotate(0) scale(.68)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.2\"/></g><g transform=\"translate(25 27) rotate(72) scale(.68)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.2\"/></g><g transform=\"translate(25 27) rotate(144) scale(.68)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.2\"/></g><g transform=\"translate(25 27) rotate(216) scale(.68)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.2\"/></g><g transform=\"translate(25 27) rotate(288) scale(.68)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.2\"/></g><circle cx=\"25\" cy=\"27\" r=\"3.2\" fill=\"#ff8fb1\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><circle cx=\"25\" cy=\"27\" r=\"1.2\" fill=\"#ffe27a\"/><g transform=\"translate(47 32) rotate(30) scale(1.05)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.19\"/><path d=\"M0 -3L0 -11\" stroke=\"#f08aa8\" stroke-width=\"1.52\" stroke-linecap=\"round\"/><path d=\"M-4 -12C-4.5 -14 -4 -16 -3.5 -17\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.71\" stroke-linecap=\"round\"/></g><g transform=\"translate(40 56) rotate(-12) scale(1.05)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.19\"/><path d=\"M0 -3L0 -11\" stroke=\"#f08aa8\" stroke-width=\"1.52\" stroke-linecap=\"round\"/><path d=\"M-4 -12C-4.5 -14 -4 -16 -3.5 -17\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.71\" stroke-linecap=\"round\"/></g><g transform=\"translate(20 56) rotate(-35) scale(0.9)\"><path d=\"M0 0C-7 -4 -9 -14 -5 -20L0 -16.5L5 -20C9 -14 7 -4 0 0Z\" fill=\"#ffd3e0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.56\"/><path d=\"M0 -3L0 -11\" stroke=\"#f08aa8\" stroke-width=\"1.78\" stroke-linecap=\"round\"/><path d=\"M-4 -12C-4.5 -14 -4 -16 -3.5 -17\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.00\" stroke-linecap=\"round\"/></g>", "そざい|たんざく": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"rotate(6 32 34)\"><path d=\"M32 4L32 14\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M32 6C28 2 25 4 27 7C29 8 31 7 32 6C33 7 35 8 37 7C39 4 36 2 32 6Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><rect x=\"21\" y=\"13\" width=\"22\" height=\"42\" rx=\"2\" fill=\"#ffe27a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"32\" cy=\"17.5\" r=\"1.8\" fill=\"#fff3d6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.2\"/><path d=\"M32.0 21.5L33.7 25.6L38.2 26.0L34.8 28.9L35.8 33.3L32.0 30.9L28.2 33.3L29.2 28.9L25.8 26.0L30.3 25.6Z\" fill=\"#f4891f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><path d=\"M27 39L37 39M27 44L35 44M27 49L33 49\" stroke=\"#c99b2c\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><path d=\"M24 17L24 30\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/></g><path d=\"M6 10C14 4 22 4 28 7C22 10 14 12 6 10Z\" fill=\"#8cc152\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M10 9L24 7\" stroke=\"#5b8f34\" stroke-width=\"1.2\" stroke-linecap=\"round\"/><path d=\"M52 8Q52 12 56 12Q52 12 52 16Q52 12 48 12Q52 12 52 8Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M54 43Q54 46 57 46Q54 46 54 49Q54 46 51 46Q54 46 54 43Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/>", "そざい|ちょうちんの かみ": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><path d=\"M32 2L32 12\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M26 7C26 3 38 3 38 7\" fill=\"none\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><ellipse cx=\"32\" cy=\"33\" rx=\"19\" ry=\"17\" fill=\"#e8453c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M14 27C26 25 38 25 50 27M13.5 33L50.5 33M14 39C26 41 38 41 50 39\" fill=\"none\" stroke=\"#b52a24\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M32 16C24 22 24 44 32 50M32 16C40 22 40 44 32 50\" fill=\"none\" stroke=\"#b52a24\" stroke-width=\"1.4\" opacity=\".6\"/><circle cx=\"32\" cy=\"33\" r=\"7\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"32\" cy=\"33\" r=\"3\" fill=\"#e8453c\"/><rect x=\"23\" y=\"11\" width=\"18\" height=\"6\" rx=\"2\" fill=\"#3a2a1e\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><rect x=\"23\" y=\"49\" width=\"18\" height=\"6\" rx=\"2\" fill=\"#3a2a1e\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M32 55L32 60\" stroke=\"#f6d36b\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M19 26C20 22 23 20 26 19\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/>", "bag:s": "<ellipse cx=\"32\" cy=\"58\" rx=\"14\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"translate(32 56) scale(0.78) translate(-32 -56)\"><path d=\"M20 24C8 30 6 54 32 55C58 54 56 30 44 24Z\" fill=\"#b07a45\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.21\"/><path d=\"M21 24C13 17 17 9 24 13C26 6 38 6 40 13C47 9 51 17 43 24Z\" fill=\"#c99560\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"3.21\"/><path d=\"M25 18L26 23M32 13L32 23M39 18L38 23\" stroke=\"rgba(43,29,20,.35)\" stroke-width=\"1.92\" stroke-linecap=\"round\"/><path d=\"M19 24C28 28 36 28 45 24\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"8.97\" stroke-linecap=\"round\"/><path d=\"M19 24C28 28 36 28 45 24\" fill=\"none\" stroke=\"#e8d3a8\" stroke-width=\"5.13\" stroke-linecap=\"round\"/><path d=\"M40 27C44 31 45 35 44 40\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"6.41\" stroke-linecap=\"round\"/><path d=\"M40 27C44 31 45 35 44 40\" fill=\"none\" stroke=\"#e8d3a8\" stroke-width=\"2.82\" stroke-linecap=\"round\"/><circle cx=\"44\" cy=\"42\" r=\"3\" fill=\"#e8d3a8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.31\"/><path d=\"M14 38C13 43 15 47 18 49\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3.21\" stroke-linecap=\"round\" opacity=\".7\"/></g>", "bag:m": "<ellipse cx=\"32\" cy=\"58\" rx=\"16\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"translate(32 56) scale(0.88) translate(-32 -56)\"><path d=\"M20 24C8 30 6 54 32 55C58 54 56 30 44 24Z\" fill=\"#4a7fd0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.84\"/><path d=\"M21 24C13 17 17 9 24 13C26 6 38 6 40 13C47 9 51 17 43 24Z\" fill=\"#6b9be0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.84\"/><path d=\"M25 18L26 23M32 13L32 23M39 18L38 23\" stroke=\"rgba(43,29,20,.35)\" stroke-width=\"1.70\" stroke-linecap=\"round\"/><circle cx=\"30\" cy=\"41\" r=\"9\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-width=\"1.8\" stroke-dasharray=\"2 2.2\"/><path d=\"M30.0 35.5L31.6 39.3L35.7 39.6L32.6 42.3L33.5 46.4L30.0 44.2L26.5 46.4L27.4 42.3L24.3 39.6L28.4 39.3Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><path d=\"M19 24C28 28 36 28 45 24\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"7.95\" stroke-linecap=\"round\"/><path d=\"M19 24C28 28 36 28 45 24\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"4.55\" stroke-linecap=\"round\"/><path d=\"M40 27C44 31 45 35 44 40\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"5.68\" stroke-linecap=\"round\"/><path d=\"M40 27C44 31 45 35 44 40\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"2.50\" stroke-linecap=\"round\"/><circle cx=\"44\" cy=\"42\" r=\"3\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.05\"/><path d=\"M14 38C13 43 15 47 18 49\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.84\" stroke-linecap=\"round\" opacity=\".7\"/></g>", "bag:l": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g transform=\"translate(32 56) scale(1) translate(-32 -56)\"><path d=\"M20 24C8 30 6 54 32 55C58 54 56 30 44 24Z\" fill=\"#8e5bb5\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.50\"/><path d=\"M21 24C13 17 17 9 24 13C26 6 38 6 40 13C47 9 51 17 43 24Z\" fill=\"#a97bd0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.50\"/><path d=\"M25 18L26 23M32 13L32 23M39 18L38 23\" stroke=\"rgba(43,29,20,.35)\" stroke-width=\"1.50\" stroke-linecap=\"round\"/><path d=\"M21 22C14 16 17 10 23 13.5C26 7 38 7 40 13.5C46 10 50 16 43 22\" fill=\"none\" stroke=\"#f6c94a\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><circle cx=\"19\" cy=\"44\" r=\"1.8\" fill=\"#f6c94a\"/><circle cx=\"24\" cy=\"50\" r=\"1.6\" fill=\"#f6c94a\"/><circle cx=\"32\" cy=\"52\" r=\"1.6\" fill=\"#f6c94a\"/><circle cx=\"40\" cy=\"50\" r=\"1.6\" fill=\"#f6c94a\"/><path d=\"M30 31L37 39L30 47L23 39Z\" fill=\"#f6c94a\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M30 35L33 39L30 43L27 39Z\" fill=\"#ff6b9a\"/><path d=\"M19 24C28 28 36 28 45 24\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"7.00\" stroke-linecap=\"round\"/><path d=\"M19 24C28 28 36 28 45 24\" fill=\"none\" stroke=\"#f6c94a\" stroke-width=\"4.00\" stroke-linecap=\"round\"/><path d=\"M40 27C44 31 45 35 44 40\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"5.00\" stroke-linecap=\"round\"/><path d=\"M40 27C44 31 45 35 44 40\" fill=\"none\" stroke=\"#f6c94a\" stroke-width=\"2.20\" stroke-linecap=\"round\"/><circle cx=\"44\" cy=\"42\" r=\"3\" fill=\"#f6c94a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.80\"/><path d=\"M14 38C13 43 15 47 18 49\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.50\" stroke-linecap=\"round\" opacity=\".7\"/></g><path d=\"M54 7Q54 12 59 12Q54 12 54 17Q54 12 49 12Q54 12 54 7Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M9 14.5Q9 18 12.5 18Q9 18 9 21.5Q9 18 5.5 18Q9 18 9 14.5Z\" fill=\"#fff6c2\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/><path d=\"M56 31Q56 34 59 34Q56 34 56 37Q56 34 53 34Q56 34 56 31Z\" fill=\"#fff\" stroke=\"#2b1d14\" stroke-width=\"1\" stroke-linejoin=\"round\"/>", "boss:jinn": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M32 40C30 50 35 55 43 54\" fill=\"none\" stroke-width=\"12\"/><path d=\"M43 54C51 52 52 43 46 42C41 41 40 47 44 48\" fill=\"none\" stroke-width=\"8\"/><path d=\"M32 40C30 50 35 55 43 54\" fill=\"none\" stroke=\"#5fa8e8\" stroke-width=\"7.5\"/><path d=\"M43 54C51 52 52 43 46 42C41 41 40 47 44 48\" fill=\"none\" stroke=\"#5fa8e8\" stroke-width=\"3.8\"/><path d=\"M20 39C19 31 24 28 32 28C40 28 45 31 44 39C43 43 38 45 32 45C26 45 21 43 20 39Z\" fill=\"#5fa8e8\"/><path d=\"M26 29L28 42M38 29L36 42\" fill=\"none\" stroke=\"#8e5bb5\" stroke-width=\"2.6\"/><path d=\"M20 34Q27 40 39 38\" fill=\"none\" stroke-width=\"7\"/><path d=\"M20 34Q27 40 39 38\" fill=\"none\" stroke=\"#3d7fc4\" stroke-width=\"3.6\"/><path d=\"M44 34Q37 40 25 38\" fill=\"none\" stroke-width=\"7\"/><path d=\"M44 34Q37 40 25 38\" fill=\"none\" stroke=\"#5fa8e8\" stroke-width=\"3.6\"/><path d=\"M22.5 34.5L21 37.5M41.5 34.5L43 37.5\" stroke=\"#e3b23c\" stroke-width=\"2\"/><path d=\"M21 16L11 12L20 25Z\" fill=\"#5fa8e8\"/><path d=\"M43 16L53 12L44 25Z\" fill=\"#5fa8e8\"/><path d=\"M27 9C27 2 37 2 37 9Z\" fill=\"#2f4f8f\"/><path d=\"M35 4C38 0 44 2 41 6\" fill=\"none\" stroke-width=\"2\"/><circle cx=\"32\" cy=\"20\" r=\"13\" fill=\"#5fa8e8\"/><path d=\"M27.5 8.5L36.5 8.5\" stroke=\"#e3b23c\" stroke-width=\"2.5\"/><circle cx=\"18.5\" cy=\"26\" r=\"2.3\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"1.6\"/><path d=\"M23 12C25 9.5 27.5 8.5 30 8.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"19\" r=\"4.3\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"27\" cy=\"19.6\" r=\"2.5\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"26.1\" cy=\"18.5\" r=\"0.9\" fill=\"#fff\" stroke=\"none\"/><circle cx=\"38\" cy=\"19\" r=\"4.3\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"39\" cy=\"19.6\" r=\"2.5\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"38.1\" cy=\"18.5\" r=\"0.9\" fill=\"#fff\" stroke=\"none\"/><path d=\"M21.5 13.5C23.5 12 26.5 12 29 13.5M35 15L42.5 12.5\" fill=\"none\" stroke-width=\"2\"/><path d=\"M25 25Q32 28.5 40 24Q37.5 32 31.5 31.5Q26.5 31 25 25Z\" fill=\"#7a2b3a\" stroke-width=\"1.8\"/><path d=\"M33 27.3L33.5 29.5L36 28.8L35.8 26.6Z\" fill=\"#fff\" stroke=\"none\"/><ellipse cx=\"21\" cy=\"24.5\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"43\" cy=\"24.5\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g>", "boss:jinn:down": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(32 58) scale(1.07 .9) translate(-32 -58)\"><path d=\"M32 40C30 50 35 55 43 54\" fill=\"none\" stroke-width=\"12\"/><path d=\"M43 54C51 52 52 43 46 42C41 41 40 47 44 48\" fill=\"none\" stroke-width=\"8\"/><path d=\"M32 40C30 50 35 55 43 54\" fill=\"none\" stroke=\"#5fa8e8\" stroke-width=\"7.5\"/><path d=\"M43 54C51 52 52 43 46 42C41 41 40 47 44 48\" fill=\"none\" stroke=\"#5fa8e8\" stroke-width=\"3.8\"/><path d=\"M20 39C19 31 24 28 32 28C40 28 45 31 44 39C43 43 38 45 32 45C26 45 21 43 20 39Z\" fill=\"#5fa8e8\"/><path d=\"M26 29L28 42M38 29L36 42\" fill=\"none\" stroke=\"#8e5bb5\" stroke-width=\"2.6\"/><path d=\"M20 34Q27 40 39 38\" fill=\"none\" stroke-width=\"7\"/><path d=\"M20 34Q27 40 39 38\" fill=\"none\" stroke=\"#3d7fc4\" stroke-width=\"3.6\"/><path d=\"M44 34Q37 40 25 38\" fill=\"none\" stroke-width=\"7\"/><path d=\"M44 34Q37 40 25 38\" fill=\"none\" stroke=\"#5fa8e8\" stroke-width=\"3.6\"/><path d=\"M22.5 34.5L21 37.5M41.5 34.5L43 37.5\" stroke=\"#e3b23c\" stroke-width=\"2\"/><path d=\"M21 16L11 12L20 25Z\" fill=\"#5fa8e8\"/><path d=\"M43 16L53 12L44 25Z\" fill=\"#5fa8e8\"/><path d=\"M27 9C27 2 37 2 37 9Z\" fill=\"#2f4f8f\"/><path d=\"M35 4C38 0 44 2 41 6\" fill=\"none\" stroke-width=\"2\"/><circle cx=\"32\" cy=\"20\" r=\"13\" fill=\"#5fa8e8\"/><path d=\"M27.5 8.5L36.5 8.5\" stroke=\"#e3b23c\" stroke-width=\"2.5\"/><circle cx=\"18.5\" cy=\"26\" r=\"2.3\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"1.6\"/><path d=\"M23 12C25 9.5 27.5 8.5 30 8.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"19\" r=\"4.3\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M26 19L26.1 19.2L25.9 19.4L25.5 19.3L25.2 18.7L25.6 18L26.6 17.9L27.4 18.7L27.3 20L26.1 20.9L24.5 20.5L23.7 18.8L24.5 17L26.6 16.4L28.6 17.7L28.9 20.2L27 22.1\" fill=\"none\" stroke-width=\"1.4\"/><circle cx=\"38\" cy=\"19\" r=\"4.3\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M38 19L38.1 19.2L37.9 19.4L37.5 19.3L37.2 18.7L37.6 18L38.6 17.9L39.4 18.7L39.3 20L38.1 20.9L36.5 20.5L35.7 18.8L36.5 17L38.6 16.4L40.6 17.7L40.9 20.2L39 22.1\" fill=\"none\" stroke-width=\"1.4\"/><path d=\"M27 27.5q1.25 -2 2.5 0t2.5 0t2.5 0t2.5 0\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"21\" cy=\"24.5\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"43\" cy=\"24.5\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g></g><g stroke=\"#2b1d14\" stroke-width=\"1.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"12,3.6 12.9,5.8 15.2,5.9 13.5,7.5 14,9.8 12,8.5 10,9.8 10.5,7.5 8.8,5.9 11.1,5.8\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"52,2 52.8,3.9 54.9,4.1 53.3,5.4 53.8,7.4 52,6.4 50.2,7.4 50.7,5.4 49.1,4.1 51.2,3.9\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"44,9.6 44.6,11.1 46.3,11.3 45,12.3 45.4,13.9 44,13.1 42.6,13.9 43,12.3 41.7,11.3 43.4,11.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/></g>", "boss:scorpion": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><circle cx=\"37\" cy=\"29\" r=\"5.5\" fill=\"#f2c55c\"/><circle cx=\"42\" cy=\"21\" r=\"5\" fill=\"#f2c55c\"/><circle cx=\"41\" cy=\"13\" r=\"4.5\" fill=\"#f2c55c\"/><circle cx=\"35\" cy=\"8.5\" r=\"4\" fill=\"#f2c55c\"/><path d=\"M31.5 8.5C29 5 25 7 25.5 10.5C26 13 29 13.5 31.5 11Z\" fill=\"#e8913a\"/><path d=\"M18 46L11 50L10 54M20 49L15 54L15 57M46 46L53 50L54 54M44 49L49 54L49 57\" fill=\"none\" stroke-width=\"2.6\"/><path d=\"M19 40L13 31\" fill=\"none\" stroke-width=\"7\"/><path d=\"M19 40L13 31\" fill=\"none\" stroke=\"#f2c55c\" stroke-width=\"3.6\"/><path d=\"M8 31C2 25 6 15 13 17L11.5 23L18 22.5C19 30 13 35 8 31Z\" fill=\"#f2c55c\"/><g transform=\"matrix(-1 0 0 1 64 0)\"><path d=\"M19 40L13 31\" fill=\"none\" stroke-width=\"7\"/><path d=\"M19 40L13 31\" fill=\"none\" stroke=\"#f2c55c\" stroke-width=\"3.6\"/><path d=\"M8 31C2 25 6 15 13 17L11.5 23L18 22.5C19 30 13 35 8 31Z\" fill=\"#f2c55c\"/></g><ellipse cx=\"32\" cy=\"42\" rx=\"17\" ry=\"12.5\" fill=\"#f2c55c\"/><path d=\"M18 49Q32 58 46 49M21 52.5Q32 59 43 52.5\" fill=\"none\" stroke=\"#d9a23a\" stroke-width=\"1.8\"/><path d=\"M24.5 32L24.5 24.5L28.3 27.8L32 22.5L35.7 27.8L39.5 24.5L39.5 32Z\" fill=\"#e3b23c\" stroke-width=\"1.8\"/><circle cx=\"32\" cy=\"29\" r=\"1.6\" fill=\"#d3123f\" stroke-width=\"1\"/><path d=\"M19 38C20 35 22 33 24.5 32.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"40\" r=\"4.5\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"26.9\" cy=\"40.3\" r=\"2.6\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"25.9\" cy=\"39.1\" r=\"1\" fill=\"#fff\" stroke=\"none\"/><circle cx=\"38\" cy=\"40\" r=\"4.5\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"38.9\" cy=\"40.3\" r=\"2.6\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"37.9\" cy=\"39.1\" r=\"1\" fill=\"#fff\" stroke=\"none\"/><path d=\"M20.5 34.3L28.5 36.3M43.5 34.3L35.5 36.3\" fill=\"none\" stroke-width=\"2\"/><path d=\"M28 47Q32 50.5 37 46\" fill=\"none\" stroke-width=\"1.8\"/><path d=\"M34.5 48.2L35.3 50L36.4 47.4Z\" fill=\"#fff\" stroke-width=\"1\"/><ellipse cx=\"21\" cy=\"46\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"43\" cy=\"46\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g>", "boss:scorpion:down": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(32 58) scale(1.07 .9) translate(-32 -58)\"><circle cx=\"37\" cy=\"29\" r=\"5.5\" fill=\"#f2c55c\"/><circle cx=\"42\" cy=\"21\" r=\"5\" fill=\"#f2c55c\"/><circle cx=\"41\" cy=\"13\" r=\"4.5\" fill=\"#f2c55c\"/><circle cx=\"35\" cy=\"8.5\" r=\"4\" fill=\"#f2c55c\"/><path d=\"M31.5 8.5C29 5 25 7 25.5 10.5C26 13 29 13.5 31.5 11Z\" fill=\"#e8913a\"/><path d=\"M18 46L11 50L10 54M20 49L15 54L15 57M46 46L53 50L54 54M44 49L49 54L49 57\" fill=\"none\" stroke-width=\"2.6\"/><path d=\"M19 40L13 31\" fill=\"none\" stroke-width=\"7\"/><path d=\"M19 40L13 31\" fill=\"none\" stroke=\"#f2c55c\" stroke-width=\"3.6\"/><path d=\"M8 31C2 25 6 15 13 17L11.5 23L18 22.5C19 30 13 35 8 31Z\" fill=\"#f2c55c\"/><g transform=\"matrix(-1 0 0 1 64 0)\"><path d=\"M19 40L13 31\" fill=\"none\" stroke-width=\"7\"/><path d=\"M19 40L13 31\" fill=\"none\" stroke=\"#f2c55c\" stroke-width=\"3.6\"/><path d=\"M8 31C2 25 6 15 13 17L11.5 23L18 22.5C19 30 13 35 8 31Z\" fill=\"#f2c55c\"/></g><ellipse cx=\"32\" cy=\"42\" rx=\"17\" ry=\"12.5\" fill=\"#f2c55c\"/><path d=\"M18 49Q32 58 46 49M21 52.5Q32 59 43 52.5\" fill=\"none\" stroke=\"#d9a23a\" stroke-width=\"1.8\"/><path d=\"M24.5 32L24.5 24.5L28.3 27.8L32 22.5L35.7 27.8L39.5 24.5L39.5 32Z\" fill=\"#e3b23c\" stroke-width=\"1.8\"/><circle cx=\"32\" cy=\"29\" r=\"1.6\" fill=\"#d3123f\" stroke-width=\"1\"/><path d=\"M19 38C20 35 22 33 24.5 32.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"40\" r=\"4.5\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M26 40L26.1 40.2L25.9 40.4L25.4 40.3L25.2 39.7L25.6 39L26.6 38.8L27.5 39.6L27.4 41L26.2 42L24.5 41.5L23.6 39.8L24.5 37.9L26.7 37.2L28.7 38.6L29 41.3L27.1 43.3\" fill=\"none\" stroke-width=\"1.4\"/><circle cx=\"38\" cy=\"40\" r=\"4.5\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M38 40L38.1 40.2L37.9 40.4L37.4 40.3L37.2 39.7L37.6 39L38.6 38.8L39.5 39.6L39.4 41L38.2 42L36.5 41.5L35.6 39.8L36.5 37.9L38.7 37.2L40.7 38.6L41 41.3L39.1 43.3\" fill=\"none\" stroke-width=\"1.4\"/><path d=\"M27.5 48q1.125 -2 2.25 0t2.25 0t2.25 0t2.25 0\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"21\" cy=\"46\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"43\" cy=\"46\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g></g><g stroke=\"#2b1d14\" stroke-width=\"1.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"14,4.8 14.8,6.8 17,7 15.4,8.4 15.9,10.6 14,9.4 12.1,10.6 12.6,8.4 11,7 13.2,6.8\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"52,6 52.8,7.9 54.9,8.1 53.3,9.4 53.8,11.4 52,10.4 50.2,11.4 50.7,9.4 49.1,8.1 51.2,7.9\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"24,12.6 24.6,14.1 26.3,14.3 25,15.3 25.4,16.9 24,16.1 22.6,16.9 23,15.3 21.7,14.3 23.4,14.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/></g>", "boss:kraken": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M18 38C13 44 7 45 7 51C7 55 12 55 12.5 51.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M25 42C24 49 20 52 21.5 55.5C23 58 27 56.5 26 53.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M32 43C32 50 35 52 33.5 56\" fill=\"none\" stroke-width=\"9\"/><path d=\"M39 42C40 49 44 52 42.5 55.5C41 58 37 56.5 38 53.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M46 38C51 44 57 45 57 51C57 55 52 55 51.5 51.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M18 38C13 44 7 45 7 51C7 55 12 55 12.5 51.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M25 42C24 49 20 52 21.5 55.5C23 58 27 56.5 26 53.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M32 43C32 50 35 52 33.5 56\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M39 42C40 49 44 52 42.5 55.5C41 58 37 56.5 38 53.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M46 38C51 44 57 45 57 51C57 55 52 55 51.5 51.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M12 33C10 18 20 11 32 11C44 11 54 18 52 33C51 40 44 44 32 44C20 44 13 40 12 33Z\" fill=\"#d98bd0\"/><g fill=\"#b565b0\" stroke=\"none\"><circle cx=\"18\" cy=\"22\" r=\"2.3\"/><circle cx=\"46\" cy=\"21\" r=\"2\"/><circle cx=\"15\" cy=\"30\" r=\"1.5\"/><circle cx=\"49\" cy=\"29\" r=\"1.6\"/></g><path d=\"M23 41.5Q32 44.5 41 41.5L32 50Z\" fill=\"#3d6fb6\" stroke-width=\"1.8\"/><path d=\"M17 18C19 15 22 13 25 12.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><g transform=\"rotate(-14 32 12)\"><path d=\"M23 13C22 4 42 4 41 13Z\" fill=\"#fff\"/><path d=\"M18 13C24 9.5 40 9.5 46 13C47 17 17 17 18 13Z\" fill=\"#fff\"/><path d=\"M19.5 13.5C26 11 38 11 44.5 13.5\" fill=\"none\" stroke=\"#3d6fb6\" stroke-width=\"2\"/></g><path d=\"M50 33C57 30 58 22 52 15\" fill=\"none\" stroke-width=\"9\"/><path d=\"M50 33C57 30 58 22 52 15\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><circle cx=\"25\" cy=\"26\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"26\" cy=\"26.5\" r=\"2.9\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"24.9\" cy=\"25.2\" r=\"1.1\" fill=\"#fff\" stroke=\"none\"/><circle cx=\"39\" cy=\"26\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"40\" cy=\"26.5\" r=\"2.9\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"38.9\" cy=\"25.2\" r=\"1.1\" fill=\"#fff\" stroke=\"none\"/><path d=\"M20 22.6Q24 20.5 29 21.6M35 20.6Q40 19.5 44 22\" fill=\"none\" stroke-width=\"2\"/><path d=\"M34 25.3A5 5 0 0 1 44 25.3Z\" fill=\"#d98bd0\" stroke-width=\"1.8\"/><path d=\"M27 34Q32 38.5 38.5 33\" fill=\"none\" stroke-width=\"2\"/><ellipse cx=\"19\" cy=\"32\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"45\" cy=\"32\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g>", "boss:kraken:down": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(32 58) scale(1.07 .9) translate(-32 -58)\"><path d=\"M18 38C13 44 7 45 7 51C7 55 12 55 12.5 51.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M25 42C24 49 20 52 21.5 55.5C23 58 27 56.5 26 53.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M32 43C32 50 35 52 33.5 56\" fill=\"none\" stroke-width=\"9\"/><path d=\"M39 42C40 49 44 52 42.5 55.5C41 58 37 56.5 38 53.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M46 38C51 44 57 45 57 51C57 55 52 55 51.5 51.5\" fill=\"none\" stroke-width=\"9\"/><path d=\"M18 38C13 44 7 45 7 51C7 55 12 55 12.5 51.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M25 42C24 49 20 52 21.5 55.5C23 58 27 56.5 26 53.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M32 43C32 50 35 52 33.5 56\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M39 42C40 49 44 52 42.5 55.5C41 58 37 56.5 38 53.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M46 38C51 44 57 45 57 51C57 55 52 55 51.5 51.5\" fill=\"none\" stroke=\"#d98bd0\" stroke-width=\"5.5\"/><path d=\"M12 33C10 18 20 11 32 11C44 11 54 18 52 33C51 40 44 44 32 44C20 44 13 40 12 33Z\" fill=\"#d98bd0\"/><g fill=\"#b565b0\" stroke=\"none\"><circle cx=\"18\" cy=\"22\" r=\"2.3\"/><circle cx=\"46\" cy=\"21\" r=\"2\"/><circle cx=\"15\" cy=\"30\" r=\"1.5\"/><circle cx=\"49\" cy=\"29\" r=\"1.6\"/></g><path d=\"M23 41.5Q32 44.5 41 41.5L32 50Z\" fill=\"#3d6fb6\" stroke-width=\"1.8\"/><path d=\"M17 18C19 15 22 13 25 12.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><g transform=\"translate(-13 2) rotate(-50 32 12)\"><path d=\"M23 13C22 4 42 4 41 13Z\" fill=\"#fff\"/><path d=\"M18 13C24 9.5 40 9.5 46 13C47 17 17 17 18 13Z\" fill=\"#fff\"/><path d=\"M19.5 13.5C26 11 38 11 44.5 13.5\" fill=\"none\" stroke=\"#3d6fb6\" stroke-width=\"2\"/></g><circle cx=\"25\" cy=\"26\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M25 26L25.2 26.2L24.9 26.5L24.4 26.4L24 25.7L24.5 24.8L25.7 24.7L26.7 25.6L26.6 27.2L25.2 28.2L23.2 27.8L22.3 25.8L23.2 23.6L25.8 22.8L28.1 24.4L28.5 27.4L26.2 29.8\" fill=\"none\" stroke-width=\"1.4\"/><circle cx=\"39\" cy=\"26\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M39 26L39.2 26.2L38.9 26.5L38.4 26.4L38 25.7L38.5 24.8L39.7 24.7L40.7 25.6L40.6 27.2L39.2 28.2L37.2 27.8L36.3 25.8L37.2 23.6L39.8 22.8L42.1 24.4L42.5 27.4L40.2 29.8\" fill=\"none\" stroke-width=\"1.4\"/><path d=\"M27 35q1.25 -2 2.5 0t2.5 0t2.5 0t2.5 0\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"19\" cy=\"32\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"45\" cy=\"32\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g></g><g stroke=\"#2b1d14\" stroke-width=\"1.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"52,3.6 52.9,5.8 55.2,5.9 53.5,7.5 54,9.8 52,8.5 50,9.8 50.5,7.5 48.8,5.9 51.1,5.8\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"44,0.5 44.7,2.1 46.4,2.2 45.1,3.3 45.5,5 44,4.1 42.5,5 42.9,3.3 41.6,2.2 43.3,2.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"58,12.6 58.6,14.1 60.3,14.3 59,15.3 59.4,16.9 58,16.1 56.6,16.9 57,15.3 55.7,14.3 57.4,14.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/></g>", "boss:bat": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M52 1A9.5 9.5 0 1 0 62.5 15A7.5 7.5 0 1 1 52 1Z\" fill=\"#ffe27a\" stroke-width=\"2\"/><path d=\"M20 30C13 22 6 19 2 23C4 29 3 35 4 42C7 38.5 10 39.5 11 44C13 40.5 17 41.5 18 46Z\" fill=\"#6b4294\"/><path d=\"M5 26L11 40M10 23.5L15 42\" fill=\"none\" stroke=\"#8e6bb8\" stroke-width=\"1.2\" opacity=\".8\"/><g transform=\"matrix(-1 0 0 1 64 0)\"><path d=\"M20 30C13 22 6 19 2 23C4 29 3 35 4 42C7 38.5 10 39.5 11 44C13 40.5 17 41.5 18 46Z\" fill=\"#6b4294\"/><path d=\"M5 26L11 40M10 23.5L15 42\" fill=\"none\" stroke=\"#8e6bb8\" stroke-width=\"1.2\" opacity=\".8\"/></g><path d=\"M21 25L18 9L29 19Z\" fill=\"#8e5bb5\"/><path d=\"M43 25L46 9L35 19Z\" fill=\"#8e5bb5\"/><path d=\"M21.5 20L20.5 13.5L25 18Z\" fill=\"#ff9ab0\" stroke=\"none\"/><path d=\"M42.5 20L43.5 13.5L39 18Z\" fill=\"#ff9ab0\" stroke=\"none\"/><path d=\"M27 50L26 55M37 50L38 55\" fill=\"none\" stroke-width=\"3\"/><circle cx=\"32\" cy=\"35\" r=\"16\" fill=\"#8e5bb5\"/><ellipse cx=\"32\" cy=\"42\" rx=\"9\" ry=\"7.5\" fill=\"#c3a2e3\" stroke=\"none\"/><path d=\"M20 30C21 26 23.5 23.5 26.5 22.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"32\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"26.6\" cy=\"32.8\" r=\"2.9\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"25.5\" cy=\"31.5\" r=\"1.1\" fill=\"#fff\" stroke=\"none\"/><circle cx=\"38\" cy=\"32\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"38.6\" cy=\"32.8\" r=\"2.9\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"37.5\" cy=\"31.5\" r=\"1.1\" fill=\"#fff\" stroke=\"none\"/><path d=\"M28.5 39.5Q32 42.5 35.5 39.5\" fill=\"none\" stroke-width=\"1.8\"/><path d=\"M29.6 40.5L30.4 43L31.4 41.3ZM34.4 40.5L33.6 43L32.6 41.3Z\" fill=\"#fff\" stroke-width=\"1\"/><path d=\"M21 26.5L27 28.5M43 26.5L37 28.5\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"21\" cy=\"38\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"43\" cy=\"38\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g>", "boss:bat:down": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(32 58) scale(1.07 .9) translate(-32 -58)\"><path d=\"M52 1A9.5 9.5 0 1 0 62.5 15A7.5 7.5 0 1 1 52 1Z\" fill=\"#ffe27a\" stroke-width=\"2\"/><path d=\"M20 30C13 22 6 19 2 23C4 29 3 35 4 42C7 38.5 10 39.5 11 44C13 40.5 17 41.5 18 46Z\" fill=\"#6b4294\"/><path d=\"M5 26L11 40M10 23.5L15 42\" fill=\"none\" stroke=\"#8e6bb8\" stroke-width=\"1.2\" opacity=\".8\"/><g transform=\"matrix(-1 0 0 1 64 0)\"><path d=\"M20 30C13 22 6 19 2 23C4 29 3 35 4 42C7 38.5 10 39.5 11 44C13 40.5 17 41.5 18 46Z\" fill=\"#6b4294\"/><path d=\"M5 26L11 40M10 23.5L15 42\" fill=\"none\" stroke=\"#8e6bb8\" stroke-width=\"1.2\" opacity=\".8\"/></g><path d=\"M21 25L18 9L29 19Z\" fill=\"#8e5bb5\"/><path d=\"M43 25L46 9L35 19Z\" fill=\"#8e5bb5\"/><path d=\"M21.5 20L20.5 13.5L25 18Z\" fill=\"#ff9ab0\" stroke=\"none\"/><path d=\"M42.5 20L43.5 13.5L39 18Z\" fill=\"#ff9ab0\" stroke=\"none\"/><path d=\"M27 50L26 55M37 50L38 55\" fill=\"none\" stroke-width=\"3\"/><circle cx=\"32\" cy=\"35\" r=\"16\" fill=\"#8e5bb5\"/><ellipse cx=\"32\" cy=\"42\" rx=\"9\" ry=\"7.5\" fill=\"#c3a2e3\" stroke=\"none\"/><path d=\"M20 30C21 26 23.5 23.5 26.5 22.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"32\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M26 32L26.2 32.2L25.9 32.5L25.4 32.4L25 31.7L25.5 30.8L26.7 30.7L27.7 31.6L27.6 33.2L26.2 34.2L24.2 33.8L23.3 31.8L24.2 29.6L26.8 28.8L29.1 30.4L29.5 33.4L27.2 35.8\" fill=\"none\" stroke-width=\"1.4\"/><circle cx=\"38\" cy=\"32\" r=\"5\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M38 32L38.2 32.2L37.9 32.5L37.4 32.4L37 31.7L37.5 30.8L38.7 30.7L39.7 31.6L39.6 33.2L38.2 34.2L36.2 33.8L35.3 31.8L36.2 29.6L38.8 28.8L41.1 30.4L41.5 33.4L39.2 35.8\" fill=\"none\" stroke-width=\"1.4\"/><path d=\"M27.5 41q1.125 -2 2.25 0t2.25 0t2.25 0t2.25 0\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"21\" cy=\"38\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"43\" cy=\"38\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g></g><g stroke=\"#2b1d14\" stroke-width=\"1.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"10,8.8 10.8,10.8 13,11 11.4,12.4 11.9,14.6 10,13.4 8.1,14.6 8.6,12.4 7,11 9.2,10.8\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"24,3.5 24.7,5.1 26.4,5.2 25.1,6.3 25.5,8 24,7.1 22.5,8 22.9,6.3 21.6,5.2 23.3,5.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"8,47.4 8.7,49.1 10.5,49.2 9.1,50.4 9.5,52.1 8,51.2 6.5,52.1 6.9,50.4 5.5,49.2 7.3,49.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/></g>", "boss:golem": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><rect x=\"19\" y=\"47\" width=\"10\" height=\"10\" rx=\"3\" fill=\"#8f877d\"/><rect x=\"35\" y=\"47\" width=\"10\" height=\"10\" rx=\"3\" fill=\"#8f877d\"/><path d=\"M15 50C12 41 14 31 21 28L43 28C50 31 52 41 49 50C45 53 19 53 15 50Z\" fill=\"#b9b2a8\"/><path d=\"M20 40L24 43L23 47M44 36L41 39\" fill=\"none\" stroke=\"#8f877d\" stroke-width=\"1.6\"/><path d=\"M32 36L35 40L32 44L29 40Z\" fill=\"#7fe0d0\" stroke-width=\"1.6\"/><ellipse cx=\"11\" cy=\"35\" rx=\"7\" ry=\"7.5\" fill=\"#b9b2a8\"/><ellipse cx=\"10\" cy=\"46\" rx=\"6.5\" ry=\"6\" fill=\"#8f877d\"/><path d=\"M8 32C10 30 12 30 14 31\" fill=\"none\" stroke=\"#8cc152\" stroke-width=\"3\"/><g transform=\"matrix(-1 0 0 1 64 0)\"><ellipse cx=\"11\" cy=\"35\" rx=\"7\" ry=\"7.5\" fill=\"#b9b2a8\"/><ellipse cx=\"10\" cy=\"46\" rx=\"6.5\" ry=\"6\" fill=\"#8f877d\"/><path d=\"M8 32C10 30 12 30 14 31\" fill=\"none\" stroke=\"#8cc152\" stroke-width=\"3\"/></g><path d=\"M19 12C19 7 24 6 32 6C40 6 45 7 45 12L46 25C46 30 40 31 32 31C24 31 18 30 18 25Z\" fill=\"#b9b2a8\"/><path d=\"M20 11C22 4 29 5 32 7.5C35 4 43 5 44 11C40 13.5 25 13.5 20 11Z\" fill=\"#8cc152\" stroke-width=\"1.8\"/><path d=\"M32 7L33 2\" fill=\"none\" stroke-width=\"1.6\"/><path d=\"M33 3C34.5 0 38 1 37 3.5C36 5 34 4.5 33 3Z\" fill=\"#8cc152\" stroke-width=\"1.2\"/><circle cx=\"31.5\" cy=\"2.3\" r=\"1.9\" fill=\"#ff9ab0\" stroke-width=\"1.2\"/><path d=\"M40 16L42 19M22 25L24 27\" fill=\"none\" stroke=\"#8f877d\" stroke-width=\"1.5\"/><path d=\"M22 15C22 14 22.5 13.5 23.5 13.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"19\" r=\"6.3\" fill=\"#fff59a\" opacity=\".5\" stroke=\"none\"/><circle cx=\"26\" cy=\"19\" r=\"4.3\" fill=\"#e8ff7a\" stroke-width=\"1.8\"/><circle cx=\"26\" cy=\"19.3\" r=\"2\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"25.2\" cy=\"18.2\" r=\".9\" fill=\"#fff\" stroke=\"none\"/><circle cx=\"38\" cy=\"19\" r=\"6.3\" fill=\"#fff59a\" opacity=\".5\" stroke=\"none\"/><circle cx=\"38\" cy=\"19\" r=\"4.3\" fill=\"#e8ff7a\" stroke-width=\"1.8\"/><circle cx=\"38\" cy=\"19.3\" r=\"2\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"37.2\" cy=\"18.2\" r=\".9\" fill=\"#fff\" stroke=\"none\"/><path d=\"M28 26Q32 29.5 36 26\" fill=\"none\" stroke-width=\"2\"/><ellipse cx=\"21.5\" cy=\"25\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"42.5\" cy=\"25\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g>", "boss:golem:down": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(32 58) scale(1.07 .9) translate(-32 -58)\"><rect x=\"19\" y=\"47\" width=\"10\" height=\"10\" rx=\"3\" fill=\"#8f877d\"/><rect x=\"35\" y=\"47\" width=\"10\" height=\"10\" rx=\"3\" fill=\"#8f877d\"/><path d=\"M15 50C12 41 14 31 21 28L43 28C50 31 52 41 49 50C45 53 19 53 15 50Z\" fill=\"#b9b2a8\"/><path d=\"M20 40L24 43L23 47M44 36L41 39\" fill=\"none\" stroke=\"#8f877d\" stroke-width=\"1.6\"/><path d=\"M32 36L35 40L32 44L29 40Z\" fill=\"#7fe0d0\" stroke-width=\"1.6\"/><ellipse cx=\"11\" cy=\"35\" rx=\"7\" ry=\"7.5\" fill=\"#b9b2a8\"/><ellipse cx=\"10\" cy=\"46\" rx=\"6.5\" ry=\"6\" fill=\"#8f877d\"/><path d=\"M8 32C10 30 12 30 14 31\" fill=\"none\" stroke=\"#8cc152\" stroke-width=\"3\"/><g transform=\"matrix(-1 0 0 1 64 0)\"><ellipse cx=\"11\" cy=\"35\" rx=\"7\" ry=\"7.5\" fill=\"#b9b2a8\"/><ellipse cx=\"10\" cy=\"46\" rx=\"6.5\" ry=\"6\" fill=\"#8f877d\"/><path d=\"M8 32C10 30 12 30 14 31\" fill=\"none\" stroke=\"#8cc152\" stroke-width=\"3\"/></g><path d=\"M19 12C19 7 24 6 32 6C40 6 45 7 45 12L46 25C46 30 40 31 32 31C24 31 18 30 18 25Z\" fill=\"#b9b2a8\"/><path d=\"M20 11C22 4 29 5 32 7.5C35 4 43 5 44 11C40 13.5 25 13.5 20 11Z\" fill=\"#8cc152\" stroke-width=\"1.8\"/><path d=\"M32 7L33 2\" fill=\"none\" stroke-width=\"1.6\"/><path d=\"M33 3C34.5 0 38 1 37 3.5C36 5 34 4.5 33 3Z\" fill=\"#8cc152\" stroke-width=\"1.2\"/><circle cx=\"31.5\" cy=\"2.3\" r=\"1.9\" fill=\"#ff9ab0\" stroke-width=\"1.2\"/><path d=\"M40 16L42 19M22 25L24 27\" fill=\"none\" stroke=\"#8f877d\" stroke-width=\"1.5\"/><path d=\"M22 15C22 14 22.5 13.5 23.5 13.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><circle cx=\"26\" cy=\"19\" r=\"4.3\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M26 19L26.1 19.2L25.9 19.4L25.5 19.3L25.2 18.7L25.6 18L26.6 17.9L27.4 18.7L27.3 20L26.1 20.9L24.5 20.5L23.7 18.8L24.5 17L26.6 16.4L28.6 17.7L28.9 20.2L27 22.1\" fill=\"none\" stroke-width=\"1.4\"/><circle cx=\"38\" cy=\"19\" r=\"4.3\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M38 19L38.1 19.2L37.9 19.4L37.5 19.3L37.2 18.7L37.6 18L38.6 17.9L39.4 18.7L39.3 20L38.1 20.9L36.5 20.5L35.7 18.8L36.5 17L38.6 16.4L40.6 17.7L40.9 20.2L39 22.1\" fill=\"none\" stroke-width=\"1.4\"/><path d=\"M27.5 26.5q1.125 -2 2.25 0t2.25 0t2.25 0t2.25 0\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"21.5\" cy=\"25\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"42.5\" cy=\"25\" rx=\"2.6\" ry=\"1.6900000000000002\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g></g><g stroke=\"#2b1d14\" stroke-width=\"1.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"12,4.8 12.8,6.8 15,7 13.4,8.4 13.9,10.6 12,9.4 10.1,10.6 10.6,8.4 9,7 11.2,6.8\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"52,4 52.8,5.9 54.9,6.1 53.3,7.4 53.8,9.4 52,8.4 50.2,9.4 50.7,7.4 49.1,6.1 51.2,5.9\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"46,0.2 46.6,1.7 48.2,1.8 47,2.8 47.4,4.4 46,3.5 44.6,4.4 45,2.8 43.8,1.8 45.4,1.7\" fill=\"#ffd84a\" stroke-width=\"1.2\"/></g>", "boss:dragon": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><path d=\"M16 47C7 48 4 40 9 37\" fill=\"none\" stroke-width=\"8\"/><path d=\"M16 47C7 48 4 40 9 37\" fill=\"none\" stroke=\"#9fdcf2\" stroke-width=\"4.5\"/><path d=\"M8 37L5 32L11 35Z\" fill=\"#e8f8ff\" stroke-width=\"1.5\"/><path d=\"M17 33C10 25 6 29 3 26C3 34 7 39 15 40Z\" fill=\"#6cbadf\"/><ellipse cx=\"22\" cy=\"55\" rx=\"5\" ry=\"3\" fill=\"#9fdcf2\"/><ellipse cx=\"36\" cy=\"55\" rx=\"5\" ry=\"3\" fill=\"#9fdcf2\"/><ellipse cx=\"29\" cy=\"43\" rx=\"15\" ry=\"12.5\" fill=\"#9fdcf2\"/><ellipse cx=\"31\" cy=\"45\" rx=\"8\" ry=\"8.5\" fill=\"#e8f8ff\" stroke-width=\"1.6\"/><path d=\"M19 12C16 9 15 6 16 2.5C19 5 22 7 24 9.5Z\" fill=\"#fff6d6\"/><path d=\"M31 9C32 5.5 34 3 37 2C37 5 37.5 7.5 37 10.5Z\" fill=\"#fff6d6\"/><path d=\"M16 20L12 21L15 24M15 26L11 28.5L15.5 30\" fill=\"#e8f8ff\" stroke-width=\"1.6\"/><circle cx=\"28\" cy=\"21\" r=\"12.5\" fill=\"#9fdcf2\"/><ellipse cx=\"39.5\" cy=\"25.5\" rx=\"7\" ry=\"6\" fill=\"#9fdcf2\"/><path d=\"M30 25.5Q35 22 39 24\" fill=\"none\" stroke=\"#9fdcf2\" stroke-width=\"3\"/><path d=\"M42 23.5h.1M45 24h.1\" stroke-width=\"1.8\"/><path d=\"M37 39L42 37M20 39L16 37\" fill=\"none\" stroke-width=\"3.5\"/><path d=\"M37 39L42 37M20 39L16 37\" fill=\"none\" stroke=\"#9fdcf2\" stroke-width=\"1.5\"/><path d=\"M19 15C20.5 12 23 10.5 26 10\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><g fill=\"#fff\" stroke=\"#7fb6e8\" stroke-width=\"1.5\"><circle cx=\"49.5\" cy=\"27\" r=\"2.6\"/><circle cx=\"52.5\" cy=\"23.5\" r=\"2.2\"/></g><path d=\"M55 17L62 17M60 17L62 19M60 17L62 15M55 17L59 23M57 21L57 24M57 21L60 22M55 17L52 23M53 21L50 22M53 21L53 24M55 17L48 17M51 17L49 15M51 17L49 19M55 17L52 11M53 13L53 10M53 13L50 12M55 17L59 11M57 13L60 12M57 13L57 10\" fill=\"none\" stroke-width=\"4\"/><path d=\"M55 17L62 17M60 17L62 19M60 17L62 15M55 17L59 23M57 21L57 24M57 21L60 22M55 17L52 23M53 21L50 22M53 21L53 24M55 17L48 17M51 17L49 15M51 17L49 19M55 17L52 11M53 13L53 10M53 13L50 12M55 17L59 11M57 13L60 12M57 13L57 10\" fill=\"none\" stroke=\"#dff4ff\" stroke-width=\"2\"/><circle cx=\"55\" cy=\"17\" r=\"2\" fill=\"#fff\" stroke-width=\"1.4\"/><circle cx=\"24\" cy=\"19\" r=\"4.2\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"25.2\" cy=\"19.3\" r=\"2.4\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"24.3\" cy=\"18.2\" r=\"0.9\" fill=\"#fff\" stroke=\"none\"/><circle cx=\"34\" cy=\"19\" r=\"4.4\" fill=\"#fff\" stroke-width=\"1.8\"/><circle cx=\"35.2\" cy=\"19.3\" r=\"2.6\" fill=\"#2b1d14\" stroke=\"none\"/><circle cx=\"34.2\" cy=\"18.2\" r=\"1\" fill=\"#fff\" stroke=\"none\"/><path d=\"M20 14L27 15.3M31 14.6L37.5 13.5\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"44.5\" cy=\"28.5\" rx=\"2.3\" ry=\"2\" fill=\"#7a2b3a\" stroke-width=\"1.6\"/><ellipse cx=\"21\" cy=\"26\" rx=\"2.3\" ry=\"1.4949999999999999\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"35\" cy=\"28.5\" rx=\"2.3\" ry=\"1.4949999999999999\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g>", "boss:dragon:down": "<ellipse cx=\"32\" cy=\"58\" rx=\"18\" ry=\"3.5\" fill=\"rgba(59,74,42,.15)\"/><g stroke=\"#2b1d14\" stroke-width=\"2.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><g transform=\"translate(32 58) scale(1.07 .9) translate(-32 -58)\"><path d=\"M16 47C7 48 4 40 9 37\" fill=\"none\" stroke-width=\"8\"/><path d=\"M16 47C7 48 4 40 9 37\" fill=\"none\" stroke=\"#9fdcf2\" stroke-width=\"4.5\"/><path d=\"M8 37L5 32L11 35Z\" fill=\"#e8f8ff\" stroke-width=\"1.5\"/><path d=\"M17 33C10 25 6 29 3 26C3 34 7 39 15 40Z\" fill=\"#6cbadf\"/><ellipse cx=\"22\" cy=\"55\" rx=\"5\" ry=\"3\" fill=\"#9fdcf2\"/><ellipse cx=\"36\" cy=\"55\" rx=\"5\" ry=\"3\" fill=\"#9fdcf2\"/><ellipse cx=\"29\" cy=\"43\" rx=\"15\" ry=\"12.5\" fill=\"#9fdcf2\"/><ellipse cx=\"31\" cy=\"45\" rx=\"8\" ry=\"8.5\" fill=\"#e8f8ff\" stroke-width=\"1.6\"/><path d=\"M19 12C16 9 15 6 16 2.5C19 5 22 7 24 9.5Z\" fill=\"#fff6d6\"/><path d=\"M31 9C32 5.5 34 3 37 2C37 5 37.5 7.5 37 10.5Z\" fill=\"#fff6d6\"/><path d=\"M16 20L12 21L15 24M15 26L11 28.5L15.5 30\" fill=\"#e8f8ff\" stroke-width=\"1.6\"/><circle cx=\"28\" cy=\"21\" r=\"12.5\" fill=\"#9fdcf2\"/><ellipse cx=\"39.5\" cy=\"25.5\" rx=\"7\" ry=\"6\" fill=\"#9fdcf2\"/><path d=\"M30 25.5Q35 22 39 24\" fill=\"none\" stroke=\"#9fdcf2\" stroke-width=\"3\"/><path d=\"M42 23.5h.1M45 24h.1\" stroke-width=\"1.8\"/><path d=\"M37 39L42 37M20 39L16 37\" fill=\"none\" stroke-width=\"3.5\"/><path d=\"M37 39L42 37M20 39L16 37\" fill=\"none\" stroke=\"#9fdcf2\" stroke-width=\"1.5\"/><path d=\"M19 15C20.5 12 23 10.5 26 10\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.2\" opacity=\".85\"/><path d=\"M43 28Q45 33 47 29\" fill=\"#ff8fa8\" stroke-width=\"1.5\"/><circle cx=\"24\" cy=\"19\" r=\"4.2\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M24 19L24.1 19.2L23.9 19.4L23.5 19.3L23.2 18.8L23.6 18.1L24.5 17.9L25.4 18.7L25.3 19.9L24.1 20.8L22.6 20.4L21.8 18.8L22.6 17.1L24.6 16.5L26.5 17.7L26.8 20.1L25 22\" fill=\"none\" stroke-width=\"1.4\"/><circle cx=\"34\" cy=\"19\" r=\"4.4\" fill=\"#fff\" stroke-width=\"1.8\"/><path d=\"M34 19L34.1 19.2L33.9 19.4L33.5 19.3L33.2 18.7L33.6 18L34.6 17.9L35.4 18.7L35.4 20L34.2 20.9L32.5 20.5L31.7 18.8L32.5 16.9L34.6 16.3L36.7 17.6L36.9 20.2L35.1 22.2\" fill=\"none\" stroke-width=\"1.4\"/><path d=\"M37 29q0.75 -2 1.5 0t1.5 0t1.5 0t1.5 0\" fill=\"none\" stroke-width=\"1.8\"/><ellipse cx=\"21\" cy=\"26\" rx=\"2.3\" ry=\"1.4949999999999999\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/><ellipse cx=\"35\" cy=\"28.5\" rx=\"2.3\" ry=\"1.4949999999999999\" fill=\"#ff8fa8\" opacity=\".55\" stroke=\"none\"/></g></g><g stroke=\"#2b1d14\" stroke-width=\"1.4\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><circle cx=\"53\" cy=\"54\" r=\"2.4\" fill=\"#dff4ff\" stroke-width=\"1.4\"/></g><g stroke=\"#2b1d14\" stroke-width=\"1.2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><polygon points=\"13,4.8 13.8,6.8 16,7 14.4,8.4 14.9,10.6 13,9.4 11.1,10.6 11.6,8.4 10,7 12.2,6.8\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"44,3 44.8,4.9 46.9,5.1 45.3,6.4 45.8,8.4 44,7.4 42.2,8.4 42.7,6.4 41.1,5.1 43.2,4.9\" fill=\"#ffd84a\" stroke-width=\"1.2\"/><polygon points=\"52,12.6 52.6,14.1 54.3,14.3 53,15.3 53.4,16.9 52,16.1 50.6,16.9 51,15.3 49.7,14.3 51.4,14.1\" fill=\"#ffd84a\" stroke-width=\"1.2\"/></g>", "いしょう|コックぼうし": "<path d=\"M14 49C5 47 2 33 10 28C8 16 20 10 27 15C29 4 43 4 45 14C52 9 64 18 58 28C66 34 62 47 54 49Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M20 36C22 33 25 33 27 35M40 34C42 31 46 31 48 34\" fill=\"none\" stroke=\"#d9cfc2\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M11 46L57 46L57 60Q34 65 11 60Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M22 48L22 61M34 48L34 62M46 48L46 61\" stroke=\"#d9cfc2\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M11 30C10 24 14 19 19 19M30 12C32 10 35 9 38 10\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|まじょの ぼうし": "<path d=\"M18 54C24 41 27 27 31 18C34 11 40 8 48 10C52 11 54 15 51 17C47 14 43 16 42 22C42 33 46 45 51 54Z\" fill=\"#8e5bb5\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M19 50Q34 46 50 50L52 56Q34 52 17 56Z\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><ellipse cx=\"34\" cy=\"58\" rx=\"29\" ry=\"5.5\" fill=\"#8e5bb5\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M20 56Q34 53 48 56\" fill=\"none\" stroke=\"#6b3f8f\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M35 27.5L37.2 32L42.1 32.7L38.6 36.2L39.4 41.1L35 38.8L30.6 41.1L31.4 36.2L27.9 32.7L32.8 32Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"51\" cy=\"17\" r=\"2.6\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.5\"/><path d=\"M28 41C29 34 31 27 33 22\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><circle cx=\"22\" cy=\"29\" r=\"1.4\" fill=\"#f6d36b\"/><circle cx=\"54\" cy=\"37\" r=\"1.4\" fill=\"#f6d36b\"/>", "いしょう|はなかんむり": "<path d=\"M5 53Q34 67 63 53\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"7\" stroke-linecap=\"round\"/><path d=\"M5 53Q34 67 63 53\" fill=\"none\" stroke=\"#6aa84f\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><path d=\"M14 58Q8.5 59.5 6.2 53.5Q12.5 52.5 14 58ZM25 62Q22.6 67.1 16.5 65.1Q19.9 59.6 25 62ZM43 62Q48.1 59.6 51.5 65.1Q45.4 67.1 43 62ZM54 58Q55.5 52.5 61.8 53.5Q59.5 59.5 54 58ZM34 54Q30 50 34 45Q38 50 34 54Z\" fill=\"#6aa84f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><g transform=\"translate(27 51) scale(0.75)\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(41 51) scale(0.75)\" fill=\"#ffb36b\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(7 52) scale(0.9)\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(19 57) scale(0.9)\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#f4891f\"/></g><g transform=\"translate(49 57) scale(0.9)\" fill=\"#7fb6e8\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(61 52) scale(0.9)\" fill=\"#c9a4ff\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(34 59) scale(1.05)\" fill=\"#ff7a8a\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g>", "いしょう|おうさまの かんむり": "<path d=\"M11 50L8 23L21 37L34 15L47 37L60 23L57 50Z\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M10 49L58 49L58 61Q34 64 10 61Z\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"8\" cy=\"22\" r=\"3.2\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"34\" cy=\"13\" r=\"3.5\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"60\" cy=\"22\" r=\"3.2\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><path d=\"M34 50L39 55L34 60L29 55Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"20\" cy=\"55.5\" r=\"3.2\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"48\" cy=\"55.5\" r=\"3.2\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"34\" cy=\"37\" r=\"3.4\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><path d=\"M15 46L13 33M25 46L30 33\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/><circle cx=\"33\" cy=\"54\" r=\"1\" fill=\"#fff\"/>", "いしょう|はねかざりの ターバン": "<path d=\"M36 38C29 28 29 14 37 4C41 0 48 0 50 4C55 12 51 26 40 38Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M38 36C39 24 42 12 47 3\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M35 20L41 18M34 27L40 26M44 12L49 10M43 20L49 18\" stroke=\"#ff9ab0\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M5 60C1 41 15 26 34 26C53 26 67 41 63 60Q34 66 5 60Z\" fill=\"#3bb5a6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M8 50C20 39 40 34 60 47M7 57C22 47 42 43 62 55M14 36C27 40 42 49 51 61\" fill=\"none\" stroke=\"#24877b\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><ellipse cx=\"34\" cy=\"41\" rx=\"7\" ry=\"8\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><ellipse cx=\"34\" cy=\"41\" rx=\"3.8\" ry=\"4.8\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.5\"/><circle cx=\"32.8\" cy=\"39.2\" r=\"1.2\" fill=\"#fff\"/><circle cx=\"34\" cy=\"52\" r=\"2.2\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><path d=\"M10 45C14 36 21 32 27 31\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|かいぞくの ぼうし": "<path d=\"M3 47Q11 34 20 41Q23 20 34 20Q45 20 48 41Q57 34 65 47Q52 64 34 59Q16 64 3 47Z\" fill=\"#3a3238\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M6 48Q18 60 34 56Q50 60 62 48\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><ellipse cx=\"34\" cy=\"42\" rx=\"5.5\" ry=\"4.5\" fill=\"#fffdf8\"/><circle cx=\"27\" cy=\"35\" r=\"2.6\" fill=\"#fffdf8\"/><circle cx=\"32\" cy=\"31.5\" r=\"2.6\" fill=\"#fffdf8\"/><circle cx=\"37\" cy=\"31.5\" r=\"2.6\" fill=\"#fffdf8\"/><circle cx=\"41.5\" cy=\"35\" r=\"2.6\" fill=\"#fffdf8\"/><path d=\"M24 29C26 25 29 23 32 23\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|カボチャの かぶりもの": "<path d=\"M34 24C33 18 35 13 39 10\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"6\" stroke-linecap=\"round\"/><path d=\"M34 24C33 18 35 13 39 10\" fill=\"none\" stroke=\"#6aa84f\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M37 18Q40.3 10.8 48.8 13.7Q44.2 21.3 37 18Z\" fill=\"#8cc152\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><path d=\"M34 23C22 18 6 24 5 41C4 56 18 63 34 62C50 63 64 56 63 41C62 24 46 18 34 23Z\" fill=\"#f4891f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M34 23C26 30 26 52 34 62M34 23C42 30 42 52 34 62M19 22C12 30 12 50 19 60M49 22C56 30 56 50 49 60\" fill=\"none\" stroke=\"#c9650f\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M22 38L27 32L31 38Z M37 38L41 32L46 38Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><path d=\"M20 45Q34 58 48 45Q44 46 41 47L39 50L36 48Q34 49 32 48L29 50L27 47Q24 46 20 45Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><circle cx=\"18\" cy=\"43\" r=\"2.3\" fill=\"#ff9ab0\" opacity=\".8\"/><circle cx=\"50\" cy=\"43\" r=\"2.3\" fill=\"#ff9ab0\" opacity=\".8\"/><path d=\"M10 36C11 30 14 27 18 26\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|サンタの ぼうし": "<path d=\"M12 53C14 28 28 11 44 12C54 13 59 21 58 33C54 27 49 27 47 31C51 38 54 46 56 53Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M19 45C21 32 27 22 35 17\" fill=\"none\" stroke=\"#ff6b7d\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M8 52Q34 44 60 52Q64 57 60 62Q34 55 8 62Q4 57 8 52Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M15 55Q17 53 19 55M28 52Q30 50 32 52M40 52Q42 50 44 52M51 54Q53 52 55 54\" fill=\"none\" stroke=\"#d9cfc2\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><circle cx=\"58\" cy=\"36\" r=\"6\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M55 34Q56 32 58 32\" fill=\"none\" stroke=\"#d9cfc2\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>", "いしょう|えんぎの はちまき": "<path d=\"M4 55Q34 48 64 55L64 64Q34 57 4 64Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M7 59Q34 53 61 59\" fill=\"none\" stroke=\"#e9e1d6\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M34 55L18 37L15 46Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M34 55L50 37L53 46Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M22 42L19 44M27 48L24 50M46 42L49 44M41 48L44 50\" stroke=\"#d3123f\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M34 55L24 32L19 39Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M34 55L44 32L49 39Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><ellipse cx=\"34\" cy=\"56\" rx=\"7.5\" ry=\"6.5\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M29 53Q34 59 39 53M29 58Q34 63 39 58\" fill=\"none\" stroke=\"#fffdf8\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M9 57Q13 56 17 55\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|さくらの かんむり": "<path d=\"M5 55Q34 67 63 55\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"6\" stroke-linecap=\"round\"/><path d=\"M5 55Q34 67 63 55\" fill=\"none\" stroke=\"#a0622d\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M13 57Q8.1 59.8 4.3 54.7Q10.2 52.1 13 57ZM4 52Q-1.6 51.5 -1.8 45.1Q4.5 46.4 4 52ZM55 57Q57.8 52.1 63.7 54.7Q59.9 59.8 55 57ZM64 52Q63.5 46.4 69.8 45.1Q69.6 51.5 64 52Z\" fill=\"#8cc152\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><g fill=\"#ffc2d4\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"><g transform=\"translate(24 49) rotate(10) scale(1)\"><path d=\"M0 0C-6,-3 -6,-9 -2,-10L0,-8L2,-10C6,-9 6,-3 0 0ZM0 0C1,-6 7,-8 9,-5L8,-3L10,-1C10,2 5,4 0 0ZM0 0C6,-1 10,4 8,7L5,7L4,9C1,11 -3,6 0 0ZM0 0C3,6 -1,11 -4,9L-5,7L-8,7C-10,4 -6,-1 0 0ZM0 0C-5,4 -10,2 -10,-1L-8,-3L-9,-5C-7,-8 -1,-6 0 0Z\"/><circle r=\"2.6\" fill=\"#ff7fa3\" stroke=\"none\"/></g><g transform=\"translate(44 49) rotate(-12) scale(1)\"><path d=\"M0 0C-6,-3 -6,-9 -2,-10L0,-8L2,-10C6,-9 6,-3 0 0ZM0 0C1,-6 7,-8 9,-5L8,-3L10,-1C10,2 5,4 0 0ZM0 0C6,-1 10,4 8,7L5,7L4,9C1,11 -3,6 0 0ZM0 0C3,6 -1,11 -4,9L-5,7L-8,7C-10,4 -6,-1 0 0ZM0 0C-5,4 -10,2 -10,-1L-8,-3L-9,-5C-7,-8 -1,-6 0 0Z\"/><circle r=\"2.6\" fill=\"#ff7fa3\" stroke=\"none\"/></g><g transform=\"translate(14 57) rotate(15) scale(1.05)\"><path d=\"M0 0C-6,-3 -6,-9 -2,-10L0,-8L2,-10C6,-9 6,-3 0 0ZM0 0C1,-6 7,-8 9,-5L8,-3L10,-1C10,2 5,4 0 0ZM0 0C6,-1 10,4 8,7L5,7L4,9C1,11 -3,6 0 0ZM0 0C3,6 -1,11 -4,9L-5,7L-8,7C-10,4 -6,-1 0 0ZM0 0C-5,4 -10,2 -10,-1L-8,-3L-9,-5C-7,-8 -1,-6 0 0Z\"/><circle r=\"2.6\" fill=\"#ff7fa3\" stroke=\"none\"/></g><g transform=\"translate(34 61) rotate(0) scale(1.15)\"><path d=\"M0 0C-6,-3 -6,-9 -2,-10L0,-8L2,-10C6,-9 6,-3 0 0ZM0 0C1,-6 7,-8 9,-5L8,-3L10,-1C10,2 5,4 0 0ZM0 0C6,-1 10,4 8,7L5,7L4,9C1,11 -3,6 0 0ZM0 0C3,6 -1,11 -4,9L-5,7L-8,7C-10,4 -6,-1 0 0ZM0 0C-5,4 -10,2 -10,-1L-8,-3L-9,-5C-7,-8 -1,-6 0 0Z\"/><circle r=\"2.6\" fill=\"#ff7fa3\" stroke=\"none\"/></g><g transform=\"translate(54 57) rotate(-15) scale(1.05)\"><path d=\"M0 0C-6,-3 -6,-9 -2,-10L0,-8L2,-10C6,-9 6,-3 0 0ZM0 0C1,-6 7,-8 9,-5L8,-3L10,-1C10,2 5,4 0 0ZM0 0C6,-1 10,4 8,7L5,7L4,9C1,11 -3,6 0 0ZM0 0C3,6 -1,11 -4,9L-5,7L-8,7C-10,4 -6,-1 0 0ZM0 0C-5,4 -10,2 -10,-1L-8,-3L-9,-5C-7,-8 -1,-6 0 0Z\"/><circle r=\"2.6\" fill=\"#ff7fa3\" stroke=\"none\"/></g></g>", "いしょう|ほしの かんむり": "<path d=\"M6 52L12 52L11 64L5 64Z\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\" transform=\"rotate(12 9 52)\"/><path d=\"M56 52L62 52L63 64L57 64Z\" fill=\"#7fb6e8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\" transform=\"rotate(-12 59 52)\"/><path d=\"M13 54L18 54L18 64L13 64Z\" fill=\"#8cc152\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\" transform=\"rotate(4 15 54)\"/><path d=\"M50 54L55 54L55 64L50 64Z\" fill=\"#c9a4ff\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\" transform=\"rotate(-4 52 54)\"/><path d=\"M20 50L22 36M34 50L34 26M48 50L46 36\" stroke=\"#2b1d14\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M19.8 25.6L23 30.2L28.6 30.3L25.2 34.7L26.9 40.1L21.6 38.2L17 41.5L17.2 35.9L12.6 32.5L18 30.9Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M34 10L37.2 16.6L44.5 17.6L39.2 22.7L40.5 29.9L34 26.5L27.5 29.9L28.8 22.7L23.5 17.6L30.8 16.6Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M48.2 25.6L50 30.9L55.4 32.5L50.8 35.9L51 41.5L46.4 38.2L41.1 40.1L42.8 34.7L39.4 30.3L45 30.2Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M6 51Q34 44 62 51L62 61Q34 54 6 61Z\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><circle cx=\"16\" cy=\"55\" r=\"1.4\" fill=\"#fff6c8\"/><circle cx=\"27\" cy=\"52.5\" r=\"1.4\" fill=\"#fff6c8\"/><circle cx=\"41\" cy=\"52.5\" r=\"1.4\" fill=\"#fff6c8\"/><circle cx=\"52\" cy=\"55\" r=\"1.4\" fill=\"#fff6c8\"/><path d=\"M31 18L33 16\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|おまつりの おめん": "<path d=\"M2 63Q16 57 30 57\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"4.5\" stroke-linecap=\"round\"/><path d=\"M2 63Q16 57 30 57\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"2\" stroke-linecap=\"round\"/><g transform=\"translate(42 46) rotate(15)\"><path d=\"M-15 -4L-16 -22L-5 -13Q0 -14 5 -13L16 -22L15 -4Q16 8 0 18Q-16 8 -15 -4Z\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.3\"/><path d=\"M-13 -9L-14 -17L-8 -12Z M13 -9L14 -17L8 -12Z\" fill=\"#ff7a8a\"/><path d=\"M-11 -3Q-7 -6 -3 -3 M3 -3Q7 -6 11 -3\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M-10 1Q-7 3 -4 1M4 1Q7 3 10 1\" fill=\"none\" stroke=\"#2b1d14\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><path d=\"M0 -12L-2 -7L0 -5L2 -7Z\" fill=\"#d3123f\"/><ellipse cx=\"0\" cy=\"12\" rx=\"2.2\" ry=\"1.6\" fill=\"#2b1d14\"/><path d=\"M-13 6L-8 7M13 6L8 7\" stroke=\"#d3123f\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M-12 -2Q-13 3 -10 7\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" opacity=\".9\"/></g>", "いしょう|ちょうネクタイ": "<path d=\"M32 23L15 13Q11 22 15 33Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M32 23L49 13Q53 22 49 33Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M18 19L25 22M46 19L39 22M18 28L25 24.5M46 28L39 24.5\" stroke=\"#9c0c2e\" stroke-width=\"1.8\" stroke-linecap=\"round\"/><rect x=\"27.5\" y=\"18\" width=\"9\" height=\"10\" rx=\"3\" fill=\"#ff4f6d\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><path d=\"M16 19Q16 17 17.5 16.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/><circle cx=\"30.5\" cy=\"21\" r=\"1\" fill=\"#fff\"/>", "いしょう|はなの レイ": "<path d=\"M10.4 26.5Q15.4 26.9 15.6 32.7Q9.9 31.6 10.4 26.5ZM19 34.3Q23.8 36.1 22.3 41.7Q17.2 39.1 19 34.3ZM27.7 38.8Q31.7 41.9 28.8 46.8Q24.6 42.9 27.7 38.8ZM36.4 38.8Q39.4 42.9 35.2 46.8Q32.3 41.9 36.4 38.8ZM45 34.3Q46.8 39.1 41.7 41.7Q40.2 36.1 45 34.3ZM53.7 26.5Q54.1 31.6 48.4 32.7Q48.6 26.9 53.7 26.5Z\" fill=\"#6aa84f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.3\"/><g transform=\"translate(6 19) scale(0.9)\" fill=\"#ff9ab0\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(14.7 28) scale(0.9)\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#f4891f\"/></g><g transform=\"translate(23.3 34.6) scale(0.9)\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(32 37) scale(0.9)\" fill=\"#ff7a8a\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(40.7 34.6) scale(0.9)\" fill=\"#c9a4ff\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(49.3 28) scale(0.9)\" fill=\"#ffb36b\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g><g transform=\"translate(58 19) scale(0.9)\" fill=\"#fffdf8\" stroke=\"#2b1d14\" stroke-width=\"1.5\"><circle cx=\"0\" cy=\"-6\" r=\"5\"/><circle cx=\"6\" cy=\"-2\" r=\"5\"/><circle cx=\"4\" cy=\"5\" r=\"5\"/><circle cx=\"-4\" cy=\"5\" r=\"5\"/><circle cx=\"-6\" cy=\"-2\" r=\"5\"/><circle r=\"3.4\" fill=\"#ffd25a\"/></g>", "いしょう|ほしの マフラー": "<path d=\"M36 26L34 52L46 50L44 26Z\" fill=\"#2c3e78\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.3\"/><path d=\"M35 52L35 56M38.5 51.5L38.5 56M42 51L42 55.5M45.5 50.5L45.5 55\" stroke=\"#ffd25a\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M35 44L45 43\" stroke=\"#ffd25a\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M5 15Q32 30 59 15L59 25Q32 40 5 25Z\" fill=\"#2c3e78\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M33 28L30 36L42 37L41 28Z\" fill=\"#3a4f92\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M12 17.8L12.9 19.7L15 20L13.5 21.5L13.9 23.6L12 22.6L10.1 23.6L10.5 21.5L9 20L11.1 19.7Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M22 22.8L22.9 24.7L25 25L23.5 26.5L23.9 28.6L22 27.6L20.1 28.6L20.5 26.5L19 25L21.1 24.7Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M50 17.8L50.9 19.7L53 20L51.5 21.5L51.9 23.6L50 22.6L48.1 23.6L48.5 21.5L47 20L49.1 19.7Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M56 16.3L56.9 18.2L59 18.5L57.5 20L57.9 22.1L56 21.1L54.1 22.1L54.5 20L53 18.5L55.1 18.2Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M39 31.8L39.9 33.7L42 34L40.5 35.5L40.9 37.6L39 36.6L37.1 37.6L37.5 35.5L36 34L38.1 33.7Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M40 44.8L40.9 46.7L43 47L41.5 48.5L41.9 50.6L40 49.6L38.1 50.6L38.5 48.5L37 47L39.1 46.7Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M17 20.3L17.9 22.2L20 22.5L18.5 24L18.9 26.1L17 25.1L15.1 26.1L15.5 24L14 22.5L16.1 22.2Z\" fill=\"#ffd25a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"0.9\"/><path d=\"M9 18Q14 21 19 23\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|きんの くびかざり": "<ellipse cx=\"8\" cy=\"18\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"12\" cy=\"21.6\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"16\" cy=\"25\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"20\" cy=\"27.9\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"24\" cy=\"30.1\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"28\" cy=\"31.5\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"36\" cy=\"31.5\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"40\" cy=\"30.1\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"44\" cy=\"27.9\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"48\" cy=\"25\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"52\" cy=\"21.6\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><ellipse cx=\"56\" cy=\"18\" rx=\"2.6\" ry=\"2.1\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.4\"/><path d=\"M32 32L32 36\" stroke=\"#2b1d14\" stroke-width=\"2.2\"/><circle cx=\"32\" cy=\"32\" r=\"3\" fill=\"#f6d36b\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><path d=\"M32 35C23 38 22 47 32 56C42 47 41 38 32 35Z\" fill=\"#e3b23c\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.4\"/><path d=\"M32 38.5C26.5 41 26.5 47 32 52C37.5 47 37.5 41 32 38.5Z\" fill=\"#3d6fb6\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.6\"/><circle cx=\"30.3\" cy=\"43\" r=\"1.3\" fill=\"#fff\"/><path d=\"M24.5 42Q24.5 39.5 26.5 38.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.8\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|ひいらぎの スカーフ": "<path d=\"M18 26L14 52L26 53L27 27Z\" fill=\"#3f9b4a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.3\"/><path d=\"M15 50L26 51\" stroke=\"#d3123f\" stroke-width=\"2.2\" stroke-linecap=\"round\"/><path d=\"M14.5 53L14 57M18 53.5L17.8 57.5M21.5 53.5L21.5 57.5M25 53.5L25 57.5\" stroke=\"#3f9b4a\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M5 15Q32 30 59 15L59 25Q32 40 5 25Z\" fill=\"#3f9b4a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2.5\"/><path d=\"M6 17Q32 32 58 17M6 23Q32 38 58 23\" fill=\"none\" stroke=\"#d3123f\" stroke-width=\"1.4\" stroke-linecap=\"round\" stroke-dasharray=\"3 3\"/><path d=\"M16 26Q20 32 28 32L30 37L19 35Z\" fill=\"#4fb35a\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><g transform=\"translate(13 21) rotate(10)\"><path d=\"M0 0L-2 -2L-5 -2L-5 -4L-8 -4L-9 -1L-6 0L-9 1L-8 4L-5 4L-5 2L-2 2ZM0 0L2 -2L5 -2L5 -4L8 -4L9 -1L6 0L9 1L8 4L5 4L5 2L2 2Z\" fill=\"#2f7d3a\"/><circle cx=\"0\" cy=\"-1.5\" r=\"1.8\" fill=\"#d3123f\"/><circle cx=\"1.5\" cy=\"1\" r=\"1.6\" fill=\"#d3123f\"/></g><g transform=\"translate(32 29) rotate(0)\"><path d=\"M0 0L-2 -2L-5 -2L-5 -4L-8 -4L-9 -1L-6 0L-9 1L-8 4L-5 4L-5 2L-2 2ZM0 0L2 -2L5 -2L5 -4L8 -4L9 -1L6 0L9 1L8 4L5 4L5 2L2 2Z\" fill=\"#2f7d3a\"/><circle cx=\"0\" cy=\"-1.5\" r=\"1.8\" fill=\"#d3123f\"/><circle cx=\"1.5\" cy=\"1\" r=\"1.6\" fill=\"#d3123f\"/></g><g transform=\"translate(51 21) rotate(-10)\"><path d=\"M0 0L-2 -2L-5 -2L-5 -4L-8 -4L-9 -1L-6 0L-9 1L-8 4L-5 4L-5 2L-2 2ZM0 0L2 -2L5 -2L5 -4L8 -4L9 -1L6 0L9 1L8 4L5 4L5 2L2 2Z\" fill=\"#2f7d3a\"/><circle cx=\"0\" cy=\"-1.5\" r=\"1.8\" fill=\"#d3123f\"/><circle cx=\"1.5\" cy=\"1\" r=\"1.6\" fill=\"#d3123f\"/></g><g transform=\"translate(20.5 42) rotate(80)\"><path d=\"M0 0L-2 -2L-5 -2L-5 -4L-8 -4L-9 -1L-6 0L-9 1L-8 4L-5 4L-5 2L-2 2ZM0 0L2 -2L5 -2L5 -4L8 -4L9 -1L6 0L9 1L8 4L5 4L5 2L2 2Z\" fill=\"#2f7d3a\"/><circle cx=\"0\" cy=\"-1.5\" r=\"1.8\" fill=\"#d3123f\"/><circle cx=\"1.5\" cy=\"1\" r=\"1.6\" fill=\"#d3123f\"/></g><path d=\"M9 18Q13 20 17 22\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|ヒーローの マント": "<path d=\"M7 13Q32 6 57 13L63 52Q58 57 52 53Q45 58 39 54Q32 59 25 54Q19 58 12 53Q6 57 1 52Z\" fill=\"#d3123f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M3.5 50Q7 54 12 51Q19 56 25 52Q32 57 39 52Q45 56 52 51Q57 54 60.5 50\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M7 13L2 50M57 13L62 50\" fill=\"none\" stroke=\"#e3b23c\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M10 24L6 44M54 24L58 44\" stroke=\"#9c0c2e\" stroke-width=\"1.6\" stroke-linecap=\"round\"/><path d=\"M8 26L5 36\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.6\" stroke-linecap=\"round\" opacity=\".85\"/>", "いしょう|おばけの マント": "<path d=\"M7 13Q32 6 57 13L64 54Q59 50 54 55Q48 50 43 55Q37 50 32 55Q27 50 21 55Q16 50 10 55Q5 50 0 54Z\" fill=\"#f4891f\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"2\"/><path d=\"M8.5 13Q32 7.5 55.5 13L60 48Q56 45 51 49Q46 45 42 49Q37 45 32 49Q27 45 22 49Q18 45 13 49Q8 45 4 48Z\" fill=\"#7a3fa8\" stroke=\"#2b1d14\" stroke-linejoin=\"round\" stroke-linecap=\"round\" stroke-width=\"1.8\"/><path d=\"M0 -1C-2 -4 -5 -4 -8 -2C-6 -1 -6 1 -5 2C-4 0 -2 1 -1 2L0 3L1 2C2 1 4 0 5 2C6 1 6 -1 8 -2C5 -4 2 -4 0 -1ZM-1 -1L-1.6 -4L0 -2L1.6 -4L1 -1Z\" transform=\"translate(7 32) scale(0.6)\" fill=\"#ffd25a\"/><path d=\"M0 -1C-2 -4 -5 -4 -8 -2C-6 -1 -6 1 -5 2C-4 0 -2 1 -1 2L0 3L1 2C2 1 4 0 5 2C6 1 6 -1 8 -2C5 -4 2 -4 0 -1ZM-1 -1L-1.6 -4L0 -2L1.6 -4L1 -1Z\" transform=\"translate(57 32) scale(0.6)\" fill=\"#ffd25a\"/><path d=\"M0 -1C-2 -4 -5 -4 -8 -2C-6 -1 -6 1 -5 2C-4 0 -2 1 -1 2L0 3L1 2C2 1 4 0 5 2C6 1 6 -1 8 -2C5 -4 2 -4 0 -1ZM-1 -1L-1.6 -4L0 -2L1.6 -4L1 -1Z\" transform=\"translate(6 42) scale(0.5)\" fill=\"#2b1d14\"/><path d=\"M0 -1C-2 -4 -5 -4 -8 -2C-6 -1 -6 1 -5 2C-4 0 -2 1 -1 2L0 3L1 2C2 1 4 0 5 2C6 1 6 -1 8 -2C5 -4 2 -4 0 -1ZM-1 -1L-1.6 -4L0 -2L1.6 -4L1 -1Z\" transform=\"translate(58 42) scale(0.5)\" fill=\"#2b1d14\"/><path d=\"M0 -1C-2 -4 -5 -4 -8 -2C-6 -1 -6 1 -5 2C-4 0 -2 1 -1 2L0 3L1 2C2 1 4 0 5 2C6 1 6 -1 8 -2C5 -4 2 -4 0 -1ZM-1 -1L-1.6 -4L0 -2L1.6 -4L1 -1Z\" transform=\"translate(32 16) scale(0.6)\" fill=\"#2b1d14\"/><path d=\"M10 22L7 30M54 22L57 30\" stroke=\"#a46ad1\" stroke-width=\"1.4\" stroke-linecap=\"round\"/>"});
+  const STEPS_PER_KM = 1400;   // about 0.7 m a step, the same as ぼうけん km
+  // ---- seasonal events: during one, bags can hold the event's material and its costumes can be made ----
+  const EVENTS = [
+    { id: "halloween", name: "ハロウィン", icon: "🎃", from: [10, 15], to: [10, 31] },
+    { id: "xmas", name: "クリスマス", icon: "🎄", from: [12, 10], to: [12, 25] },
+    { id: "newyear", name: "おしょうがつ", icon: "🎍", from: [12, 31], to: [1, 7] },
+    { id: "sakura", name: "おはなみ", icon: "🌸", from: [3, 25], to: [4, 10] },
+    { id: "tanabata", name: "たなばた", icon: "🎋", from: [7, 1], to: [7, 7] },
+    { id: "matsuri", name: "なつまつり", icon: "🏮", from: [8, 5], to: [8, 20] },
+  ];
+  const EVENT_BY_ID = Object.fromEntries(EVENTS.map((e) => [e.id, e]));
+  function eventNow(d = new Date()) {
+    const md = (d.getMonth() + 1) * 100 + d.getDate();
+    return EVENTS.find((e) => { const a = e.from[0] * 100 + e.from[1], b = e.to[0] * 100 + e.to[1]; return a <= b ? md >= a && md <= b : md >= a || md <= b; }) || null;
+  }
+  const evDates = (e) => `${e.from[0]}/${e.from[1]}〜${e.to[0]}/${e.to[1]}`;
+  // ---- materials: [name, how often a bag gives it, event] ----
+  const MATS = [
+    ["ぬの", 6], ["いと", 6], ["ボタン", 5], ["はね", 5], ["はなびら", 5], ["ほしの すな", 2], ["ほうせき", 2], ["きんの いと", 2],
+    ["おばけの ぬの", 0, "halloween"], ["ひいらぎの は", 0, "xmas"], ["えんぎの ひも", 0, "newyear"],
+    ["さくらの はなびら", 0, "sakura"], ["たんざく", 0, "tanabata"], ["ちょうちんの かみ", 0, "matsuri"],
+  ];
+  const matIcon = (n) => (ITEM_ART["そざい|" + n] ? "そざい|" + n : "🧶");
+  const BAGS = {
+    s: { name: "ちいさな そざいぶくろ", km: 2, n: 3, rare: 0 },
+    m: { name: "そざいぶくろ", km: 5, n: 5, rare: 1 },
+    l: { name: "おおきな そざいぶくろ", km: 10, n: 8, rare: 2 },
+  };
+  const BAG_SLOTS = 3, BAG_MAX = 9;
+  // ---- costumes: [name, where it is worn, materials, event] ----
+  const COSTUMES = [
+    ["コックぼうし", "head", { "ぬの": 3, "ボタン": 1 }, "", "まっしろな コックさんの ぼうし。きょうの ごはんは ぼくが つくるよ！"],
+    ["まじょの ぼうし", "head", { "ぬの": 3, "ほしの すな": 2 }, "", "とんがった まほうつかいの ぼうし。ほしの すなで きらきら！"],
+    ["はなかんむり", "head", { "はなびら": 5, "いと": 2 }, "", "はなびらを いとで つないだ かんむり。いい におい！"],
+    ["かいぞくの ぼうし", "head", { "ぬの": 4, "ボタン": 2, "はね": 1 }, "", "トラの あしあとマークの かいぞくぼうし。シンドバッドも びっくり！"],
+    ["はねかざりの ターバン", "head", { "ぬの": 2, "はね": 3, "ほうせき": 1 }, "", "おおきな はねと ほうせきの ついた とくべつな ターバン。"],
+    ["おうさまの かんむり", "head", { "ほうせき": 3, "きんの いと": 3 }, "", "ほうせきが いっぱいの きんの かんむり。ぼく、おうさま！"],
+    ["ちょうネクタイ", "front", { "ぬの": 2, "ボタン": 1 }, "", "あかい ちょうネクタイ。おでかけの ひに ぴったり。"],
+    ["はなの レイ", "front", { "はなびら": 6, "いと": 2 }, "", "くびに かける はなの わ。アロハ〜！"],
+    ["ほしの マフラー", "front", { "いと": 4, "ほしの すな": 2 }, "", "ほしの もようの マフラー。さむい ひも あったか！"],
+    ["きんの くびかざり", "front", { "きんの いと": 2, "ほうせき": 2 }, "", "ほうせきの ペンダントが ゆれる きんの くびかざり。"],
+    ["ヒーローの マント", "back", { "ぬの": 5, "ボタン": 2, "きんの いと": 1 }, "", "あかい ヒーローの マント。これで ぼくも ヒーロー！"],
+    ["カボチャの かぶりもの", "head", { "おばけの ぬの": 4, "ぬの": 2 }, "halloween", "にっこり わらう カボチャの かぶりもの。トリック・オア・トリート！"],
+    ["おばけの マント", "back", { "おばけの ぬの": 5, "ボタン": 1 }, "halloween", "コウモリ もようの ハロウィン マント。"],
+    ["サンタの ぼうし", "head", { "ひいらぎの は": 3, "ぬの": 3 }, "xmas", "サンタさんと おそろいの ぼうし。メリークリスマス！"],
+    ["ひいらぎの スカーフ", "front", { "ひいらぎの は": 4, "いと": 2 }, "xmas", "ひいらぎ もようの クリスマス スカーフ。"],
+    ["えんぎの はちまき", "head", { "えんぎの ひも": 3, "ぬの": 1 }, "newyear", "あかと しろの ひもで むすんだ おしょうがつの はちまき。"],
+    ["さくらの かんむり", "head", { "さくらの はなびら": 5, "いと": 1 }, "sakura", "さくらの はなびらで つくった はるの かんむり。"],
+    ["ほしの かんむり", "head", { "たんざく": 4, "ほしの すな": 2 }, "tanabata", "たんざくと ほしで できた たなばたの かんむり。"],
+    ["おまつりの おめん", "head", { "ちょうちんの かみ": 3, "ボタン": 1 }, "matsuri", "なつまつりの キツネの おめん。あたまに ななめに つけるよ。"],
+  ].map(([name, slot, recipe, ev, desc]) => {
+    const key = "いしょう|" + name;
+    const c = { key, name, slot, recipe, ev, desc, icon: ITEM_ART[key] ? key : { head: "🎩", front: "🎀", back: "🦸" }[slot], region: "いしょう", place: "いしょうづくり", costume: true };
+    if (slot === "head") ITEM_BY_KEY[key] = c;   // a hat costume works like any お宝 hat
+    return c;
+  });
+  const COSTUME_BY_KEY = Object.fromEntries(COSTUMES.map((c) => [c.key, c]));
+  const BOSSES = [["jinn", "いたずら ジン"], ["scorpion", "すなあらしの サソリおう"], ["kraken", "おおダコ クラーケン"], ["bat", "よるの おおコウモリ"], ["golem", "いわの ゴーレム"], ["dragon", "こおりの ドラゴン"]];
+  const BOSS_NAME = Object.fromEntries(BOSSES);
+
+  // ---- days, weeks (monday first) and months ----
+  const addDays = (k, n) => { const d = keyDate(k); return dayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n)); };
+  const weekKey = (d = new Date()) => dayKey(new Date(d.getFullYear(), d.getMonth(), d.getDate() - ((d.getDay() + 6) % 7)));
+  const monthKey = (d = new Date()) => d.getFullYear() + "-" + (d.getMonth() + 1);
+  const weekDays = (wk) => Array.from({ length: 7 }, (_, i) => addDays(wk, i));
+  const monthDays = (mk) => { const [y, m] = mk.split("-").map(Number), n = new Date(y, m, 0).getDate(); return Array.from({ length: n }, (_, i) => `${y}-${m}-${i + 1}`); };
+  const stepsOn = (k) => Math.max(k === S.stepDay ? S.stepsToday : 0, (S.log && S.log[k] && S.log[k].steps) || 0);
+  const sumSteps = (days) => days.reduce((s, k) => s + stepsOn(k), 0);
+  function avgSteps(n) {
+    const v = []; for (let i = 1; i <= n; i++) { const s = stepsOn(addDays(S.stepDay, -i)); if (s > 0) v.push(s); }
+    return v.length >= 3 ? v.reduce((a, b) => a + b, 0) / v.length : 0;
+  }
+  const allLog = () => Object.entries(S.log || {});
+
+  // ---- counters per day / week / month, and for all time (S.stat) ----
+  function cnt(p) {
+    S.cnt = S.cnt || {};
+    const key = p === "d" ? today() : p === "w" ? weekKey() : monthKey();
+    if (!S.cnt[p] || S.cnt[p].key !== key) { if (p === "w" && S.cnt.w) S.prevW = S.cnt.w; S.cnt[p] = { key }; }
+    return S.cnt[p];
+  }
+  const stat = () => (S.stat = S.stat || {});
+  function bump(kind, n = 1) {
+    if (stageOf().id === "egg") return;
+    ["d", "w", "m"].forEach((p) => { const c = cnt(p); c[kind] = (c[kind] || 0) + n; });
+    stat()[kind] = (stat()[kind] || 0) + n;
+    setTimeout(checkAdv, 300);
+  }
+
+  // ---- bags: the first BAG_SLOTS ones open after walking their distance ----
+  function activateBags() { (S.bags || []).slice(0, BAG_SLOTS).forEach((b) => { if (b.at == null) b.at = S.totalSteps; }); }
+  const bagLeft = (b) => (b.at == null ? null : Math.max(0, BAGS[b.t].km * STEPS_PER_KM - (S.totalSteps - b.at)));
+  function giveBag(t) {
+    S.bags = S.bags || [];
+    if (S.bags.length >= BAG_MAX) { S.coins = (S.coins || 0) + 30; return false; }   // no room: 30 coins instead
+    S.bags.push({ t, at: null }); activateBags(); return true;
+  }
+  function addMat(n, k = 1) { S.mats = S.mats || {}; S.mats[n] = (S.mats[n] || 0) + k; }
+  function rollMats(t) {
+    const B = BAGS[t], ev = eventNow(), out = {}, commons = MATS.filter((m) => !m[2]);
+    const add = (n) => { out[n] = (out[n] || 0) + 1; addMat(n); };
+    for (let i = 0; i < B.n; i++) {
+      if (ev && Math.random() < 0.35) { add(MATS.find((m) => m[2] === ev.id)[0]); continue; }
+      const pool = i < B.rare ? commons.filter((m) => m[1] <= 2) : commons;
+      let r = Math.random() * pool.reduce((s, m) => s + m[1], 0);
+      for (const m of pool) { if ((r -= m[1]) < 0) { add(m[0]); break; } }
+    }
+    return out;
+  }
+  let lastBagOpen = null;
+  function openBag(i) {
+    const b = (S.bags || [])[i];
+    if (!b || bagLeft(b) !== 0) return;
+    S.bags.splice(i, 1); activateBags();
+    lastBagOpen = { t: b.t, got: rollMats(b.t) };
+    bump("bag"); sfx("reveal"); save(); render(); renderCraft();
+  }
+
+  // ---- missions ----
+  const pickBy = (seed, arr, n) => { let h = 0; for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const a = arr.slice(), out = []; while (out.length < n && a.length) { h = (h * 1103515245 + 12345) >>> 0; out.push(a.splice(h % a.length, 1)[0]); } return out; };
+  const MD_STEP = [
+    { id: "s3", t: "3,000歩 あるく", goal: 3000, prog: () => S.stepsToday, icon: "👣" },
+    { id: "s6", t: "6,000歩 あるく", goal: 6000, prog: () => S.stepsToday, icon: "👣" },
+    { id: "s9", t: "9,000歩 あるく", goal: 9000, prog: () => S.stepsToday, icon: "👣" },
+  ];
+  const MD_OTHER = [
+    { id: "game", t: "ミニゲームで 1かい あそぶ", goal: 1, prog: () => cnt("d").game || 0, icon: "🎮" },
+    { id: "game3", t: "ミニゲームで 3かい あそぶ", goal: 3, prog: () => cnt("d").game || 0, icon: "🎮" },
+    { id: "feed", t: "バナナを 2ほん あげる", goal: 2, prog: () => cnt("d").feed || 0, icon: "🍌" },
+    { id: "clean", t: "おそうじ する", goal: 1, prog: () => cnt("d").clean || 0, icon: "🧹" },
+    { id: "gacha", t: "ガチャを 1かい まわす", goal: 1, prog: () => cnt("d").gacha || 0, icon: "🎰" },
+    { id: "bag", t: "そざいぶくろを 1こ ひらく", goal: 1, prog: () => cnt("d").bag || 0, icon: "👜" },
+  ];
+  function missionsOf(p) {
+    if (p === "d") {
+      const avg = avgSteps(7), step = MD_STEP[avg && avg < 4500 ? 0 : avg > 8500 ? 2 : 1];
+      const list = [step, ...pickBy(today(), MD_OTHER, 2)];
+      const ev = eventNow();
+      if (ev) list.push({ id: "ev", t: `${ev.name}: 5,000歩 あるく`, goal: 5000, prog: () => S.stepsToday, icon: ev.icon, ev });
+      return list;
+    }
+    if (p === "w") {
+      const wk = weekKey();
+      return [
+        { id: "w35", t: "1しゅうかんで 35,000歩 あるく", goal: 35000, prog: () => sumSteps(weekDays(wk)), icon: "👟" },
+        { id: "w5d", t: "5,000歩の ひを 4にち つくる", goal: 4, prog: () => weekDays(wk).filter((k) => stepsOn(k) >= 5000).length, icon: "📖" },
+        ...pickBy(wk, [
+          { id: "wgame", t: "ミニゲームで 7かい あそぶ", goal: 7, prog: () => cnt("w").game || 0, icon: "🎮" },
+          { id: "wmis", t: "きょうの ミッションを 12こ クリア", goal: 12, prog: () => cnt("w").mission || 0, icon: "📋" },
+          { id: "wboss", t: "しゅうまつ ボスを たおす", goal: 1, prog: () => (bossNow().down ? 1 : 0), icon: "⚔️" },
+        ], 1),
+      ];
+    }
+    const mk = monthKey();
+    return [
+      { id: "m150", t: "1かげつで 150,000歩 あるく", goal: 150000, prog: () => sumSteps(monthDays(mk)), icon: "🏃" },
+      { id: "m8d", t: "8,000歩の ひを 10にち つくる", goal: 10, prog: () => monthDays(mk).filter((k) => stepsOn(k) >= 8000).length, icon: "🎁" },
+      { id: "mmis", t: "きょうの ミッションを 50こ クリア", goal: 50, prog: () => cnt("m").mission || 0, icon: "📋" },
+    ];
+  }
+  const MIS_COINS = { d: 20, w: 80, m: 200 }, MIS_BAG = { d: "s", w: "m", m: "l" };
+  function misState(p) {
+    S.mis = S.mis || {};
+    const key = p === "d" ? today() : p === "w" ? weekKey() : monthKey();
+    if (!S.mis[p] || S.mis[p].key !== key) S.mis[p] = { key, claimed: {}, bonus: 0 };
+    return S.mis[p];
+  }
+  const misReady = (p) => { const st = misState(p); return missionsOf(p).filter((m) => !st.claimed[m.id] && m.prog() >= m.goal).length; };
+  function claimMission(p, id) {
+    const st = misState(p), m = missionsOf(p).find((x) => x.id === id);
+    if (!m || st.claimed[id] || m.prog() < m.goal) return;
+    st.claimed[id] = 1;
+    S.coins = (S.coins || 0) + MIS_COINS[p];
+    if (m.ev) addMat(MATS.find((x) => x[2] === m.ev.id)[0], 2);
+    if (p === "d" && !m.ev) bump("mission");
+    stat().allMissions = (stat().allMissions || 0) + 1;
+    let msg = `ミッション クリア！ 金貨 ${MIS_COINS[p]}まい` + (m.ev ? ` と ${MATS.find((x) => x[2] === m.ev.id)[0]} 2こ` : "");
+    const base = missionsOf(p).filter((x) => !x.ev);
+    if (!st.bonus && base.every((x) => st.claimed[x.id])) { st.bonus = 1; giveBag(MIS_BAG[p]); msg += `！ ぜんぶ クリアで ${BAGS[MIS_BAG[p]].name}も！`; }
+    say(msg, 4500); sfx("coin"); cheer(); save(); render(); renderMissions(); checkAdv();
+  }
+
+  // ---- weekend boss: a new one every monday; the week's steps are the attack ----
+  function bossNow() {
+    const wk = weekKey();
+    if (!S.boss || S.boss.wk !== wk) {
+      if (S.boss) S.lastBoss = { wk: S.boss.wk, id: S.boss.id, hp: S.boss.hp, down: !!S.boss.down };
+      const n = Math.round(keyDate(wk).getTime() / (7 * 864e5)), idx = ((n % BOSSES.length) + BOSSES.length) % BOSSES.length;
+      const avg = avgSteps(28), hp = avg ? Math.round(Math.min(60000, Math.max(15000, avg * 7 * 0.75)) / 1000) * 1000 : 25000;
+      S.boss = { wk, id: BOSSES[idx][0], hp, down: false, claimed: false };
+    }
+    const dmg = sumSteps(weekDays(S.boss.wk));
+    if (!S.boss.down && dmg >= S.boss.hp) S.boss.down = true;
+    return Object.assign({ dmg, name: BOSS_NAME[S.boss.id] }, S.boss);
+  }
+  function claimBoss() {
+    const b = bossNow();
+    if (!b.down || S.boss.claimed) return;
+    S.boss.claimed = true;
+    S.coins = (S.coins || 0) + 150; giveBag("l"); addMat("ほうせき"); addMat("きんの いと");
+    bump("boss");
+    say(`${b.name}を やっつけた！ 金貨 150まい、おおきな そざいぶくろ、ほうせき、きんの いと ゲット！`, 6000);
+    sfx("fanfare"); cheer(); save(); render(); renderBoss();
+  }
+
+  // ---- medals: bronze, silver, gold ----
+  function bestStreak() {
+    const days = Object.keys(S.log || {}).filter((k) => stepsOn(k) >= 5000).map((k) => keyDate(k).getTime()).sort((a, b) => a - b);
+    let best = 0, run = 0, prev = null;
+    days.forEach((t) => { run = prev != null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; best = Math.max(best, run); prev = t; });
+    return best;
+  }
+  const logSum = (f) => allLog().reduce((s, [k, v]) => s + (f(k, v) || 0), 0);
+  const MEDALS = [
+    ["walk", "👣", "あるいた 歩数", () => S.totalSteps, [100000, 1000000, 5000000], "歩"],
+    ["km", "🗺️", "あるいた きょり", () => Math.floor(logSum((k, v) => (v.km != null ? v.km : stepsOn(k) / STEPS_PER_KM))), [50, 500, 2000], "km"],
+    ["bigday", "⚡", "1にちの さいこう歩数", () => Math.max(S.stepsToday, ...allLog().map(([k]) => stepsOn(k))), [10000, 20000, 30000], "歩"],
+    ["streak", "🔥", "5,000歩の れんぞく", bestStreak, [3, 10, 30], "にち"],
+    ["goal", "📖", "5,000歩を たっせい", () => S.goalDays || 0, [10, 100, 365], "にち"],
+    ["stairs", "🪜", "のぼった かいだん", () => Math.round(logSum((k, v) => v.flights)), [100, 1000, 5000], "かい"],
+    ["treasure", "🎁", "あつめた お宝", () => ITEMS.filter((it) => S.items[it.key]).length, [30, 150, 400], "こ"],
+    ["mission", "📋", "ミッション クリア", () => stat().allMissions || 0, [10, 100, 500], "こ"],
+    ["boss", "⚔️", "ボスを たおした", () => stat().boss || 0, [1, 5, 20], "かい"],
+    ["craft", "🧵", "いしょうを つくった", () => stat().craft || 0, [1, 5, 15], "こ"],
+    ["bag", "👜", "そざいぶくろを ひらいた", () => stat().bag || 0, [5, 30, 100], "こ"],
+    ["game", "🎮", "ミニゲームで あそんだ", () => stat().game || 0, [10, 100, 300], "かい"],
+    ["gacha", "🎰", "ガチャを まわした", () => stat().gacha || 0, [10, 50, 200], "かい"],
+  ];
+  const TIER = ["", "どう", "ぎん", "きん"], TIER_COINS = [0, 30, 100, 300];
+  const TIER_COL = [["#d9cfc2", "#ece4d8"], ["#c9834a", "#ebb487"], ["#a9b4bf", "#e3eaf0"], ["#e3b23c", "#f6d36b"]];
+  const medalTier = (m, v) => m[4].filter((x) => v >= x).length;
+  const medalSvg = (tier, emoji) => `<svg class="art" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 3h9l6 20h-9z" fill="#d3123f" stroke="#2b1d14" stroke-width="2" stroke-linejoin="round"/><path d="M44 3h-9l-6 20h9z" fill="#3a6fd8" stroke="#2b1d14" stroke-width="2" stroke-linejoin="round"/><circle cx="32" cy="39" r="20" fill="${TIER_COL[tier][0]}" stroke="#2b1d14" stroke-width="2.5"/><circle cx="32" cy="39" r="14.5" fill="none" stroke="${TIER_COL[tier][1]}" stroke-width="2.5"/><text x="32" y="45.5" font-size="17" text-anchor="middle"${tier ? "" : ' opacity=".35"'}>${emoji}</text></svg>`;
+  function checkMedals() {
+    S.medals = S.medals || {};
+    const got = [];
+    MEDALS.forEach((m) => {
+      const t = medalTier(m, m[3]()), had = S.medals[m[0]] || 0;
+      if (t > had) { for (let k = had + 1; k <= t; k++) S.coins = (S.coins || 0) + TIER_COINS[k]; S.medals[m[0]] = t; got.push(`${m[2]}の ${TIER[t]}メダル`); }
+    });
+    return got;
+  }
+
+  // ---- the weekly review, shown once at the start of each week ----
+  function reviewData(wk) {
+    const days = weekDays(wk), steps = days.map(stepsOn), total = steps.reduce((a, b) => a + b, 0);
+    const prev = sumSteps(weekDays(addDays(wk, -7))), best = Math.max(...steps), bi = steps.indexOf(best);
+    return { wk, days, steps, total, prev, best, bestDay: days[bi], goal: steps.filter((s) => s >= 5000).length,
+      missions: S.prevW && S.prevW.key === wk ? S.prevW.mission || 0 : null,
+      boss: S.lastBoss && S.lastBoss.wk === wk ? S.lastBoss : null };
+  }
+
+  let advBusy = false;
+  function checkAdv() {
+    if (advBusy || stageOf().id === "egg") return;
+    advBusy = true;
+    try {
+      const say2 = [];
+      if (S.freeBagDay !== today()) { S.freeBagDay = today(); if (giveBag("s")) say2.push("きょうの そざいぶくろが とどいたよ！ 2km あるくと ひらけるよ"); }
+      activateBags();
+      const b = bossNow();
+      const md = checkMedals();
+      if (md.length > 2) say2.push(`🏅 メダルを ${md.length}こ ゲット！ メダルの がめんを みてね`); else md.forEach((t) => say2.push(`🏅 ${t}を ゲット！`));
+      const wk = weekKey();
+      if (S.revWk !== wk) {
+        const last = addDays(wk, -7), had = S.revWk;
+        S.revWk = wk;
+        if (had && sumSteps(weekDays(last)) > 0) pendingReview = last;
+      }
+      if (say2.length) { say(say2.join(" "), 6000); save(); }
+      const ready = misReady("d") + misReady("w") + misReady("m");
+      $("bMissions").classList.toggle("ping", ready > 0);
+      $("bMissions").querySelector("i").textContent = ready || "";
+      $("bBoss").classList.toggle("ping", b.down && !S.boss.claimed);
+      $("bCraft").classList.toggle("ping", (S.bags || []).some((x) => bagLeft(x) === 0));
+      const ev = eventNow();
+      $("evBanner").hidden = !ev;
+      if (ev) $("evBanner").textContent = `${ev.icon} ${ev.name} イベント（〜${ev.to[0]}/${ev.to[1]}）: そざいぶくろから「${MATS.find((m) => m[2] === ev.id)[0]}」が でるよ`;
+      const nb = (S.bags || []).filter((x) => x.at != null).sort((x, y) => bagLeft(x) - bagLeft(y))[0];
+      $("wBag").textContent = nb ? (bagLeft(nb) === 0 ? "👜 そざいぶくろが ひらけるよ！" : `👜 あと ${(bagLeft(nb) / STEPS_PER_KM).toFixed(1)}km で そざいぶくろ`) : "";
+      if (pendingReview && document.querySelectorAll(".story:not([hidden])").length === 0) { const w = pendingReview; pendingReview = null; openReview(w, true); }
+    } finally { advBusy = false; }
+  }
+  let pendingReview = null;
+
+  // ---- screens ----
+  const bar = (v, max) => `<span class="ad-bar"><i style="width:${Math.min(100, (v / max) * 100)}%"></i></span>`;
+  let misTab = "d";
+  function openMissions() { misTab = "d"; renderMissions(); $("missions").hidden = false; $("misClose").focus(); }
+  function renderMissions() {
+    document.querySelectorAll("#misTabs button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.p === misTab));
+    const p = misTab, st = misState(p), list = missionsOf(p), box = $("misList");
+    const until = p === "d" ? "きょう いっぱい" : p === "w" ? `にちようびまで（あと ${7 - ((new Date().getDay() + 6) % 7)}にち）` : `${new Date().getMonth() + 1}がつの おわりまで`;
+    $("misHead").textContent = until;
+    box.innerHTML = "";
+    list.forEach((m) => {
+      const v = Math.min(m.goal, m.prog()), done = v >= m.goal, got = !!st.claimed[m.id];
+      const row = document.createElement("div"); row.className = "ad-row" + (got ? " got" : "");
+      row.innerHTML = `<span class="ad-ic"></span><span class="ad-mid"><b></b>${bar(v, m.goal)}<small></small></span><span class="ad-act"></span>`;
+      row.querySelector(".ad-ic").textContent = m.icon;
+      row.querySelector("b").textContent = m.t;
+      row.querySelector("small").textContent = `${v.toLocaleString()} / ${m.goal.toLocaleString()} · ごほうび 金貨 ${MIS_COINS[p]}` + (m.ev ? ` + ${MATS.find((x) => x[2] === m.ev.id)[0]} 2こ` : "");
+      const act = row.querySelector(".ad-act");
+      if (got) act.textContent = "✅";
+      else { const b = document.createElement("button"); b.type = "button"; b.textContent = "うけとる"; b.disabled = !done; b.onclick = () => claimMission(p, m.id); act.appendChild(b); }
+      box.appendChild(row);
+    });
+    const base = list.filter((x) => !x.ev), n = base.filter((x) => st.claimed[x.id]).length;
+    $("misBonus").textContent = st.bonus ? `🎉 ぜんぶ クリア！ ${BAGS[MIS_BAG[p]].name}を もらったよ` : `ぜんぶ（${base.length}こ）クリアで ${BAGS[MIS_BAG[p]].name}！ いま ${n} / ${base.length}`;
+    $("misReview").hidden = !(S.revWk && sumSteps(weekDays(addDays(weekKey(), -7))) > 0);
+  }
+  function openBoss() { renderBoss(); $("bossDlg").hidden = false; $("bossClose").focus(); }
+  function renderBoss() {
+    const b = bossNow(), left = Math.max(0, b.hp - b.dmg), wd = (new Date().getDay() + 6) % 7;
+    setArt($("bossArt"), "boss:" + b.id + (b.down ? ":down" : ""));
+    if (!ITEM_ART["boss:" + b.id]) $("bossArt").textContent = "👹";
+    $("bossName").textContent = b.name;
+    $("bossHp").innerHTML = `<span class="ad-bar hp"><i style="width:${(left / b.hp) * 100}%"></i></span>`;
+    $("bossHpTxt").textContent = b.down ? "やっつけた！" : `のこり HP ${left.toLocaleString()} / ${b.hp.toLocaleString()}`;
+    const days = weekDays(b.wk), max = Math.max(1, ...days.map(stepsOn));
+    $("bossDays").innerHTML = days.map((k, i) => `<span class="bd${i === wd ? " now" : ""}${i > wd ? " later" : ""}"><i style="height:${(stepsOn(k) / max) * 100}%"></i><small>${WDAY[(i + 1) % 7]}</small></span>`).join("");
+    $("bossTxt").textContent = b.down
+      ? (S.boss.claimed ? "ごほうびを もらったよ。らいしゅうの げつようびに、つぎの ボスが くるよ！" : "やったね！ ごほうびを うけとろう！")
+      : `こんしゅう あるいた ${b.dmg.toLocaleString()}歩が こうげき！ にちようびまでに HPを 0に しよう（あと ${7 - wd}にち）。`;
+    $("bossClaim").hidden = !(b.down && !S.boss.claimed);
+    $("bossReward").textContent = "ごほうび: 金貨 150まい・おおきな そざいぶくろ・ほうせき・きんの いと";
+    const lb = S.lastBoss;
+    $("bossLast").textContent = lb ? `せんしゅうの ${BOSS_NAME[lb.id]}: ${lb.down ? "やっつけた！" : "にげられちゃった…"}` : "";
+  }
+  function openCraft() { lastBagOpen = null; renderCraft(); $("craft").hidden = false; $("craftClose").focus(); }
+  function renderCraft() {
+    activateBags();
+    const bags = $("crBags"); bags.innerHTML = "";
+    (S.bags || []).forEach((b, i) => {
+      const B = BAGS[b.t], left = bagLeft(b), row = document.createElement("div");
+      row.className = "ad-row";
+      row.innerHTML = `<span class="ad-ic art-ic"></span><span class="ad-mid"><b></b>${left == null ? "" : bar(B.km * STEPS_PER_KM - left, B.km * STEPS_PER_KM)}<small></small></span><span class="ad-act"></span>`;
+      setArt(row.querySelector(".ad-ic"), ITEM_ART["bag:" + b.t] ? "bag:" + b.t : "👜");
+      row.querySelector("b").textContent = `${B.name}（${B.km}km）`;
+      row.querySelector("small").textContent = left == null ? "まっているよ（あいている わくが できたら あるきはじめる）" : left === 0 ? `ひらけるよ！ そざい ${B.n}こ` : `あと ${(left / STEPS_PER_KM).toFixed(1)}km（${left.toLocaleString()}歩）`;
+      if (left === 0) { const bt = document.createElement("button"); bt.type = "button"; bt.textContent = "ひらく"; bt.onclick = () => openBag(i); row.querySelector(".ad-act").appendChild(bt); }
+      bags.appendChild(row);
+    });
+    if (!(S.bags || []).length) bags.innerHTML = `<p class="note">そざいぶくろは まいにち 1こ とどくよ。ミッションや ボスでも もらえるよ。</p>`;
+    const res = $("crResult");
+    res.hidden = !lastBagOpen;
+    if (lastBagOpen) res.innerHTML = `<b>${BAGS[lastBagOpen.t].name}を ひらいた！</b><span class="cr-got">${Object.entries(lastBagOpen.got).map(([n, k]) => `<span class="cr-mat"><span class="art-ic" data-icon="${matIcon(n)}"></span>${n} ×${k}</span>`).join("")}</span>`;
+    const mats = $("crMats"); mats.innerHTML = "";
+    const ev = eventNow();
+    MATS.forEach(([n, , e]) => {
+      const k = (S.mats || {})[n] || 0;
+      if (e && !k && (!ev || ev.id !== e)) return;   // event materials show during their event, or once owned
+      const c = document.createElement("span"); c.className = "cr-mat" + (k ? "" : " none");
+      c.innerHTML = `<span class="art-ic" data-icon="${matIcon(n)}"></span><span></span>`;
+      c.lastChild.textContent = `${n} ${k}`;
+      mats.appendChild(c);
+    });
+    const grid = $("crCostumes"); grid.innerHTML = "";
+    COSTUMES.forEach((c) => {
+      const own = !!(S.wear || {})[c.key];
+      const can = Object.entries(c.recipe).every(([n, k]) => ((S.mats || {})[n] || 0) >= k);
+      const worn = c.slot === "head" ? S.hat === c.key : S.outfit === c.key;
+      const card = document.createElement("div"); card.className = "cr-card" + (own ? " own" : "") + (worn ? " worn" : "");
+      card.innerHTML = `<b class="cr-art"></b><span class="cr-name"></span><span class="cr-rec"></span><span class="cr-btns"></span>`;
+      setArt(card.querySelector(".cr-art"), c.icon);
+      card.querySelector(".cr-name").textContent = (c.ev ? EVENT_BY_ID[c.ev].icon + " " : "") + c.name;
+      card.querySelector(".cr-rec").textContent = own ? { head: "あたま", front: "くび", back: "せなか" }[c.slot] + "に つける いしょう" : Object.entries(c.recipe).map(([n, k]) => `${n}${(S.mats || {})[n] || 0}/${k}`).join("・") + (c.ev ? `（${EVENT_BY_ID[c.ev].name}の そざい）` : "");
+      const btns = card.querySelector(".cr-btns"), mk = (t, fn, dis) => { const b = document.createElement("button"); b.type = "button"; b.textContent = t; b.disabled = !!dis; b.onclick = fn; btns.appendChild(b); };
+      if (!own) mk("つくる", () => craftCostume(c.key), !can);
+      else mk(worn ? "はずす" : "つける", () => wearCostume(c.key, !worn));
+      grid.appendChild(card);
+    });
+    document.querySelectorAll("#craft .art-ic[data-icon]").forEach((el) => setArt(el, el.dataset.icon));
+    $("crWear").textContent = "いま: " + [S.hat && ITEM_BY_KEY[S.hat] ? ITEM_BY_KEY[S.hat].name : S.hat === "@random" ? "まいにち ランダムの ぼうし" : "ターバン", S.outfit && COSTUME_BY_KEY[S.outfit] ? COSTUME_BY_KEY[S.outfit].name : ""].filter(Boolean).join(" ＋ ");
+  }
+  function craftCostume(key) {
+    const c = COSTUME_BY_KEY[key];
+    if (!c || (S.wear || {})[key]) return;
+    if (!Object.entries(c.recipe).every(([n, k]) => ((S.mats || {})[n] || 0) >= k)) return;
+    Object.entries(c.recipe).forEach(([n, k]) => (S.mats[n] -= k));
+    S.wear = S.wear || {}; S.wear[key] = 1;
+    bump("craft");
+    wearCostume(key, true, true);
+    say(`「${c.name}」が できた！ さっそく きてみたよ。にあう？`, 5000); sfx("fanfare"); cheer();
+  }
+  function wearCostume(key, on, quiet) {
+    const c = COSTUME_BY_KEY[key]; if (!c) return;
+    if (c.slot === "head") S.hat = on ? key : "";
+    else S.outfit = on ? key : "";
+    if (!quiet) say(on ? `「${c.name}」を つけたよ！` : `「${c.name}」を はずしたよ。`);
+    save(); drawPet(); renderCraft();
+  }
+  function openMedals() { checkMedals(); save(); renderMedals(); $("medals").hidden = false; $("medClose").focus(); }
+  function renderMedals() {
+    const box = $("medList"); box.innerHTML = "";
+    let n = 0;
+    MEDALS.forEach((m) => {
+      const v = m[3](), t = medalTier(m, v); n += t;
+      const next = m[4][t], card = document.createElement("div"); card.className = "med-card";
+      card.innerHTML = medalSvg(t, m[1]) + `<b></b><small></small>`;
+      card.querySelector("b").textContent = m[2] + (t ? `（${TIER[t]}）` : "");
+      card.querySelector("small").textContent = next != null ? `${v.toLocaleString()} / ${next.toLocaleString()}${m[5]}` : `${v.toLocaleString()}${m[5]} · コンプリート！`;
+      box.appendChild(card);
+    });
+    $("medCount").textContent = `メダル ${n} / ${MEDALS.length * 3} · どう 30・ぎん 100・きん 300まいの 金貨つき`;
+  }
+  function openReview(wk, auto) {
+    const r = reviewData(wk), diff = r.prev ? Math.round(((r.total - r.prev) / r.prev) * 100) : null;
+    $("revTitle").textContent = `${keyDate(wk).getMonth() + 1}/${keyDate(wk).getDate()}〜 の 1しゅうかん`;
+    const max = Math.max(1, ...r.steps);
+    $("revChart").innerHTML = r.days.map((k, i) => `<span class="bd${r.steps[i] >= 5000 ? " ok" : ""}"><i style="height:${(r.steps[i] / max) * 100}%"></i><small>${WDAY[(i + 1) % 7]}</small></span>`).join("");
+    const rows = [
+      ["👣", "あるいた 歩数", r.total.toLocaleString() + "歩"],
+      ["📈", "せんしゅうと くらべて", diff == null ? "はじめての きろく" : (diff >= 0 ? "+" : "") + diff + "%"],
+      ["⭐", "いちばん あるいた ひ", r.best ? `${WDAY[keyDate(r.bestDay).getDay()]}ようび ${r.best.toLocaleString()}歩` : "-"],
+      ["📖", "5,000歩 たっせい", r.goal + "にち"],
+    ];
+    if (r.missions != null) rows.push(["📋", "きょうの ミッション", r.missions + "こ クリア"]);
+    if (r.boss) rows.push(["⚔️", BOSS_NAME[r.boss.id], r.boss.down ? "やっつけた！" : "にげられちゃった"]);
+    $("revRows").innerHTML = rows.map(([i, a, b]) => `<li><span>${i}</span>${a}<b>${b}</b></li>`).join("");
+    const say1 = diff == null ? "これからも いっしょに あるこうね！" : diff >= 10 ? "せんしゅうより いっぱい あるけたね！ すごい！" : diff >= -10 ? "いい ちょうし！ こんしゅうも この ペースで いこう！" : "せんしゅうは いそがしかったかな？ こんしゅうは すこしずつ いこうね！";
+    $("revSay").textContent = "💬 " + say1;
+    $("revBonus").textContent = auto && !(S.revPaid === wk) ? "ふりかえり ボーナス: 金貨 30まい！" : "";
+    if (auto && S.revPaid !== wk) { S.revPaid = wk; S.coins = (S.coins || 0) + 30; save(); render(); }
+    $("review").hidden = false; $("revClose").focus();
+  }
+
+  // ---- ぼうし: chosen from pictures, like the お宝ずかん ----
+  function renderHatGrid() {
+    const box = $("hatGrid"); box.innerHTML = "";
+    const mk = (key, icon, name, grid) => {
+      const b = document.createElement("button"); b.type = "button";
+      b.className = "zk-item" + (S.hat === key ? " on" : "");
+      b.innerHTML = `<b aria-hidden="true"></b><span></span>`;
+      if (icon === "@turban") b.querySelector("b").innerHTML = `<svg class="art" viewBox="0 0 64 64"><circle cx="32" cy="34" r="22" fill="#d3123f" stroke="#2b1d14" stroke-width="3"/><path d="M12 30 q20 -11 40 0 M12 40 q20 -9 40 0 M32 12 q-8 22 0 44" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="33" cy="37" rx="8" ry="10" fill="#e3b23c" stroke="#2b1d14" stroke-width="2"/><ellipse cx="33" cy="37" rx="4.5" ry="6" fill="#b0103a"/></svg>`;
+      else setArt(b.querySelector("b"), icon);
+      b.querySelector("span").textContent = name;
+      b.setAttribute("aria-pressed", S.hat === key);
+      b.onclick = () => { S.hat = key; save(); renderHatGrid(); showHatPrev(); };
+      grid.appendChild(b);
+    };
+    const group = (title, open) => { const d = document.createElement("details"); d.className = "zk-region"; d.open = open; d.innerHTML = `<summary></summary><div class="zk-grid"></div>`; d.querySelector("summary").textContent = title; box.appendChild(d); return d.querySelector(".zk-grid"); };
+    const g0 = group("いつもの", true);
+    mk("", "@turban", "ターバン", g0);
+    const rnd = ITEM_BY_KEY[wornHat()];
+    mk("@random", "🎲", "まいにち ランダム" + (S.hat === "@random" && rnd ? `（${rnd.name}）` : ""), g0);
+    const heads = COSTUMES.filter((c) => c.slot === "head" && (S.wear || {})[c.key]);
+    if (heads.length) { const g = group(`いしょう（${heads.length}）`, true); heads.forEach((c) => mk(c.key, c.icon, c.name, g)); }
+    const regions = [];
+    ITEMS.filter((it) => S.items[it.key]).forEach((it) => { let r = regions[regions.length - 1]; if (!r || r.name !== it.region) regions.push(r = { name: it.region, items: [] }); r.items.push(it); });
+    regions.forEach((r) => { const g = group(`${r.name}（${r.items.length}）`, r.items.some((it) => it.key === S.hat)); r.items.forEach((it) => mk(it.key, it.icon, it.name, g)); });
+    if (!regions.length) { const p = document.createElement("p"); p.className = "note"; p.textContent = "お宝を あつめると、ここから ぼうしに できるよ。"; box.appendChild(p); }
+  }
+
+  $("bMissions").onclick = openMissions;
+  $("misClose").onclick = () => { $("missions").hidden = true; $("bMissions").focus(); };
+  document.querySelectorAll("#misTabs button").forEach((b) => (b.onclick = () => { misTab = b.dataset.p; renderMissions(); }));
+  $("misReview").onclick = () => { $("missions").hidden = true; openReview(addDays(weekKey(), -7), false); };
+  $("bBoss").onclick = openBoss;
+  $("bossClaim").onclick = claimBoss;
+  $("bossClose").onclick = () => { $("bossDlg").hidden = true; $("bBoss").focus(); };
+  $("bCraft").onclick = openCraft;
+  $("evBanner").onclick = openCraft;
+  $("craftClose").onclick = () => { $("craft").hidden = true; $("bCraft").focus(); };
+  $("bMedals").onclick = openMedals;
+  $("medClose").onclick = () => { $("medals").hidden = true; $("bMedals").focus(); };
+  $("revClose").onclick = () => { $("review").hidden = true; };
+  setInterval(checkAdv, 15000);
+  setTimeout(checkAdv, 2500);
+
   function rollDay() {
     const t = today();
     if (S.stepDay !== t) { S.stepDay = t; S.stepsToday = 0; S.bananas = Math.min(99, S.bananas + DAILY_BANANAS); S.coins = (S.coins || 0) + DAILY_COINS; }
@@ -4311,7 +4918,7 @@ body {
     if (delta <= 0) { if (live) { S.stepsToday = n; save(); render(); return; } return say(`きょうの ${S.stepsToday.toLocaleString()}歩は もう もらってるよ！`); }
     const got = Math.floor(n / STEPS_PER_BANANA) - Math.floor(paid / STEPS_PER_BANANA);
     S.stepsToday = n; S.totalSteps += delta; logDay(S.stepDay, { steps: n });
-    setTimeout(checkVoyage, 1200);
+    setTimeout(checkVoyage, 1200); setTimeout(checkAdv, 2000);
     S.bananas = Math.min(99, S.bananas + got);
     if (stageOf().id !== "egg") {
       S.age += (delta / 1000) * 5;            // walking speeds up growth: 1000 steps = 5 minutes
@@ -4338,7 +4945,7 @@ body {
     rollDay();
     if (S.hunger >= 95 && S.energy >= 95) { S.happy = clamp(S.happy - 5); say("バナナでも もう おなか いっぱい…"); }
     else if (S.bananas <= 0) { say("バナナが ない！ さんぽして とってこようね！"); }
-    else { S.bananas--; S.hunger = clamp(S.hunger + 30); S.energy = clamp(S.energy + 20); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすきだよ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.2) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
+    else { bump("feed"); S.bananas--; S.hunger = clamp(S.hunger + 30); S.energy = clamp(S.energy + 20); S.happy = clamp(S.happy + 8); say(["もぐもぐ… バナナ おいしい！", "バナナ だいすきだよ！", "あまくて しあわせ〜", "ごちそうさま！ …もう1ぽん だめ？"][Math.floor(Math.random() * 4)]); cheer(); if (Math.random() < 0.2) setTimeout(() => { S.poops = Math.min(4, S.poops + 1); render(); }, 4000); }
     save(); render();
   }
   function sleepToggle() {
@@ -4348,7 +4955,7 @@ body {
   }
   function clean() {
     if (S.poops === 0 && S.clean > 90) return say("もう ぴかぴかだよ！");
-    S.poops = 0; S.clean = 100; S.happy = clamp(S.happy + 5); say("すっきり！ ありがとう！"); cheer(); save(); render();
+    S.poops = 0; S.clean = 100; S.happy = clamp(S.happy + 5); bump("clean"); say("すっきり！ ありがとう！"); cheer(); save(); render();
   }
   function medicine() {
     if (!S.sick) return;
@@ -4405,7 +5012,7 @@ body {
     if (isBest) S.best[id] = score;
     S.happy = clamp(S.happy + 6 + Math.round(rate * 18)); if (!TEST) { S.energy = clamp(S.energy - 10); S.hunger = clamp(S.hunger - 5); }
     const line = rate >= .99 ? "かんぺき！ きみ、すごいね！" : rate >= .6 ? "やったね！ たのしかった！" : rate > 0 ? "まあまあだね！ つぎは まけないよ！" : "えへへ、ぼくの かちだね！ また しょうぶしようね！";
-    const coins = Math.round(5 + rate * 15); S.coins = (S.coins || 0) + coins;   // 5 to 20 gold coins a game
+    const coins = Math.round(5 + rate * 15); S.coins = (S.coins || 0) + coins; bump("game");   // 5 to 20 gold coins a game
     say((isBest && prev != null ? "しんきろく！ " : "") + line + ` 金貨 ${coins}まい ゲット！`, 4000); cheer();
     gameMusic(null); sfx(rate >= .6 ? "fanfare" : "jingle");
     save();
@@ -4714,14 +5321,7 @@ body {
   // ---- settings ----
   function openSettings() {
     $("setName").value = S.userName || "";
-    const sel = $("setHat"); sel.innerHTML = "";
-    const opt = (v, t) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); };
-    opt("", "👳 ターバン（いつもの）");
-    ITEMS.filter((it) => S.items[it.key]).forEach((it) => opt(it.key, `${it.name}（${it.place.replace(/（.*）/, "")}）`));
-    const rnd = wornHat(), rndItem = S.hat === "@random" && ITEM_BY_KEY[rnd];
-    opt("@random", "🎲 まいにち ランダム" + (rndItem ? `（きょうは ${rndItem.name}）` : ""));
-    sel.insertBefore(sel.lastChild, sel.children[1]);
-    sel.value = S.hat === "@random" ? "@random" : ITEM_BY_KEY[S.hat] ? S.hat : "";
+    renderHatGrid();
     requestAnimationFrame(showHatPrev);   // once the dialog is showing, so the preview can measure Chandu
     $("setToon").checked = !!prefs.toon;
     $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
@@ -4744,9 +5344,6 @@ body {
       const x = tx + bb.x * sc, y = ty + bb.y * sc, w = bb.width * sc, side = Math.max(w, 90);
       pv.setAttribute("viewBox", `${x + w / 2 - side / 2} ${y - 6} ${side} ${side}`); } catch (e) { pv.setAttribute("viewBox", "0 0 200 200"); }
   };
-  $("setHat").onchange = () => { S.hat = $("setHat").value; save(); showHatPrev(); if (S.hat === "@random") openSettingsHat(); };
-  // refresh the random option's label so it says which お宝 today is
-  const openSettingsHat = () => { const o = $("setHat").querySelector('option[value="@random"]'), it = ITEM_BY_KEY[wornHat()]; if (o) o.textContent = "🎲 まいにち ランダム" + (it ? `（きょうは ${it.name}）` : ""); };
   document.querySelectorAll(".hat-btns [data-fit]").forEach((b) => (b.onclick = () => {
     const d = b.dataset.fit.split(",").map(Number), [x, y, sc, r] = hatFit(wornHat()), clampN = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     S.hatFit = S.hatFit || {};
