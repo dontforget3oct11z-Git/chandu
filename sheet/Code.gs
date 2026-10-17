@@ -38,7 +38,7 @@ function doGet(e) {
     bs.setFrozenRows(1); bs.setColumnWidth(2, 180); bs.setColumnWidth(3, 120); bs.setColumnWidth(4, 360);
   }
   out.bosses = readTab(bs);
-  try { out.bossIcons = readIcons(bs).icons; } catch (e) { out.bossIcons = {}; }
+  try { const bi = readIcons(bs); out.bossIcons = bi.icons; out.bossMissed = bi.iconsMissed; } catch (e) { out.bossIcons = {}; out.bossError = e.message; }
   return json(out);
 }
 

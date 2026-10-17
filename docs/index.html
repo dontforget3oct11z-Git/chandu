@@ -223,6 +223,12 @@ body {
 .ad-bonus { font-size: 12px; font-weight: 700; color: #6b3a1e; text-align: center; margin: 0; }
 .boss-art { width: 150px; height: 150px; margin: 0 auto; font-size: 96px; text-align: center; line-height: 150px; }
 .boss-art { position: relative; }
+.boss-dex { margin-top: 10px; flex-shrink: 0; }
+.story-card .boss-dex .zk-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+.boss-dex .zk-item b { font-size: 30px; }
+.boss-dex .zk-item b img { width: 48px; height: 48px; object-fit: contain; border-radius: 8px; }
+.boss-dex .zk-item.now { border-color: #e0344f; background: #ffe0e4; }
+.boss-dex .zk-item small { display: block; font-size: 9px; color: #b6573a; font-weight: 700; }
 .boss-art img { width: 150px; height: 150px; object-fit: contain; display: block; border-radius: 18px; }
 .boss-art.down img, .boss-art.down { filter: grayscale(.6); }
 .boss-art.down { transform: rotate(-12deg) scale(.92); }
@@ -260,7 +266,15 @@ body {
 .med-card small { font-size: 10px; opacity: .8; }
 .rev-list li { grid-template-columns: 1.6em 1fr auto; }
 .ad-days.rev { height: 80px; }
-.hat-grid { flex-shrink: 0; min-height: 120px; max-height: 260px; overflow-y: auto; border: 2px solid #f0d9a8; border-radius: 12px; padding: 4px 6px; background: #fffaf0; }
+.hat-grid { flex-shrink: 0; }
+#hatDlg { z-index: 11; }
+.story-card button.hat-pick { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: #fffaf0; border: 2px solid #f0d9a8; border-radius: 12px; padding: 6px 10px; margin: 4px 0; cursor: pointer; box-shadow: none; color: inherit; font-family: var(--font-body); font-size: 14px; font-weight: 400; }
+.story-card .hat-pick b { width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; font-size: 30px; }
+.story-card .hat-pick b svg, .hat-pick b img { width: 44px; height: 44px; }
+.hat-pick span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.hat-pick small { font-size: 11px; color: #9a7a5a; }
+.hat-pick em { font-style: normal; font-weight: 700; font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.story-card .hat-pick i { font-style: normal; font-weight: 700; color: #b6573a; font-size: 14px; white-space: nowrap; }
 .story-card .hat-grid .zk-item.on { border-color: #f4891f; background: #ffe3cf; box-shadow: 0 0 0 2px rgba(244,137,31,.35); }
 .story-card .hat-grid .zk-grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
 .top-btns.ad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
@@ -525,6 +539,7 @@ body {
         <p class="note" id="bossReward"></p>
         <button type="button" id="bossClaim" hidden>ごほうびを うけとる</button>
         <p class="note" id="bossLast"></p>
+        <details class="zk-region boss-dex" id="bossDex"><summary>👿 ボス ずかん</summary><p class="note">うえから じゅんばんに、まいしゅう げつようびに 1たいずつ くるよ。え と ひとことは スプレッドシートの「ボス」タブで かえられるよ。</p><div class="zk-grid" id="bossDexGrid"></div></details>
       </div>
       <button type="button" id="bossClose">とじる</button>
     </div>
@@ -719,7 +734,7 @@ body {
         <h4>👤 きみの なまえ</h4>
         <div class="row"><input id="setName" maxlength="12" placeholder="なまえ" autocomplete="nickname" aria-label="なまえ"><button type="button" class="mini-btn" id="setNameOk">きめた！</button></div>
         <h4>🎩 チャンドゥの ぼうし</h4>
-        <div class="hat-grid" id="hatGrid" aria-label="ぼうし"></div>
+        <button type="button" class="hat-pick" id="hatOpen"><b aria-hidden="true"></b><span><small>いま かぶっている ぼうし</small><em id="hatNow"></em></span><i>えらぶ ›</i></button>
         <div class="hat-adj">
           <svg id="hatPrev" viewBox="0 0 200 200" aria-hidden="true"></svg>
           <div class="hat-btns" role="group" aria-label="ぼうしの いち">
@@ -754,6 +769,14 @@ body {
       <button type="button" id="setClose">とじる</button>
     </div>
   </div>
+  <div class="story" id="hatDlg" hidden role="dialog" aria-modal="true" aria-labelledby="hatTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">せってい</div>
+      <h3 id="hatTitle">🎩 ぼうしを えらぶ</h3>
+      <div class="scroll"><div class="hat-grid" id="hatGrid" aria-label="ぼうし"></div></div>
+      <button type="button" id="hatClose">とじる</button>
+    </div>
+  </div>
   <input type="file" id="faceFile" accept="image/*" hidden>
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="toon" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="1.1"/><feComponentTransfer><feFuncR type="discrete" tableValues="0 .15 .3 .45 .6 .75 .9 1"/><feFuncG type="discrete" tableValues="0 .15 .3 .45 .6 .75 .9 1"/><feFuncB type="discrete" tableValues="0 .15 .3 .45 .6 .75 .9 1"/></feComponentTransfer></filter></svg>
 
@@ -776,7 +799,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.37";
+  const VERSION = "1.38";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4639,9 +4662,15 @@ body {
 
   // ---- weekend boss: a new one every monday; the week's steps are the attack ----
   // the same villain all week; 50 villains take turns, one a week
-  function bossOfWeek(wk) { const n = Math.round(keyDate(wk).getTime() / (7 * 864e5)), L = bossList.length; return bossList[((n % L) + L) % L].name; }
+  // the ボス tab's rows in order: row 1 the first week this player meets a boss, then one row each week
+  function bossOfWeek(wk) {
+    if (!S.bossStart) S.bossStart = wk;
+    const n = Math.round((keyDate(wk) - keyDate(S.bossStart)) / (7 * 864e5)), L = bossList.length;
+    return bossList[((n % L) + L) % L].name;
+  }
   function bossNow() {
     const wk = weekKey();
+    if (S.boss && S.boss.wk && !S.bossStart) S.bossStart = S.boss.wk;   // before v1.38 the order did not start at row 1: keep this week's boss, row 2 comes next
     if (!S.boss || S.boss.wk !== wk) {
       if (S.boss) S.lastBoss = { wk: S.boss.wk, name: S.boss.name || bossOfWeek(S.boss.wk), hp: S.boss.hp, down: !!S.boss.down };
 
@@ -4650,7 +4679,7 @@ body {
     }
     if (!S.boss.name) { S.boss.name = bossOfWeek(S.boss.wk); delete S.boss.id; }   // a v1.36 boss: same week, now a villain
     const dmg = sumSteps(weekDays(S.boss.wk));
-    if (!S.boss.down && dmg >= S.boss.hp) S.boss.down = true;
+    if (!S.boss.down && dmg >= S.boss.hp) { S.boss.down = true; (S.bossBeat = S.bossBeat || {})[S.boss.name] = (S.bossBeat[S.boss.name] || 0) + 1; }
     return Object.assign({ dmg }, S.boss);
   }
   function claimBoss() {
@@ -4787,6 +4816,21 @@ body {
     $("bossReward").textContent = "ごほうび: 金貨 150まい・おおきな そざいぶくろ・ほうせき・きんの いと";
     const lb = S.lastBoss;
     $("bossLast").textContent = lb ? `せんしゅうの ${lb.name || "ボス"}: ${lb.down ? "やっつけた！" : "にげられちゃった…"}` : "";
+    renderBossDex(b.name);
+  }
+  function renderBossDex(now) {
+    const g = $("bossDexGrid"); g.innerHTML = "";
+    const beat = S.bossBeat || {}, n = bossList.filter((x) => beat[x.name]).length;
+    $("bossDex").querySelector("summary").textContent = `👿 ボス ずかん（やっつけた ${n} / ${bossList.length}）`;
+    bossList.forEach((x, i) => {
+      const d = document.createElement("div"); d.className = "zk-item" + (x.name === now ? " now" : "");
+      d.innerHTML = `<b aria-hidden="true"></b><span></span><small></small>`;
+      const pic = bossPic(x.name), box = d.querySelector("b");
+      if (pic) { const im = new Image(); im.alt = ""; im.loading = "lazy"; im.src = pic; im.onerror = () => { box.textContent = x.icon; }; box.appendChild(im); } else box.textContent = x.icon;
+      d.querySelector("span").textContent = `${i + 1}. ${x.name}`;
+      d.querySelector("small").textContent = x.name === now ? "こんしゅう" : beat[x.name] ? "やっつけた！" : "";
+      g.appendChild(d);
+    });
   }
   function openCraft() { lastBagOpen = null; renderCraft(); $("craft").hidden = false; $("craftClose").focus(); }
   function renderCraft() {
@@ -4887,18 +4931,29 @@ body {
     $("review").hidden = false; $("revClose").focus();
   }
 
-  // ---- ぼうし: chosen from pictures, like the お宝ずかん ----
+  // ---- ぼうし: chosen from pictures, like the お宝ずかん, in its own popup ----
+  const TURBAN_SVG = `<svg class="art" viewBox="0 0 64 64"><circle cx="32" cy="34" r="22" fill="#d3123f" stroke="#2b1d14" stroke-width="3"/><path d="M12 30 q20 -11 40 0 M12 40 q20 -9 40 0 M32 12 q-8 22 0 44" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="33" cy="37" rx="8" ry="10" fill="#e3b23c" stroke="#2b1d14" stroke-width="2"/><ellipse cx="33" cy="37" rx="4.5" ry="6" fill="#b0103a"/></svg>`;
+  function renderHatNow() {
+    const b = $("hatOpen").querySelector("b"), it = S.hat === "@random" ? null : ITEM_BY_KEY[S.hat];
+    if (it) { setArt(b, it.icon); $("hatNow").textContent = it.name; }
+    else if (S.hat === "@random") { const r = ITEM_BY_KEY[wornHat()]; setArt(b, "🎲"); $("hatNow").textContent = "まいにち ランダム" + (r ? `（${r.name}）` : ""); }
+    else { b.innerHTML = TURBAN_SVG; $("hatNow").textContent = "ターバン"; }
+  }
+  function openHatDlg() { renderHatGrid(); $("hatDlg").hidden = false; const on = $("hatGrid").querySelector(".zk-item.on") || $("hatClose"); on.scrollIntoView({ block: "center" }); on.focus(); }
+  function closeHatDlg() { $("hatDlg").hidden = true; renderHatNow(); showHatPrev(); $("hatOpen").focus(); }
+  $("hatOpen").onclick = openHatDlg;
+  $("hatClose").onclick = closeHatDlg;
   function renderHatGrid() {
     const box = $("hatGrid"); box.innerHTML = "";
     const mk = (key, icon, name, grid) => {
       const b = document.createElement("button"); b.type = "button";
       b.className = "zk-item" + (S.hat === key ? " on" : "");
       b.innerHTML = `<b aria-hidden="true"></b><span></span>`;
-      if (icon === "@turban") b.querySelector("b").innerHTML = `<svg class="art" viewBox="0 0 64 64"><circle cx="32" cy="34" r="22" fill="#d3123f" stroke="#2b1d14" stroke-width="3"/><path d="M12 30 q20 -11 40 0 M12 40 q20 -9 40 0 M32 12 q-8 22 0 44" stroke="#9c0c2e" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="33" cy="37" rx="8" ry="10" fill="#e3b23c" stroke="#2b1d14" stroke-width="2"/><ellipse cx="33" cy="37" rx="4.5" ry="6" fill="#b0103a"/></svg>`;
+      if (icon === "@turban") b.querySelector("b").innerHTML = TURBAN_SVG;
       else setArt(b.querySelector("b"), icon);
       b.querySelector("span").textContent = name;
       b.setAttribute("aria-pressed", S.hat === key);
-      b.onclick = () => { S.hat = key; save(); renderHatGrid(); showHatPrev(); };
+      b.onclick = () => { S.hat = key; save(); renderHatGrid(); closeHatDlg(); };
       grid.appendChild(b);
     };
     const group = (title, open) => { const d = document.createElement("details"); d.className = "zk-region"; d.open = open; d.innerHTML = `<summary></summary><div class="zk-grid"></div>`; d.querySelector("summary").textContent = title; box.appendChild(d); return d.querySelector(".zk-grid"); };
@@ -5352,7 +5407,7 @@ body {
   // ---- settings ----
   function openSettings() {
     $("setName").value = S.userName || "";
-    renderHatGrid();
+    renderHatNow();
     requestAnimationFrame(showHatPrev);   // once the dialog is showing, so the preview can measure Chandu
     $("setToon").checked = !!prefs.toon;
     $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
@@ -5427,7 +5482,9 @@ body {
   function sheetNote() {
     if (!prefs.sheet) return "いまは アプリに はいってる データを つかってるよ。";
     if (!sheetInfo || sheetInfo.id !== prefs.sheet) return "まだ よみこめて ないよ。";
-    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい・シートの アイコン ${sheetInfo.icons_n || 0}まい・チャンドゥ ${(sheetInfo.chandu || []).length}まい）`
+    if (syncUrl()) return `✅ ${new Date(sheetInfo.at).toLocaleString("ja-JP", { month: "numeric", day: "numeric", hour: "numeric", minute: "2-digit" })}に よみこんだよ（エリア ${sheetInfo.n}こ・がぞう ${sheetInfo.faces || 0}まい・シートの アイコン ${sheetInfo.icons_n || 0}まい・チャンドゥ ${(sheetInfo.chandu || []).length}まい・ボス ${Object.keys(sheetInfo.bossIcons || {}).length}まい）`
+      + (sheetInfo.oldScript ? "\n⚠️ スクリプトが ふるいので ボスの え が よめないよ。あたらしい スクリプトを はって「あたらしい バージョン」で デプロイしてね" : "")
+      + (sheetInfo.bossMissed ? `\n⚠️ ボスタブで セルの うえに おいた がぞうが ${sheetInfo.bossMissed}まい よめなかったよ。「そうにゅう → がぞう → セル内に がぞうを そうにゅう」で いれてね` : "")
       + (sheetInfo.missed ? `\n⚠️ セルの うえに おいた がぞうが ${sheetInfo.missed}まい よめなかったよ。「そうにゅう → がぞう → セル内に がぞうを そうにゅう」で いれてね` : "");
     const d = new Date(sheetInfo.at);
     return `✅ ${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}に よみこんだよ（エリア ${sheetInfo.n}こ を はんえい）` + (sheetInfo.err ? `\n⚠️ ${sheetInfo.err}` : "");
@@ -5497,7 +5554,7 @@ body {
         faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
         sheetFaces = data.icons || {}; chanduFaces = data.chandu || []; applyBossSheet(data.bosses, data.bossIcons);
         setTimeout(cacheIcons, 500);
-        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, icons: sheetFaces, chandu: chanduFaces, bosses: data.bosses || [], bossIcons: data.bossIcons || {}, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
+        sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, icons: sheetFaces, chandu: chanduFaces, bosses: data.bosses || [], bossIcons: data.bossIcons || {}, oldScript: !data.bosses, bossMissed: data.bossMissed || 0, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
         try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}
         bgKey = ""; const rk = $("route"); if (rk) rk.dataset.key = ""; render(); drawPet();
         if (storyPages && !$("story").hidden) renderStoryPage();
