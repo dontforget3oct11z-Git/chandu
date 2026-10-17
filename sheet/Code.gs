@@ -16,7 +16,10 @@ const ICONS = "アイコン";   // one row per character: put its picture in the
 const CHANDU = "チャンドゥ";
 const TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけい" };
 
-function doGet() {
+function doGet(e) {
+  // ?img=<がぞうの リンク> … シートの がぞうを アプリが ほぞん できるように data URL で かえす（ver 1.35〜）
+  const img = e && e.parameter && e.parameter.img;
+  if (img) return json(proxyImage(String(img)));
   const ss = SpreadsheetApp.getActive(), out = {};
   try { out.iconsSynced = syncIcons(ss); } catch (e) { out.iconsSynced = "error: " + e.message; }
   Object.keys(TABS).forEach((k) => (out[k] = readTab(ss.getSheetByName(TABS[k]))));
@@ -27,6 +30,16 @@ function doGet() {
   if (!ch) { ch = ss.insertSheet(CHANDU); ch.getRange(1, 1, 21, 3).setValues([["No", "キャラクター", "アイコン"]].concat(Array.from({ length: 20 }, (_, i) => [i + 1, "チャンドゥ", "🐯"]))); }
   out.chandu = readChandu(ch);
   return json(out);
+}
+
+// Only Google's own picture hosts (where sheet pictures live), so this can't be used to fetch other sites.
+function proxyImage(url) {
+  if (!/^https:\/\/[\w.-]+\.googleusercontent\.com\//.test(url)) return { error: "host" };
+  const r = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
+  if (r.getResponseCode() !== 200) return { error: "http " + r.getResponseCode() };
+  const blob = r.getBlob(), type = blob.getContentType() || "image/png";
+  if (!/^image\//.test(type)) return { error: "type" };
+  return { img: "data:" + type + ";base64," + Utilities.base64Encode(blob.getBytes()) };
 }
 
 function doPost(e) {

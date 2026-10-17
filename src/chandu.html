@@ -283,6 +283,13 @@ body {
 .g-result .g-prize .art { width: 72px; height: 72px; display: block; }
 .story-card .g-result h4 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 20px; color: #3a2a22; }
 .story-card .g-result p { font-size: 13px; text-align: center; line-height: 1.6; }
+.g-trade { background: #fff3d6; border-radius: 14px; padding: 8px 10px; text-align: center; display: grid; gap: 6px; }
+.g-trade-head { font-size: 13px; font-weight: 700; color: #6b3a1e; }
+.g-trade-head small { font-weight: 400; }
+.g-trade-btns { display: flex; justify-content: center; gap: 8px; }
+.story-card .g-trade-btns button { font-size: 13px; padding: 6px 14px; margin: 0; background: #ffd166; color: #6b3a1e; }
+.story-card .g-trade-btns button:disabled { opacity: .4; }
+.g-trade-have { font-size: 12px; }
 .g-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
 .g-mini { width: 30px; height: 30px; font-size: 20px; display: grid; place-items: center; }
 .g-mini .art { width: 28px; height: 28px; display: block; }
@@ -475,6 +482,11 @@ body {
         </svg>
         <button type="button" id="gSpin">まわす（<i class="coin" aria-label="金貨"></i>100）</button>
         <div class="g-result" id="gResult" hidden aria-live="polite"><div class="g-prize" id="gPrize"></div><h4 id="gPrizeName"></h4><p id="gPrizeText"></p></div>
+        <div class="g-trade">
+          <div class="g-trade-head">🍌 バナナを 金貨に こうかん <small>（1ぽん → <i class="coin" aria-label="金貨"></i>20）</small></div>
+          <div class="g-trade-btns"><button type="button" data-n="1">1ぽん</button><button type="button" data-n="5">5ほん</button><button type="button" data-n="10">10ぽん</button></div>
+          <div class="g-trade-have" id="gBananas"></div>
+        </div>
         <p class="rec-note" id="gNote"></p>
         <div class="zk-count" id="gCount"></div>
         <div class="g-items" id="gItems"></div>
@@ -625,7 +637,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.34";
+  const VERSION = "1.35";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -661,10 +673,77 @@ body {
   // Pictures put in the アイコン columns of the spreadsheet's キャラクター tab. A picture picked in the app wins.
   let sheetFaces = {}, chanduFaces = [];
   // Chandu alone can have many pictures (the チャンドゥ tab); a random one shows each time.
-  const faceOf = (n) => (n === "チャンドゥ" && chanduFaces.length ? chanduFaces[Math.floor(Math.random() * chanduFaces.length)] : faces[n] || sheetFaces[n] || "");
+  const faceOf = (n) => {
+    if (n === "チャンドゥ" && chanduFaces.length) { const i = Math.floor(Math.random() * chanduFaces.length); return iconCache["chandu:" + i] || chanduFaces[i]; }
+    return faces[n] || iconCache[n] || sheetFaces[n] || "";
+  };
+  // The sheet hands out its pictures as googleusercontent links that stop working after a while, so a
+  // small copy of each one is kept on the device (IndexedDB) and used first; the links only refresh it.
+  const ICON_DB = "chandu-icons", iconCache = {}, iconMeta = {};
+  let iconDb = null, iconProxyOff = false, lastIconFix = 0;
+  function iconStore(mode) { return iconDb && iconDb.transaction("icons", mode).objectStore("icons"); }
+  try {
+    const rq = indexedDB.open(ICON_DB, 1);
+    rq.onupgradeneeded = () => rq.result.createObjectStore("icons");
+    rq.onsuccess = () => {
+      iconDb = rq.result;
+      const cur = iconStore("readonly").openCursor();
+      cur.onsuccess = () => {
+        const c = cur.result;
+        if (c) { iconCache[c.key] = c.value.data; iconMeta[c.key] = c.value.at; c.continue(); return; }
+        if (typeof storyPages !== "undefined" && storyPages && !$("story").hidden) renderStoryPage();
+        if (Object.keys(sheetFaces).length || chanduFaces.length) cacheIcons();
+      };
+    };
+  } catch (e) {}
+  // Picture → small PNG data URL (keeps transparency; the longest side at most 200px).
+  function shrinkBlob(blob) {
+    return new Promise((ok, ng) => {
+      const u = URL.createObjectURL(blob), im = new Image();
+      im.onload = () => {
+        const k = Math.min(1, 200 / Math.max(im.naturalWidth, im.naturalHeight)), cv = document.createElement("canvas");
+        cv.width = Math.max(1, Math.round(im.naturalWidth * k)); cv.height = Math.max(1, Math.round(im.naturalHeight * k));
+        cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(u);
+        try { ok(cv.toDataURL("image/png")); } catch (e) { ng(e); }
+      };
+      im.onerror = () => { URL.revokeObjectURL(u); ng(new Error("img")); };
+      im.src = u;
+    });
+  }
+  async function grabIcon(url) {
+    try { const r = await fetch(url, { mode: "cors", cache: "no-store" }); if (r.ok) return await shrinkBlob(await r.blob()); } catch (e) {}
+    // no CORS on the picture host: the sheet's script fetches it for us (scripts from ver 1.35 on)
+    const sync = typeof syncUrl === "function" && syncUrl();
+    if (!sync || iconProxyOff) return "";
+    try {
+      const j = await (await fetch(sync + (sync.includes("?") ? "&" : "?") + "img=" + encodeURIComponent(url), { cache: "no-store" })).json();
+      if (!j || !j.img) { iconProxyOff = true; return ""; }        // an older script: it ignores img=
+      return await shrinkBlob(await (await fetch(j.img)).blob());
+    } catch (e) { return ""; }
+  }
+  let iconsBusy = false;
+  async function cacheIcons() {
+    if (iconsBusy || !iconDb) return;
+    iconsBusy = true;
+    try {
+      const want = Object.entries(sheetFaces).concat(chanduFaces.map((u, i) => ["chandu:" + i, u]));
+      for (const [k, url] of want) {
+        if (!url || url.startsWith("data:")) continue;
+        if (iconCache[k] && Date.now() - (iconMeta[k] || 0) < 864e5) continue;   // refreshed within a day
+        const data = await grabIcon(url);
+        if (!data) continue;
+        iconCache[k] = data; iconMeta[k] = Date.now();
+        try { iconStore("readwrite").put({ data, at: iconMeta[k] }, k); } catch (e) {}
+      }
+    } finally { iconsBusy = false; }
+  }
   function faceImg(url, icon, box) {
     const im = new Image(); im.alt = ""; im.src = url;
-    im.onerror = () => { box.textContent = icon; };     // offline or the link went stale: back to the emoji
+    im.onerror = () => {
+      // a stale link: fetch fresh links from the sheet (at most once a minute) and show the emoji for now
+      box.textContent = icon;
+      if (Date.now() - lastIconFix > 6e4 && typeof loadSheet === "function" && prefs.sheet) { lastIconFix = Date.now(); loadSheet(false); }
+    };
     box.appendChild(im);
   }
   // Settings that are not part of the game save: photo style and the linked spreadsheet.
@@ -778,6 +857,7 @@ body {
     ({
       tap: () => tone("sine", 900, 600, 0, 0.07, 0.25),
       good: () => notes([76, 84], "square", 0.08, 0.16, 0.12),
+      coin: () => notes([88, 95], "square", 0.06, 0.1, 0.1),
       bad: () => { tone("sawtooth", 220, 150, 0, 0.18, 0.12); tone("sawtooth", 160, 110, 0.18, 0.28, 0.12); },
       catch: () => { tone("sine", 600, 1400, 0, 0.09, 0.3); tone("triangle", 1760, 1760, 0.06, 0.12, 0.1); },
       ouch: () => { tone("square", 500, 120, 0, 0.3, 0.12); hiss("bandpass", 900, 0, 0.25, 0.25); },
@@ -4166,7 +4246,7 @@ body {
   // v1.33: gacha treasures that overlapped story treasures were renamed
   const GACHA_RENAME = {"ガチャ|きんの バナナ": "ガチャ|くもの わたあめ", "ガチャ|にじいろ バナナ": "ガチャ|にじいろの ビーだま", "ガチャ|まほうの ランプ": "ガチャ|ゆきの けっしょう", "ガチャ|トラの おまもり": "ガチャ|ゆめみる まくら", "ガチャ|ふしぎな たまご": "ガチャ|かぜの ふうりん", "ガチャ|おうごんの ターバン": "ガチャ|オーロラの リボン"};
   Object.entries(GACHA_RENAME).forEach(([o, n]) => { if (S.items && S.items[o]) { S.items[n] = (S.items[n] || 0) + S.items[o]; delete S.items[o]; if (S.hat === o) S.hat = n; } });
-  const GACHA_COST = 100, DAILY_COINS = 100;
+  const GACHA_COST = 100, DAILY_COINS = 100, BANANA_COIN = 20;
   // chances out of 100
   const GACHA_TABLE = [[40, { bananas: 1 }], [27, { bananas: 2 }], [15, { bananas: 3 }], [8, { bananas: 5 }], [7, { coins: 150 }], [3, { rare: true }]];
   const bananaWord = (n) => n + ({ 1: "ぽん", 3: "ぼん" }[n] || "ほん");
@@ -4174,6 +4254,8 @@ body {
   function renderGacha() {
     $("gCoins").textContent = (S.coins || 0).toLocaleString();
     $("gSpin").disabled = (S.coins || 0) < GACHA_COST || gachaBusy;
+    $("gBananas").textContent = `いま バナナ ${S.bananas}ほん`;
+    document.querySelectorAll(".g-trade-btns button").forEach((b) => { b.disabled = gachaBusy || S.bananas < +b.dataset.n; });
     const own = GACHA_ITEMS.filter((it) => S.items[it.key]).length;
     $("gCount").textContent = `ガチャ げんていの お宝 ${own} / ${GACHA_ITEMS.length}`;
     const grid = $("gItems"); grid.innerHTML = "";
@@ -4542,6 +4624,15 @@ body {
   document.querySelectorAll("#recTabs button").forEach((b) => (b.onclick = () => { recRange = b.dataset.r; renderRecords(); }));
   $("bGacha").onclick = openGacha;
   $("gSpin").onclick = spinGacha;
+  document.querySelectorAll(".g-trade-btns button").forEach((b) => {
+    b.onclick = () => {
+      const n = +b.dataset.n;
+      if (gachaBusy || S.bananas < n) return;
+      S.bananas -= n; S.coins = (S.coins || 0) + n * BANANA_COIN; save(); render(); renderGacha(); sfx("coin");
+      $("gResult").hidden = true;
+      say(S.bananas ? `バナナ ${bananaWord(n)}を 金貨 ${n * BANANA_COIN}まいに こうかん したよ！` : "バナナ ぜんぶ こうかん しちゃった… おなか すいたら どうしよう〜", 3500);
+    };
+  });
   $("gachaClose").onclick = () => { if (gachaBusy) return; $("gacha").hidden = true; $("bGacha").focus(); };
   $("bAlbum").onclick = openAlbum;
   $("albumClose").onclick = () => { $("album").hidden = true; $("bAlbum").focus(); };
@@ -4776,6 +4867,7 @@ body {
         Object.entries(facePending).forEach(([n, d]) => { if (d) imgs[n] = d; else delete imgs[n]; });   // not uploaded yet
         faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
         sheetFaces = data.icons || {}; chanduFaces = data.chandu || [];
+        setTimeout(cacheIcons, 500);
         sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs }, icons: sheetFaces, chandu: chanduFaces, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
         try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}
         bgKey = ""; const rk = $("route"); if (rk) rk.dataset.key = ""; render(); drawPet();
@@ -4800,6 +4892,9 @@ body {
   }
   if (prefs.sheet && sheetInfo && sheetInfo.id === prefs.sheet) { sheetFaces = sheetInfo.icons || {}; chanduFaces = sheetInfo.chandu || []; applySheet(sheetInfo.data); render(); }
   if (prefs.sheet) loadSheet(false);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && prefs.sheet && (!sheetInfo || Date.now() - (sheetInfo.at || 0) > 30 * 6e4)) loadSheet(false);
+  });
 
   // Rows for the spreadsheet: what is in the app now, one tab per list.
   window.chanduExport = () => {
