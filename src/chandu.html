@@ -585,7 +585,7 @@ body {
       <div class="eyebrow">がんばりの しるし</div>
       <h3 id="medTitle">🏅 メダル</h3>
       <div class="zk-count" id="medCount"></div>
-      <div class="scroll"><div class="med-grid" id="medList"></div></div>
+      <div class="scroll"><div class="med-grid" id="medList"></div><p class="note">👣 あるく メダルは 10/1 から かぞえるよ（iPhoneの ヘルスケアの きろくも はいるよ）。</p></div>
       <button type="button" id="medClose">とじる</button>
     </div>
   </div>
@@ -828,7 +828,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.42";
+  const VERSION = "1.43";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4405,6 +4405,7 @@ body {
     });
     S.healthAt = Date.now(); save();
     if (!$("records").hidden) renderRecords();
+    setTimeout(checkAdv, 1500);   // past days from ヘルスケア can earn walking medals
   };
   let recRange = "week", recSel = null;
   function openRecords() { recSel = S.stepDay; renderRecords(); $("records").hidden = false; $("recClose").focus(); }
@@ -4769,20 +4770,23 @@ body {
   }
 
   // ---- medals: bronze, silver, gold ----
+  // Walking medals count from 2026-10-01: that month comes from ヘルスケア (the iPhone app sends past days once), later days add up as he walks.
+  const MEDAL_FROM = keyDate("2026-10-1").getTime();
+  const medalDays = () => { const ks = new Set(Object.keys(S.log || {})); ks.add(S.stepDay); return [...ks].filter((k) => keyDate(k).getTime() >= MEDAL_FROM); };
+  const medalSum = (f) => medalDays().reduce((s, k) => s + (f(k, (S.log && S.log[k]) || {}) || 0), 0);
   function bestStreak() {
-    const days = Object.keys(S.log || {}).filter((k) => stepsOn(k) >= 5000).map((k) => keyDate(k).getTime()).sort((a, b) => a - b);
+    const days = medalDays().filter((k) => stepsOn(k) >= 5000).map((k) => keyDate(k).getTime()).sort((a, b) => a - b);
     let best = 0, run = 0, prev = null;
     days.forEach((t) => { run = prev != null && Math.round((t - prev) / 864e5) === 1 ? run + 1 : 1; best = Math.max(best, run); prev = t; });
     return best;
   }
-  const logSum = (f) => allLog().reduce((s, [k, v]) => s + (f(k, v) || 0), 0);
   const MEDALS = [
-    ["walk", "👣", "あるいた 歩数", () => S.totalSteps, [100000, 1000000, 5000000], "歩"],
-    ["km", "🗺️", "あるいた きょり", () => Math.floor(logSum((k, v) => (v.km != null ? v.km : stepsOn(k) / STEPS_PER_KM))), [50, 500, 2000], "km"],
-    ["bigday", "⚡", "1にちの さいこう歩数", () => Math.max(S.stepsToday, ...allLog().map(([k]) => stepsOn(k))), [10000, 20000, 30000], "歩"],
+    ["walk", "👣", "あるいた 歩数", () => medalSum((k) => stepsOn(k)), [100000, 1000000, 5000000], "歩"],
+    ["km", "🗺️", "あるいた きょり", () => Math.floor(medalSum((k, v) => (v.km != null ? v.km : stepsOn(k) / STEPS_PER_KM))), [50, 500, 2000], "km"],
+    ["bigday", "⚡", "1にちの さいこう歩数", () => Math.max(0, ...medalDays().map(stepsOn)), [10000, 20000, 30000], "歩"],
     ["streak", "🔥", "5,000歩の れんぞく", bestStreak, [3, 10, 30], "にち"],
-    ["goal", "📖", "5,000歩を たっせい", () => S.goalDays || 0, [10, 100, 365], "にち"],
-    ["stairs", "🪜", "のぼった かいだん", () => Math.round(logSum((k, v) => v.flights)), [100, 1000, 5000], "かい"],
+    ["goal", "📖", "5,000歩を たっせい", () => medalDays().filter((k) => stepsOn(k) >= 5000).length, [10, 100, 365], "にち"],
+    ["stairs", "🪜", "のぼった かいだん", () => Math.round(medalSum((k, v) => v.flights)), [100, 1000, 5000], "かい"],
     ["treasure", "🎁", "あつめた お宝", () => ITEMS.filter((it) => S.items[it.key]).length, [30, 150, 400], "こ"],
     ["mission", "📋", "ミッション クリア", () => stat().allMissions || 0, [10, 100, 500], "こ"],
     ["boss", "⚔️", "ボスを たおした", () => stat().boss || 0, [1, 5, 20], "かい"],
