@@ -326,6 +326,8 @@ body {
 #mzBody .zk-item b svg { width: 54px; height: 54px; }
 .story-card #mzBody .zk-item.on { border-color: #f4891f; background: #ffe3cf; }
 .story-card #mzBody .zk-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+#mzBody .zk-item span i { font-style: normal; font-weight: 700; }
+#mzBody .zk-item span small { font-size: 10px; opacity: .7; }
 .story-card h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 22px; text-wrap: balance; }
 .story-card .scene { font-size: 56px; text-align: center; line-height: 1.1; }
 .story-card p { margin: 0; font-size: 14px; line-height: 1.8; }
@@ -525,7 +527,7 @@ body {
     <div class="voyage-next" id="vNext"></div>
     <div class="vbtns"><button type="button" id="bPick" class="pick-btn" hidden>🧭 きょうの ぼうけんを えらぶ</button></div>
     <div class="treasures" id="treasures"></div>
-    <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bCharZk">👥 キャラずかん</button><button type="button" id="bMuni">📍 ごとうちバッジ</button><button type="button" id="bAlbum">📚 おもいで</button></div>
+    <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bCharZk">👥 キャラずかん</button><button type="button" id="bMuni">📍 ごとうちチャーム</button><button type="button" id="bAlbum">📚 おもいで</button></div>
   </section>
 
   <div class="story" id="album" hidden role="dialog" aria-modal="true" aria-labelledby="albumTitle">
@@ -716,7 +718,7 @@ body {
   <div class="story" id="muniZk" hidden role="dialog" aria-modal="true" aria-labelledby="mzTitle">
     <div class="story-card wide">
       <div class="eyebrow">にほんの まちを あるいて あつめよう</div>
-      <h3 id="mzTitle">📍 ごとうちバッジ</h3>
+      <h3 id="mzTitle">📍 ごとうちチャーム</h3>
       <div class="zk-count" id="mzCount"></div>
       <p class="note" id="mzNote"></p>
       <div class="scroll" id="mzBody"></div>
@@ -824,9 +826,9 @@ body {
         <label class="row" style="font-size:13px"><input type="checkbox" id="setTalk" style="flex:0"> チャンドゥの ことばを よみあげる</label>
         <div class="row"><button type="button" class="mini-btn" id="setVoiceTry">▶ こえを きいてみる</button></div>
         <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。<br>チャンドゥの こえ: VOICEVOX:猫使ビィ</p>
-        <h4>📍 ごとうちバッジ</h4>
-        <label class="row" style="font-size:13px"><input type="checkbox" id="setLoc" style="flex:0"> いばしょを つかって ごとうちバッジを あつめる</label>
-        <p class="note" id="setLocNote">にほんの しくちょうそんに はいると、その まちの バッジが もらえるよ。いばしょは この iPhoneの なかだけで つかって、どこにも おくらないし、のこさないよ（のこるのは もらった バッジだけ）。ちずの データ: 「国土数値情報（行政区域データ）」（国土交通省）を加工</p>
+        <h4>📍 ごとうちチャーム</h4>
+        <label class="row" style="font-size:13px"><input type="checkbox" id="setLoc" style="flex:0"> いばしょを つかって ごとうちチャームを あつめる</label>
+        <p class="note" id="setLocNote">にほんの しくちょうそんに はいると、その まちの ごとうちチャーム（むねに つける おたから）が もらえるよ。いばしょは この iPhoneの なかだけで つかって、どこにも おくらないし、のこさないよ（のこるのは もらった バッジだけ）。ちずの データ: 「国土数値情報（行政区域データ）」（国土交通省）を加工</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -868,7 +870,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.48";
+  const VERSION = "1.49";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -2047,7 +2049,7 @@ body {
     const outfitBack = wart(wo.back) ? `<svg x="36" y="100" width="128" height="128" viewBox="0 0 64 64">${wart(wo.back)}</svg>` : "";
     const outfitBody = wart(wo.body) ? `<svg x="55" y="128" width="90" height="90" viewBox="0 0 64 64">${wart(wo.body)}</svg>` : "";
     const outfitFront = (wart(wo.front) ? `<svg x="68" y="126" width="64" height="64" viewBox="0 0 64 64">${wart(wo.front)}</svg>` : "")
-      + (S.badge && S.badge.code ? `<svg x="60" y="142" width="32" height="32" viewBox="0 0 64 64">${muniArt(S.badge).replace('class="art" ', "")}</svg>` : "");
+      + (S.badge && S.badge.code ? charmArt(S.badge) : "");
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
       <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
@@ -4259,16 +4261,16 @@ body {
     $("zukanCount").textContent = `あつめた お宝 ${got} / ${ITEMS.length}` + (got ? "" : " · 8,000歩で ゲットしようね！");
     $("zukan").hidden = false; body.scrollTop = 0; $("zukanClose").focus();
   }
-  // ---- ごとうちバッジ: one card for each municipality in Japan, given when the player is inside it.
+  // ---- ごとうちチャーム: one little treasure for each municipality in Japan, given when the player is inside it,
+  // which Chandu can wear on his chest. The items (name, emoji, words) are in jp-muni-items.json.
   // The position is used only here on the device, to look up the municipality in jp-muni.json (a file next to the page);
   // it is never sent anywhere or saved. Only the cards (municipality code → day) are saved, in S.muni.
   let muniData = null, muniLoading = null, locWatch = null, lastFix = null, muniAsked = new Set();
   const PREF_HUE = (pref) => { let h = 0; for (const ch of pref) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % 360; };
-  // Each badge has the shape of its own town (its outline on the map), so no two are alike.
-  // m = [code, prefecture, name, bbox, polygons] from jp-muni.json, or the worn badge {code, pref, name, d} saved in S.badge.
+  // A charm not found yet shows as the grey shape of its town (its outline on the map).
+  // m = [code, prefecture, name, bbox, polygons] from jp-muni.json.
   const muniPaths = new Map();
   function muniPath(m, most = 160) {
-    if (m.d) return m.d;
     const key = m[0] + ":" + most;
     if (muniPaths.has(key)) return muniPaths.get(key);
     if (!muniData || !m[4]) return "";
@@ -4288,22 +4290,26 @@ body {
     muniPaths.set(key, d);
     return d;
   }
+  const muniItem = (code) => (muniData && muniData.items && muniData.items[code]) || null;   // [name, emoji, words]
   function muniArt(m, locked, most) {
-    const pref = m[1] || m.pref, name = m[2] || m.name || "", d = muniPath(m, most);
-    const hue = PREF_HUE(pref), ch = name.replace(/^(.*?市)(.+区)$/, "$2")[0];
-    const fill = locked ? "#cfc7bc" : `hsl(${hue} 70% 60%)`;
-    if (!d) return `<svg class="art" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="${locked ? "#cfc7bc" : "#e3b23c"}" stroke="#2b1d14" stroke-width="2.5"/><text x="32" y="39" font-size="19" font-weight="700" text-anchor="middle" fill="#2b1d14">${locked ? "？" : ch}</text></svg>`;
-    return `<svg class="art" viewBox="0 0 64 64"><path d="${d}" fill="none" stroke="${locked ? "#bdb5aa" : "#e3b23c"}" stroke-width="6" stroke-linejoin="round" fill-rule="evenodd"/><path d="${d}" fill="${fill}" stroke="#2b1d14" stroke-width="1.6" stroke-linejoin="round" fill-rule="evenodd"/>`
-      + (locked ? "" : `<text x="32" y="38" font-size="15" font-weight="700" text-anchor="middle" fill="#2b1d14" stroke="#fffaf0" stroke-width="3.5" paint-order="stroke">${ch}</text>`) + `</svg>`;
+    const it = !locked && muniItem(m[0]);
+    if (it) return `<svg class="art" viewBox="0 0 64 64"><ellipse cx="32" cy="58" rx="15" ry="2.6" fill="rgba(59,74,42,.12)"/><text x="32" y="47" font-size="40" text-anchor="middle">${it[1]}</text></svg>`;
+    const d = locked ? muniPath(m, most) : "";
+    if (!d) return `<svg class="art" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="${locked ? "#cfc7bc" : "#e3b23c"}" stroke="#2b1d14" stroke-width="2.5"/><text x="32" y="39" font-size="19" font-weight="700" text-anchor="middle" fill="#2b1d14">？</text></svg>`;
+    return `<svg class="art" viewBox="0 0 64 64"><path d="${d}" fill="#cfc7bc" stroke="#bdb5aa" stroke-width="1.6" stroke-linejoin="round" fill-rule="evenodd"/><text x="32" y="39" font-size="17" font-weight="700" text-anchor="middle" fill="#8a8178">？</text></svg>`;
   }
+  // what Chandu wears: {code, pref, name, item, icon} (badges saved before v1.49 get their item when the data loads)
+  const charmOf = (m) => { const it = muniItem(m[0]) || ["", "🎐"]; return { code: m[0], pref: m[1], name: m[2], item: it[0], icon: it[1] }; };
+  const charmArt = (b) => `<circle cx="76" cy="146" r="3" fill="#e3b23c" stroke="#2b1d14" stroke-width="1.4"/><path d="M73 148 L76 152 L79 148" fill="none" stroke="#e3b23c" stroke-width="1.6"/><text x="76" y="173" font-size="24" text-anchor="middle">${b.icon || "🎐"}</text>`;
   function loadMuni() {
     if (muniData) return Promise.resolve(muniData);
-    if (!muniLoading) muniLoading = fetch("jp-muni.json").then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then((d) => {
+    const get = (f) => fetch(f).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
+    if (!muniLoading) muniLoading = Promise.all([get("jp-muni.json"), get("jp-muni-items.json").catch(() => ({}))]).then(([d, items]) => {
       // arcs → absolute quantized points
       const arcs = d.arcs.map((a) => { let x = 0, y = 0; const out = new Int32Array(a.length * 2); a.forEach(([dx, dy], i) => { x += dx; y += dy; out[i * 2] = x; out[i * 2 + 1] = y; }); return out; });
       const [sx, sy, tx, ty] = d.t;
-      muniData = { t: d.t, m: d.m, arcs, q: (lon, lat) => [(lon - tx) / sx, (lat - ty) / sy], byCode: Object.fromEntries(d.m.map((m) => [m[0], m])) };
-      if (S.badge && !S.badge.d && muniData.byCode[S.badge.code]) { S.badge.d = muniPath(muniData.byCode[S.badge.code]); save(); drawPet(); }   // a badge worn before v1.48
+      muniData = { t: d.t, m: d.m, arcs, items, q: (lon, lat) => [(lon - tx) / sx, (lat - ty) / sy], byCode: Object.fromEntries(d.m.map((m) => [m[0], m])) };
+      if (S.badge && !S.badge.icon && muniData.byCode[S.badge.code] && muniItem(S.badge.code)) { S.badge = charmOf(muniData.byCode[S.badge.code]); save(); drawPet(); }   // a badge worn before v1.49
       return muniData;
     }).catch((e) => { muniLoading = null; throw e; });
     return muniLoading;
@@ -4341,14 +4347,15 @@ body {
   }
   function showMuniGet(m) {
     $("mgPref").textContent = `📍 ${m[1]}`;
+    const c = charmOf(m), it = muniItem(m[0]);
     $("mgArt").innerHTML = muniArt(m);
     $("mgTitle").textContent = `${m[2]}に はいったよ！`;
-    $("mgText").textContent = `「${m[2]}の ごとうちバッジ」が あるよ。ゲット する？\nゲットしたら、チャンドゥの むねに つけられるよ。`;
+    $("mgText").textContent = (it ? `ごとうちチャーム「${it[0]}」を みつけた！\n${it[2]}` : `${m[2]}の ごとうちチャームを みつけた！`) + "\nゲットしたら、チャンドゥの むねに つけられるよ。";
     $("mgGet").onclick = () => {
       S.muni = S.muni || {}; S.muni[m[0]] = S.stepDay; S.happy = clamp(S.happy + 5);
       bump("muni"); save(); render(); $("muniGet").hidden = true;
-      if (!S.badge) S.badge = { code: m[0], pref: m[1], name: m[2], d: muniPath(m) };   // the first one goes straight on his chest
-      drawPet(); sfx("fanfare"); cheer(); say(`${m[2]}の ごとうちバッジ、ゲット！ ${Object.keys(S.muni).length}こめだよ！`, 5000);
+      if (!S.badge) S.badge = c;   // the first one goes straight on his chest
+      drawPet(); sfx("fanfare"); cheer(); say(`「${c.item || m[2]}」、ゲット！ ごとうちチャーム ${Object.keys(S.muni).length}こめだよ！`, 5000);
     };
     $("muniGet").hidden = false; $("mgGet").focus(); sfx("reveal");
   }
@@ -4365,7 +4372,7 @@ body {
   $("setLoc").onchange = () => { S.locOn = $("setLoc").checked; save(); if (S.locOn) { lastFix = null; locStart(); } else locStop(); };
   function openMuniZk() {
     $("mzBody").innerHTML = ""; $("muniZk").hidden = false; $("mzClose").focus();
-    $("mzNote").textContent = (S.locOn ? "" : "せっていの「いばしょを つかって ごとうちバッジを あつめる」を オンに すると あつめられるよ。\n") + "もっている バッジを タップすると、チャンドゥの むねに つけたり はずしたり できるよ。";
+    $("mzNote").textContent = (S.locOn ? "" : "せっていの「いばしょを つかって ごとうちチャームを あつめる」を オンに すると あつめられるよ。\n") + "もっている チャームを タップすると、チャンドゥの むねに つけたり はずしたり できるよ。";
     $("mzCount").textContent = "よみこみちゅう…";
     loadMuni().then(renderMuniZk, () => { $("mzCount").textContent = "ちずの データが よめなかったよ。インターネットに つないで もう いちど ひらいてね。"; });
   }
@@ -4383,11 +4390,11 @@ body {
       const fill = () => { if (grid.childElementCount) return; p.list.forEach((m) => {
         const own = !!got[m[0]], on = own && S.badge && S.badge.code === m[0], b = document.createElement(own ? "button" : "div");
         b.className = "zk-item" + (own ? "" : " locked") + (on ? " on" : "");
-        if (own) { b.type = "button"; b.setAttribute("aria-pressed", String(on)); b.onclick = () => { S.badge = on ? null : { code: m[0], pref: m[1], name: m[2], d: muniPath(m) }; save(); drawPet(); renderMuniZk(); say(on ? "バッジ、はずしたよ。" : `${m[2]}の バッジ、つけたよ！ にあう？`); }; }
+        if (own) { b.type = "button"; b.setAttribute("aria-pressed", String(on)); b.onclick = () => { S.badge = on ? null : charmOf(m); save(); drawPet(); renderMuniZk(); const it = muniItem(m[0]); say(on ? "チャーム、はずしたよ。" : it ? `「${it[0]}」を つけたよ！ ${it[2]}` : `${m[2]}の チャーム、つけたよ！`, 6000); }; }
         b.innerHTML = `<b aria-hidden="true">${muniArt(m, !own, 70)}</b><span></span>`;
-        b.querySelector("span").textContent = own ? m[2] : "？？？";
-        if (own) b.title = `${m[1]} ${m[2]}（${got[m[0]]}）`;
-        if (on) b.querySelector("span").textContent = "✅ " + m[2];
+        const it = own && muniItem(m[0]);
+        b.querySelector("span").innerHTML = own ? `${on ? "✅ " : ""}<i></i><br><small></small>` : "？？？";
+        if (own) { b.querySelector("i").textContent = it ? it[0] : m[2]; b.querySelector("small").textContent = m[2]; b.title = `${m[1]} ${m[2]}（${got[m[0]]}）${it ? "\n" + it[2] : ""}`; }
         grid.appendChild(b);
       }); };
       d.addEventListener("toggle", () => { if (d.open) fill(); });
@@ -4395,11 +4402,12 @@ body {
       d.addEventListener("toggle", () => { if (d.open) openPrefs.add(p.name); else openPrefs.delete(p.name); });
       body.appendChild(d);
     });
-    $("mzCount").textContent = `あつめた バッジ ${Object.keys(got).filter((k) => muniData.byCode[k]).length} / ${muniData.m.length}`;
+    $("mzCount").textContent = `あつめた チャーム ${Object.keys(got).filter((k) => muniData.byCode[k]).length} / ${muniData.m.length}`;
   }
   $("bMuni").onclick = openMuniZk;
   $("mzClose").onclick = () => { $("muniZk").hidden = true; $("bMuni").focus(); };
   setTimeout(locStart, 3000);
+  if (S.badge && !S.badge.icon) loadMuni().catch(() => {});   // a badge from v1.47/1.48 becomes that town's charm
 
   // ---- キャラクターずかん: everyone met in the story, by region. Disney friends also show their 出演作品 as tags.
   function charList() {
@@ -5004,7 +5012,7 @@ body {
     ["goal", "📖", "5,000歩を たっせい", () => medalDays().filter((k) => stepsOn(k) >= 5000).length, [10, 100, 365], "にち"],
     ["stairs", "🪜", "のぼった かいだん", () => Math.round(medalSum((k, v) => v.flights)), [100, 1000, 5000], "かい"],
     ["treasure", "🎁", "あつめた お宝", () => ITEMS.filter((it) => S.items[it.key]).length, [30, 150, 400], "こ"],
-    ["muni", "📍", "ごとうちバッジ", () => Object.keys(S.muni || {}).length, [5, 30, 100], "こ"],
+    ["muni", "📍", "ごとうちチャーム", () => Object.keys(S.muni || {}).length, [5, 30, 100], "こ"],
     ["mission", "📋", "ミッション クリア", () => stat().allMissions || 0, [10, 100, 500], "こ"],
     ["boss", "⚔️", "ボスを たおした", () => stat().boss || 0, [1, 5, 20], "かい"],
     ["craft", "🧵", "いしょうを つくった", () => stat().craft || 0, [1, 5, 15], "こ"],
