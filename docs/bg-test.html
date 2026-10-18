@@ -315,6 +315,11 @@ body {
 .cz-row.locked { background: #e6e1da; border-color: #cfc7bc; color: #9a9188; }
 .cz-row.locked b { font-size: 26px; font-weight: 700; color: #b3aaa0; background: #d9d2c8; }
 #czFind { width: 100%; }
+.back-fill { margin-top: 10px; flex-shrink: 0; }
+.bf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px; margin: 6px 0 10px; }
+.bf-grid label { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.bf-grid label span { flex: 0 0 auto; white-space: nowrap; font-size: 12px; text-align: right; min-width: 6.6em; text-align: left; }
+.bf-grid input { width: 100%; min-width: 0; font-size: 15px; padding: 4px 6px; border: 2px solid #f0d9a8; border-radius: 8px; }
 .story-card h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 22px; text-wrap: balance; }
 .story-card .scene { font-size: 56px; text-align: center; line-height: 1.1; }
 .story-card p { margin: 0; font-size: 14px; line-height: 1.8; }
@@ -627,6 +632,11 @@ body {
         <h4 id="recDayTitle"></h4>
         <ul class="rec-list" id="recHealth"></ul>
         <p class="rec-note" id="recNote"></p>
+        <details class="zk-region back-fill" id="backFill" hidden><summary>📥 10がつの 歩数を いれる（いちどだけ）</summary>
+          <p class="note">ヘルスケアAppの「歩数」で 日ごとの 歩数を みて いれてね。わからない 日は 空のままで だいじょうぶ。メダルと きろくに はいるよ（バナナは ふえないよ）。</p>
+          <div class="bf-grid" id="bfGrid"></div>
+          <button type="button" id="bfSave">これで きろくする</button>
+        </details>
       </div>
       <button type="button" id="recClose">とじる</button>
     </div>
@@ -829,7 +839,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.44";
+  const VERSION = "1.45";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4409,7 +4419,35 @@ body {
     setTimeout(checkAdv, 1500);   // past days from ヘルスケア can earn walking medals
   };
   let recRange = "week", recSel = null;
-  function openRecords() { recSel = S.stepDay; renderRecords(); $("records").hidden = false; $("recClose").focus(); }
+  function openRecords() { recSel = S.stepDay; renderRecords(); renderBackFill(); $("records").hidden = false; $("recClose").focus(); }
+  // One-time entry of October's daily steps (read off the ヘルスケア app) for players whose iPhone app can't send past days.
+  // Only goes into the log, which the records screen and the walking medals read; bananas and the story don't change.
+  const BF_MONTH = [2026, 10];
+  function bfDays() { const out = [], [y, m] = BF_MONTH; for (let d = 1; d <= 31; d++) { const k = `${y}-${m}-${d}`; if (keyDate(k).getMonth() !== m - 1 || keyDate(k) >= keyDate(S.stepDay)) break; out.push(k); } return out; }
+  function renderBackFill() {
+    const box = $("backFill"), days = bfDays();
+    box.hidden = !!S.backFilled || !days.length;
+    if (box.hidden) return;
+    $("bfGrid").innerHTML = "";
+    days.forEach((k) => {
+      const l = document.createElement("label"), d = keyDate(k), v = stepsOn(k);
+      l.innerHTML = `<span>${d.getMonth() + 1}/${d.getDate()}（${WDAY[d.getDay()]}）</span><input type="number" inputmode="numeric" min="0" max="100000" step="1">`;
+      const i = l.querySelector("input"); i.dataset.day = k; i.placeholder = "歩"; if (v) i.value = v;
+      $("bfGrid").appendChild(l);
+    });
+  }
+  $("bfSave").onclick = () => {
+    let n = 0;
+    $("bfGrid").querySelectorAll("input").forEach((i) => {
+      const v = Math.floor(Number(i.value));
+      if (i.value === "" || !(v >= 0) || v > 100000) return;
+      logDay(i.dataset.day, { steps: Math.max(v, (S.log[i.dataset.day] || {}).steps || 0) }); n++;
+    });
+    if (!n) return say("1にちも はいって ないよ。");
+    S.backFilled = Date.now(); save();
+    renderRecords(); renderBackFill(); setTimeout(checkAdv, 500);
+    say(`10がつの ${n}にちぶん、きろく したよ！ メダルも みてみてね！`, 5000);
+  };
   function renderRecords() {
     logDay(S.stepDay, { steps: S.stepsToday });
     const log = S.log, now = keyDate(S.stepDay), body = $("recBody");
