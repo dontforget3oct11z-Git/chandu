@@ -11,3 +11,12 @@ for line in (root / "tools/muni-items.tsv").read_text(encoding="utf-8").splitlin
     items[code] = [name, emoji, words]
 (root / "src/jp-muni-items.json").write_text(json.dumps(items, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 print(len(items), "items")
+
+# each charm's own drawing: tools/muni-art.jsonl has {"c": code, "s": inner SVG (64×64)} per line
+art = {}
+for line in (root / "tools/muni-art.jsonl").read_text(encoding="utf-8").splitlines():
+    if line.strip():
+        r = json.loads(line)
+        art[r["c"]] = r["s"]
+(root / "src/jp-muni-art.json").write_text(json.dumps(art, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+print(len(art), "drawings")

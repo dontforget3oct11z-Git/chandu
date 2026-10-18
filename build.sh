@@ -10,6 +10,7 @@ HEAD='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="vie
 cp docs/index.html ios/Chandu/Chandu/chandu.html
 cp src/jp-muni.json docs/jp-muni.json   # municipalities for the ごとうちチャーム, read only when the player turns them on
 cp src/jp-muni-items.json docs/jp-muni-items.json   # one charm (name, emoji, words) per municipality
+cp src/jp-muni-art.json docs/jp-muni-art.json   # each charm's own drawing
 TEST_HEAD='<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><title>チャンドゥ ミニゲーム テスト</title><link rel="icon" href="icon-180.png"><style>body{margin:0;-webkit-tap-highlight-color:transparent}img{max-width:100%}[hidden]{display:none!important}body{padding-top:44px!important}.test-banner{position:fixed;top:0;left:0;right:0;z-index:40;background:#3b4a2a;color:#fff8ef;font:700 13px/1.5 "Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;text-align:center;padding:8px 16px}</style><script>window.CHANDU_TEST=true</script></head><body><div class="test-banner">🧪 テスト画面: ミニゲームで げんきが へりません（本番の データには えいきょう なし）</div>'
 { echo "$TEST_HEAD"; cat src/chandu.html; echo '</body></html>'; } > docs/test.html
 BG_HEAD=$(printf '%s' "$TEST_HEAD" | sed 's/window.CHANDU_TEST=true/window.CHANDU_TEST=true;window.CHANDU_BGTEST=true/; s/チャンドゥ ミニゲーム テスト/チャンドゥ はいけい テスト/; s/🧪 テスト画面: ミニゲームで げんきが へりません（本番の データには えいきょう なし）/🧪 テスト画面: はいけいの いちらん（本番の アプリには ありません）/')

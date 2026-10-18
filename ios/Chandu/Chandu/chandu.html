@@ -871,7 +871,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.49";
+  const VERSION = "1.50";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4292,25 +4292,27 @@ body {
     return d;
   }
   const muniItem = (code) => (muniData && muniData.items && muniData.items[code]) || null;   // [name, emoji, words]
+  const muniDraw = (code) => (muniData && muniData.art && muniData.art[code]) || "";       // its own drawing (64×64, inner SVG)
   function muniArt(m, locked, most) {
-    const it = !locked && muniItem(m[0]);
+    const it = !locked && muniItem(m[0]), art = !locked && muniDraw(m[0]);
+    if (art) return `<svg class="art" viewBox="0 0 64 64">${art}</svg>`;
     if (it) return `<svg class="art" viewBox="0 0 64 64"><ellipse cx="32" cy="58" rx="15" ry="2.6" fill="rgba(59,74,42,.12)"/><text x="32" y="47" font-size="40" text-anchor="middle">${it[1]}</text></svg>`;
     const d = locked ? muniPath(m, most) : "";
     if (!d) return `<svg class="art" viewBox="0 0 64 64"><circle cx="32" cy="32" r="22" fill="${locked ? "#cfc7bc" : "#e3b23c"}" stroke="#2b1d14" stroke-width="2.5"/><text x="32" y="39" font-size="19" font-weight="700" text-anchor="middle" fill="#2b1d14">？</text></svg>`;
     return `<svg class="art" viewBox="0 0 64 64"><path d="${d}" fill="#cfc7bc" stroke="#bdb5aa" stroke-width="1.6" stroke-linejoin="round" fill-rule="evenodd"/><text x="32" y="39" font-size="17" font-weight="700" text-anchor="middle" fill="#8a8178">？</text></svg>`;
   }
-  // what Chandu wears: {code, pref, name, item, icon} (badges saved before v1.49 get their item when the data loads)
-  const charmOf = (m) => { const it = muniItem(m[0]) || ["", "🎐"]; return { code: m[0], pref: m[1], name: m[2], item: it[0], icon: it[1] }; };
-  const charmArt = (b) => `<circle cx="76" cy="146" r="3" fill="#e3b23c" stroke="#2b1d14" stroke-width="1.4"/><path d="M73 148 L76 152 L79 148" fill="none" stroke="#e3b23c" stroke-width="1.6"/><text x="76" y="173" font-size="24" text-anchor="middle">${b.icon || "🎐"}</text>`;
+  // what Chandu wears: {code, pref, name, item, icon, art} (older saves get filled in when the data loads)
+  const charmOf = (m) => { const it = muniItem(m[0]) || ["", "🎐"]; return { code: m[0], pref: m[1], name: m[2], item: it[0], icon: it[1], art: muniDraw(m[0]) }; };
+  const charmArt = (b) => b.art ? `<svg x="57" y="140" width="38" height="38" viewBox="0 0 64 64">${b.art}</svg>` : `<circle cx="76" cy="146" r="3" fill="#e3b23c" stroke="#2b1d14" stroke-width="1.4"/><path d="M73 148 L76 152 L79 148" fill="none" stroke="#e3b23c" stroke-width="1.6"/><text x="76" y="173" font-size="24" text-anchor="middle">${b.icon || "🎐"}</text>`;
   function loadMuni() {
     if (muniData) return Promise.resolve(muniData);
     const get = (f) => fetch(f).then((r) => (r.ok ? r.json() : Promise.reject(r.status)));
-    if (!muniLoading) muniLoading = Promise.all([get("jp-muni.json"), get("jp-muni-items.json").catch(() => ({}))]).then(([d, items]) => {
+    if (!muniLoading) muniLoading = Promise.all([get("jp-muni.json"), get("jp-muni-items.json").catch(() => ({})), get("jp-muni-art.json").catch(() => ({}))]).then(([d, items, art]) => {
       // arcs → absolute quantized points
       const arcs = d.arcs.map((a) => { let x = 0, y = 0; const out = new Int32Array(a.length * 2); a.forEach(([dx, dy], i) => { x += dx; y += dy; out[i * 2] = x; out[i * 2 + 1] = y; }); return out; });
       const [sx, sy, tx, ty] = d.t;
-      muniData = { t: d.t, m: d.m, arcs, items, q: (lon, lat) => [(lon - tx) / sx, (lat - ty) / sy], byCode: Object.fromEntries(d.m.map((m) => [m[0], m])) };
-      if (S.badge && !S.badge.icon && muniData.byCode[S.badge.code] && muniItem(S.badge.code)) { S.badge = charmOf(muniData.byCode[S.badge.code]); save(); drawPet(); }   // a badge worn before v1.49
+      muniData = { t: d.t, m: d.m, arcs, items, art, q: (lon, lat) => [(lon - tx) / sx, (lat - ty) / sy], byCode: Object.fromEntries(d.m.map((m) => [m[0], m])) };
+      if (S.badge && (!S.badge.icon || !S.badge.art) && muniData.byCode[S.badge.code] && muniDraw(S.badge.code)) { S.badge = charmOf(muniData.byCode[S.badge.code]); save(); drawPet(); }   // a badge worn before v1.49
       return muniData;
     }).catch((e) => { muniLoading = null; throw e; });
     return muniLoading;
@@ -4408,7 +4410,7 @@ body {
   $("bMuni").onclick = openMuniZk;
   $("mzClose").onclick = () => { $("muniZk").hidden = true; $("bMuni").focus(); };
   setTimeout(locStart, 3000);
-  if (S.badge && !S.badge.icon) loadMuni().catch(() => {});   // a badge from v1.47/1.48 becomes that town's charm
+  if (S.badge && !S.badge.art) loadMuni().catch(() => {});   // a badge from v1.47/1.48 becomes that town's charm
 
   // ---- キャラクターずかん: everyone met in the story, by region. Disney friends also show their 出演作品 as tags.
   function charList() {
