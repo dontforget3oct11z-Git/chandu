@@ -324,6 +324,7 @@ body {
 .mg-btns { justify-content: center; gap: 10px; }
 #muniGet { z-index: 12; }
 #mzBody .zk-item b svg { width: 54px; height: 54px; }
+.story-card #mzBody .zk-item.on { border-color: #f4891f; background: #ffe3cf; }
 .story-card #mzBody .zk-grid { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
 .story-card h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 22px; text-wrap: balance; }
 .story-card .scene { font-size: 56px; text-align: center; line-height: 1.1; }
@@ -524,7 +525,7 @@ body {
     <div class="voyage-next" id="vNext"></div>
     <div class="vbtns"><button type="button" id="bPick" class="pick-btn" hidden>🧭 きょうの ぼうけんを えらぶ</button></div>
     <div class="treasures" id="treasures"></div>
-    <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bCharZk">👥 キャラずかん</button><button type="button" id="bMuni">📍 ごとうちカード</button><button type="button" id="bAlbum">📚 おもいで</button></div>
+    <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bCharZk">👥 キャラずかん</button><button type="button" id="bMuni">📍 ごとうちバッジ</button><button type="button" id="bAlbum">📚 おもいで</button></div>
   </section>
 
   <div class="story" id="album" hidden role="dialog" aria-modal="true" aria-labelledby="albumTitle">
@@ -715,7 +716,7 @@ body {
   <div class="story" id="muniZk" hidden role="dialog" aria-modal="true" aria-labelledby="mzTitle">
     <div class="story-card wide">
       <div class="eyebrow">にほんの まちを あるいて あつめよう</div>
-      <h3 id="mzTitle">📍 ごとうちカード</h3>
+      <h3 id="mzTitle">📍 ごとうちバッジ</h3>
       <div class="zk-count" id="mzCount"></div>
       <p class="note" id="mzNote"></p>
       <div class="scroll" id="mzBody"></div>
@@ -823,9 +824,9 @@ body {
         <label class="row" style="font-size:13px"><input type="checkbox" id="setTalk" style="flex:0"> チャンドゥの ことばを よみあげる</label>
         <div class="row"><button type="button" class="mini-btn" id="setVoiceTry">▶ こえを きいてみる</button></div>
         <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。<br>チャンドゥの こえ: VOICEVOX:猫使ビィ</p>
-        <h4>📍 ごとうちカード</h4>
-        <label class="row" style="font-size:13px"><input type="checkbox" id="setLoc" style="flex:0"> いばしょを つかって ごとうちカードを あつめる</label>
-        <p class="note" id="setLocNote">にほんの しくちょうそんに はいると、その まちの カードが もらえるよ。いばしょは この iPhoneの なかだけで つかって、どこにも おくらないし、のこさないよ（のこるのは もらった カードだけ）。ちずの データ: 「国土数値情報（行政区域データ）」（国土交通省）を加工</p>
+        <h4>📍 ごとうちバッジ</h4>
+        <label class="row" style="font-size:13px"><input type="checkbox" id="setLoc" style="flex:0"> いばしょを つかって ごとうちバッジを あつめる</label>
+        <p class="note" id="setLocNote">にほんの しくちょうそんに はいると、その まちの バッジが もらえるよ。いばしょは この iPhoneの なかだけで つかって、どこにも おくらないし、のこさないよ（のこるのは もらった バッジだけ）。ちずの データ: 「国土数値情報（行政区域データ）」（国土交通省）を加工</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -867,7 +868,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.46";
+  const VERSION = "1.47";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -2045,7 +2046,8 @@ body {
     const wo = S.wearOn || {}, wart = (k) => (k && ITEM_ART[k]) || "";
     const outfitBack = wart(wo.back) ? `<svg x="36" y="100" width="128" height="128" viewBox="0 0 64 64">${wart(wo.back)}</svg>` : "";
     const outfitBody = wart(wo.body) ? `<svg x="55" y="128" width="90" height="90" viewBox="0 0 64 64">${wart(wo.body)}</svg>` : "";
-    const outfitFront = wart(wo.front) ? `<svg x="68" y="126" width="64" height="64" viewBox="0 0 64 64">${wart(wo.front)}</svg>` : "";
+    const outfitFront = (wart(wo.front) ? `<svg x="68" y="126" width="64" height="64" viewBox="0 0 64 64">${wart(wo.front)}</svg>` : "")
+      + (S.badge && S.badge.code ? `<svg x="60" y="142" width="32" height="32" viewBox="0 0 64 64">${muniArt(S.badge).replace('class="art" ', "")}</svg>` : "");
     setCls(md === "sleep" ? "breathe" : md === "sick" || md === "sad" ? "" : "bounce");
     setHTML(`
       <ellipse cx="100" cy="193" rx="${62 * sc}" ry="6" fill="rgba(59,74,42,.18)"/>
@@ -4257,15 +4259,17 @@ body {
     $("zukanCount").textContent = `あつめた お宝 ${got} / ${ITEMS.length}` + (got ? "" : " · 8,000歩で ゲットしようね！");
     $("zukan").hidden = false; body.scrollTop = 0; $("zukanClose").focus();
   }
-  // ---- ごとうちカード: one card for each municipality in Japan, given when the player is inside it.
+  // ---- ごとうちバッジ: one card for each municipality in Japan, given when the player is inside it.
   // The position is used only here on the device, to look up the municipality in jp-muni.json (a file next to the page);
   // it is never sent anywhere or saved. Only the cards (municipality code → day) are saved, in S.muni.
   let muniData = null, muniLoading = null, locWatch = null, lastFix = null, muniAsked = new Set();
   const PREF_HUE = (pref) => { let h = 0; for (const ch of pref) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % 360; };
+  // m = [code, prefecture, name, …] (or the saved {code, pref, name} of the worn badge)
   function muniArt(m, locked) {
-    const hue = PREF_HUE(m[1]), ch = locked ? "？" : m[2].replace(/^(.*?市)(.+区)$/, "$2")[0];
-    const fill = locked ? "#d9d2c8" : `hsl(${hue} 70% 62%)`, band = locked ? "#c4bcb1" : `hsl(${hue} 65% 42%)`;
-    return `<svg class="art" viewBox="0 0 64 64"><rect x="10" y="5" width="44" height="54" rx="6" fill="#fffaf0" stroke="#2b1d14" stroke-width="2.5"/><rect x="13" y="8" width="38" height="13" rx="3" fill="${band}"/><circle cx="32" cy="39" r="14" fill="${fill}" stroke="#2b1d14" stroke-width="2"/><text x="32" y="45" font-size="17" font-weight="700" text-anchor="middle" fill="${locked ? "#9a9188" : "#2b1d14"}">${ch}</text><text x="32" y="18" font-size="7.5" font-weight="700" text-anchor="middle" fill="#fff">${locked ? "" : m[1]}</text></svg>`;
+    const pref = m[1] || m.pref, name = m[2] || m.name || "";
+    const hue = PREF_HUE(pref), ch = locked ? "？" : name.replace(/^(.*?市)(.+区)$/, "$2")[0];
+    const fill = locked ? "#d9d2c8" : `hsl(${hue} 70% 60%)`, rib = locked ? "#c4bcb1" : `hsl(${hue} 65% 40%)`, rim = locked ? "#bdb5aa" : "#e3b23c";
+    return `<svg class="art" viewBox="0 0 64 64"><path d="M22 40 L16 60 L24 55 L28 61 L31 42 Z M42 40 L48 60 L40 55 L36 61 L33 42 Z" fill="${rib}" stroke="#2b1d14" stroke-width="2" stroke-linejoin="round"/><circle cx="32" cy="27" r="22" fill="${rim}" stroke="#2b1d14" stroke-width="2.5"/><circle cx="32" cy="27" r="16.5" fill="${fill}" stroke="#2b1d14" stroke-width="1.5"/><text x="32" y="34" font-size="19" font-weight="700" text-anchor="middle" fill="${locked ? "#9a9188" : "#2b1d14"}">${ch}</text>${locked ? "" : '<path d="M20 15 q5 -6 12 -7" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".7"/>'}</svg>`;
   }
   function loadMuni() {
     if (muniData) return Promise.resolve(muniData);
@@ -4313,11 +4317,12 @@ body {
     $("mgPref").textContent = `📍 ${m[1]}`;
     $("mgArt").innerHTML = muniArt(m);
     $("mgTitle").textContent = `${m[2]}に はいったよ！`;
-    $("mgText").textContent = `「${m[2]}の ごとうちカード」が あるよ。ゲット する？`;
+    $("mgText").textContent = `「${m[2]}の ごとうちバッジ」が あるよ。ゲット する？\nゲットしたら、チャンドゥの むねに つけられるよ。`;
     $("mgGet").onclick = () => {
       S.muni = S.muni || {}; S.muni[m[0]] = S.stepDay; S.happy = clamp(S.happy + 5);
       bump("muni"); save(); render(); $("muniGet").hidden = true;
-      sfx("fanfare"); cheer(); say(`${m[2]}の ごとうちカード、ゲット！ ${Object.keys(S.muni).length}まいめだよ！`, 5000);
+      if (!S.badge) S.badge = { code: m[0], pref: m[1], name: m[2] };   // the first one goes straight on his chest
+      drawPet(); sfx("fanfare"); cheer(); say(`${m[2]}の ごとうちバッジ、ゲット！ ${Object.keys(S.muni).length}こめだよ！`, 5000);
     };
     $("muniGet").hidden = false; $("mgGet").focus(); sfx("reveal");
   }
@@ -4334,7 +4339,7 @@ body {
   $("setLoc").onchange = () => { S.locOn = $("setLoc").checked; save(); if (S.locOn) { lastFix = null; locStart(); } else locStop(); };
   function openMuniZk() {
     $("mzBody").innerHTML = ""; $("muniZk").hidden = false; $("mzClose").focus();
-    $("mzNote").textContent = S.locOn ? "" : "せっていの「いばしょを つかって ごとうちカードを あつめる」を オンに すると あつめられるよ。";
+    $("mzNote").textContent = (S.locOn ? "" : "せっていの「いばしょを つかって ごとうちバッジを あつめる」を オンに すると あつめられるよ。\n") + "もっている バッジを タップすると、チャンドゥの むねに つけたり はずしたり できるよ。";
     $("mzCount").textContent = "よみこみちゅう…";
     loadMuni().then(renderMuniZk, () => { $("mzCount").textContent = "ちずの データが よめなかったよ。インターネットに つないで もう いちど ひらいてね。"; });
   }
@@ -4349,16 +4354,18 @@ body {
       d.querySelector("summary").innerHTML = `${p.name} <small>${have} / ${p.list.length}</small>`;
       const grid = d.querySelector(".zk-grid");
       p.list.forEach((m) => {
-        const own = !!got[m[0]], b = document.createElement("div");
-        b.className = "zk-item" + (own ? "" : " locked");
+        const own = !!got[m[0]], on = own && S.badge && S.badge.code === m[0], b = document.createElement(own ? "button" : "div");
+        b.className = "zk-item" + (own ? "" : " locked") + (on ? " on" : "");
+        if (own) { b.type = "button"; b.setAttribute("aria-pressed", String(on)); b.onclick = () => { S.badge = on ? null : { code: m[0], pref: m[1], name: m[2] }; save(); drawPet(); renderMuniZk(); say(on ? "バッジ、はずしたよ。" : `${m[2]}の バッジ、つけたよ！ にあう？`); }; }
         b.innerHTML = `<b aria-hidden="true">${muniArt(m, !own)}</b><span></span>`;
         b.querySelector("span").textContent = own ? m[2] : "？？？";
         if (own) b.title = `${m[1]} ${m[2]}（${got[m[0]]}）`;
+        if (on) b.querySelector("span").textContent = "✅ " + m[2];
         grid.appendChild(b);
       });
       body.appendChild(d);
     });
-    $("mzCount").textContent = `あつめた カード ${Object.keys(got).filter((k) => muniData.byCode[k]).length} / ${muniData.m.length}`;
+    $("mzCount").textContent = `あつめた バッジ ${Object.keys(got).filter((k) => muniData.byCode[k]).length} / ${muniData.m.length}`;
   }
   $("bMuni").onclick = openMuniZk;
   $("mzClose").onclick = () => { $("muniZk").hidden = true; $("bMuni").focus(); };
@@ -4967,7 +4974,7 @@ body {
     ["goal", "📖", "5,000歩を たっせい", () => medalDays().filter((k) => stepsOn(k) >= 5000).length, [10, 100, 365], "にち"],
     ["stairs", "🪜", "のぼった かいだん", () => Math.round(medalSum((k, v) => v.flights)), [100, 1000, 5000], "かい"],
     ["treasure", "🎁", "あつめた お宝", () => ITEMS.filter((it) => S.items[it.key]).length, [30, 150, 400], "こ"],
-    ["muni", "📍", "ごとうちカード", () => Object.keys(S.muni || {}).length, [5, 30, 100], "まい"],
+    ["muni", "📍", "ごとうちバッジ", () => Object.keys(S.muni || {}).length, [5, 30, 100], "こ"],
     ["mission", "📋", "ミッション クリア", () => stat().allMissions || 0, [10, 100, 500], "こ"],
     ["boss", "⚔️", "ボスを たおした", () => stat().boss || 0, [1, 5, 20], "かい"],
     ["craft", "🧵", "いしょうを つくった", () => stat().craft || 0, [1, 5, 15], "こ"],
