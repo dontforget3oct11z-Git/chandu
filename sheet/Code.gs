@@ -27,6 +27,7 @@ function doGet(e) {
   out.images = readImages(ss);
   const a = readIcons(ss.getSheetByName(TABS.chars)), b = readIcons(ss.getSheetByName(ICONS));
   out.icons = Object.assign(a.icons, b.icons); out.iconsMissed = a.iconsMissed + b.iconsMissed;
+  out.charInfo = readTab(ss.getSheetByName(ICONS));   // one row per character: キャラクター, 作品 and any other notes about them
   let ch = ss.getSheetByName(CHANDU);
   if (!ch) { ch = ss.insertSheet(CHANDU); ch.getRange(1, 1, 21, 3).setValues([["No", "キャラクター", "アイコン"]].concat(Array.from({ length: 20 }, (_, i) => [i + 1, "チャンドゥ", "🐯"]))); }
   out.chandu = readChandu(ch);
