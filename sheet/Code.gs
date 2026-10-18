@@ -21,16 +21,24 @@ function doGet(e) {
   // ?img=<がぞうの リンク> … シートの がぞうを アプリが ほぞん できるように data URL で かえす（ver 1.35〜）
   const img = e && e.parameter && e.parameter.img;
   if (img) return json(proxyImage(String(img)));
-  const ss = SpreadsheetApp.getActive(), out = {};
+  // Reading every tab and picture is slow, so the answer is kept for a few minutes. Any edit in the sheet,
+  // or a write from doPost, throws it away. ?fresh=1 always reads the sheet again.
+  const fresh = e && e.parameter && e.parameter.fresh;
+  if (!fresh) { const hit = cacheGet(); if (hit) return ContentService.createTextOutput(hit).setMimeType(ContentService.MimeType.JSON); }
+  const ss = SpreadsheetApp.getActive(), out = {}, ms = {};
+  let t0 = Date.now();
+  const lap = (k) => { const t = Date.now(); ms[k] = t - t0; t0 = t; };
   try { out.iconsSynced = syncIcons(ss); } catch (e) { out.iconsSynced = "error: " + e.message; }
-  Object.keys(TABS).forEach((k) => (out[k] = readTab(ss.getSheetByName(TABS[k]))));
-  out.images = readImages(ss);
-  const a = readIcons(ss.getSheetByName(TABS.chars)), b = readIcons(ss.getSheetByName(ICONS));
+  lap("syncIcons");
+  Object.keys(TABS).forEach((k) => { out[k] = readTab(ss.getSheetByName(TABS[k])); lap("tab:" + k); });
+  out.images = readImages(ss); lap("images");
+  const a = readIcons(ss.getSheetByName(TABS.chars)); lap("icons:chars");
+  const b = readIcons(ss.getSheetByName(ICONS)); lap("icons:icons");
   out.icons = Object.assign(a.icons, b.icons); out.iconsMissed = a.iconsMissed + b.iconsMissed;
-  out.charInfo = readTab(ss.getSheetByName(ICONS));   // one row per character: キャラクター, 作品 and any other notes about them
+  out.charInfo = readTab(ss.getSheetByName(ICONS)); lap("charInfo");   // one row per character: キャラクター, 作品 and any other notes about them
   let ch = ss.getSheetByName(CHANDU);
   if (!ch) { ch = ss.insertSheet(CHANDU); ch.getRange(1, 1, 21, 3).setValues([["No", "キャラクター", "アイコン"]].concat(Array.from({ length: 20 }, (_, i) => [i + 1, "チャンドゥ", "🐯"]))); }
-  out.chandu = readChandu(ch);
+  out.chandu = readChandu(ch); lap("chandu");
   let bs = ss.getSheetByName(BOSS);
   if (!bs) {
     bs = ss.insertSheet(BOSS);
@@ -40,8 +48,31 @@ function doGet(e) {
   } else addBossWorks(bs);
   out.bosses = readTab(bs);
   try { const bi = readIcons(bs); out.bossIcons = bi.icons; out.bossMissed = bi.iconsMissed; } catch (e) { out.bossIcons = {}; out.bossError = e.message; }
-  return json(out);
+  lap("bosses");
+  out.ms = ms; out.readAt = new Date().toISOString();
+  const text = JSON.stringify(out);
+  cachePut(text);
+  return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.JSON);
 }
+
+// The script cache holds at most 100KB per key, so the answer is split into pieces.
+const CACHE_MIN = 10;
+function cachePut(text) {
+  try {
+    const c = CacheService.getScriptCache(), n = Math.ceil(text.length / 90000), o = { "g:n": String(n) };
+    for (let i = 0; i < n; i++) o["g:" + i] = text.slice(i * 90000, (i + 1) * 90000);
+    c.putAll(o, CACHE_MIN * 60);
+  } catch (e) {}
+}
+function cacheGet() {
+  try {
+    const c = CacheService.getScriptCache(), n = Number(c.get("g:n"));
+    if (!n) return "";
+    const keys = Array.from({ length: n }, (_, i) => "g:" + i), got = c.getAll(keys);
+    return keys.every((k) => got[k] != null) ? keys.map((k) => got[k]).join("") : "";
+  } catch (e) { return ""; }
+}
+function cacheClear() { try { CacheService.getScriptCache().remove("g:n"); } catch (e) {} }
 
 // A ボス tab made before 作品 existed: add the 作品 column once, filled in for the bosses it knows.
 function addBossWorks(bs) {
@@ -72,6 +103,7 @@ function doPost(e) {
   const b = JSON.parse(e.postData.contents), ss = SpreadsheetApp.getActive();
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
+  cacheClear();
   try {
     if (b.op === "image") return json(saveImage(ss, String(b.name || ""), String(b.data || "")));
     if (b.op === "itemArt") return json(putItemArt(ss.getSheetByName(TABS.areas), b.rows || []));
@@ -132,6 +164,7 @@ function forgetSync() {
 function hash(t) { let h = 0; for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
 
 function onEdit(e) {
+  cacheClear();
   if (e && e.range && e.range.getSheet().getName() === ICONS) syncIcons(e.source);
 }
 
@@ -140,6 +173,7 @@ function onOpen() {
 }
 
 function syncNow() {
+  cacheClear();
   const n = syncIcons(SpreadsheetApp.getActive());
   SpreadsheetApp.getActive().toast(n + "か所に アイコンを はりました", "チャンドゥ");
 }

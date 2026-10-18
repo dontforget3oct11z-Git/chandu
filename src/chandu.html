@@ -828,7 +828,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.43";
+  const VERSION = "1.44";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -933,7 +933,7 @@ body {
     im.onerror = () => {
       // a stale link: fetch fresh links from the sheet (at most once a minute) and show the emoji for now
       box.textContent = icon;
-      if (Date.now() - lastIconFix > 6e4 && typeof loadSheet === "function" && prefs.sheet) { lastIconFix = Date.now(); loadSheet(false); }
+      if (Date.now() - lastIconFix > 6e4 && typeof loadSheet === "function" && prefs.sheet) { lastIconFix = Date.now(); loadSheet(false, true); }
     };
     box.appendChild(im);
   }
@@ -5640,10 +5640,11 @@ body {
     });
     return n;
   }
-  function loadSheet(user) {
+  function loadSheet(user, fresh) {
     const id = prefs.sheet; if (!id) return;
     if (syncUrl()) {
-      return fetch(id, { cache: "no-store" }).then((r) => r.json()).then((data) => {
+      // the script keeps its answer for a few minutes; pressing よみこむ asks it to read the sheet again
+      return fetch(user || fresh ? id + (id.includes("?") ? "&" : "?") + "fresh=1" : id, { cache: "no-store" }).then((r) => r.json()).then((data) => {
         const imgs = data.images || {};
         Object.entries(facePending).forEach(([n, d]) => { if (d) imgs[n] = d; else delete imgs[n]; });   // not uploaded yet
         faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
