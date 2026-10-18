@@ -200,6 +200,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "ヘルスケアの歩数・距離・カロリー・心拍数・睡眠などを、ゲームの「きろく」画面に表示するために読み取ります。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "いまいる市区町村の「ごとうちカード」をわたすために使います。位置はiPhoneの中だけで使い、どこにも送りません。";
 				CODE_SIGN_ENTITLEMENTS = Chandu/Chandu.entitlements;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -228,6 +229,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "ヘルスケアの歩数・距離・カロリー・心拍数・睡眠などを、ゲームの「きろく」画面に表示するために読み取ります。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "いまいる市区町村の「ごとうちカード」をわたすために使います。位置はiPhoneの中だけで使い、どこにも送りません。";
 				CODE_SIGN_ENTITLEMENTS = Chandu/Chandu.entitlements;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
