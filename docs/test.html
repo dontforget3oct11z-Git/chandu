@@ -837,6 +837,11 @@ body {
         <div class="row"><input id="setSheet" placeholder="https://script.google.com/macros/s/…/exec" aria-label="シートの URL" inputmode="url"></div>
         <div class="row"><button type="button" class="mini-btn" id="setSheetOk">よみこむ</button><button type="button" class="mini-btn" id="setSheetOff">はずす</button></div>
         <p class="note" id="sheetStatus"></p>
+        <h4>📦 セーブの ひっこし</h4>
+        <p class="note">べつの チャンドゥの アプリへ セーブを うつすときに つかうよ。<br>① まえの アプリで「セーブを コピー」<br>② あたらしい アプリで、したの わくに ながおしで はりつけて「よみこむ」</p>
+        <div class="row"><textarea id="moveText" rows="3" aria-label="セーブの もじ" placeholder="ここに はりつける" autocomplete="off" spellcheck="false" style="flex:1;font-size:12px"></textarea></div>
+        <div class="row"><button type="button" class="mini-btn" id="moveCopy">セーブを コピー</button><button type="button" class="mini-btn" id="moveLoad">よみこむ</button></div>
+        <p class="note" id="moveNote" role="status"></p>
       </div>
       <button type="button" id="setClose">とじる</button>
     </div>
@@ -871,7 +876,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.50";
+  const VERSION = "1.51";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -5733,6 +5738,35 @@ body {
     $("settings").hidden = false; $("setClose").focus();
   }
   $("bSet").onclick = openSettings;
+  // ---- セーブの ひっこし: copy the whole save (and settings, pictures) as text, and paste it into another copy of the app.
+  // Nothing is sent anywhere; the text only goes through this phone's clipboard.
+  const MOVE_KEYS = [KEY, PREF_KEY, FACE_KEY, PHOTO_KEY];
+  let movePending = null;
+  $("moveCopy").onclick = () => {
+    save(); savePrefs();
+    const all = {}; MOVE_KEYS.forEach((k) => { try { const v = localStorage.getItem(k); if (v != null) all[k] = v; } catch (e) {} });
+    const text = "CHANDU1:" + JSON.stringify(all);
+    $("moveText").value = text;
+    const done = () => { $("moveNote").textContent = "コピーしたよ！ あたらしい アプリの この わくに はりつけてね。"; };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => { $("moveText").select(); $("moveNote").textContent = "わくの もじを ぜんぶ えらんで「コピー」してね。"; });
+    else { $("moveText").select(); $("moveNote").textContent = "わくの もじを ぜんぶ えらんで「コピー」してね。"; }
+  };
+  $("moveText").oninput = () => { movePending = null; $("moveLoad").textContent = "よみこむ"; };
+  $("moveLoad").onclick = () => {
+    if (movePending) {   // second tap: really overwrite
+      Object.entries(movePending).forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} });
+      $("moveNote").textContent = "よみこんだよ！ チャンドゥを よびなおすね…";
+      setTimeout(() => location.reload(), 600); return;
+    }
+    const raw = ($("moveText").value || "").trim();
+    let all = null;
+    try { if (raw.startsWith("CHANDU1:")) all = JSON.parse(raw.slice(8)); } catch (e) {}
+    let st = null; try { st = all && JSON.parse(all[KEY]); } catch (e) {}
+    if (!st || typeof st.age !== "number") { $("moveNote").textContent = "セーブの もじが よめなかったよ。まえの アプリで コピーした もじを ぜんぶ はりつけてね。"; return; }
+    movePending = {}; MOVE_KEYS.forEach((k) => { if (typeof all[k] === "string") movePending[k] = all[k]; });
+    $("moveNote").textContent = `よみこむ セーブ: ${st.userName ? st.userName + "の " : ""}チャンドゥ（いままで ${(st.totalSteps || 0).toLocaleString()}歩）。いまの この アプリの セーブは うわがき されて きえるよ。いいなら もういちど おしてね。`;
+    $("moveLoad").textContent = "うわがき して よみこむ";
+  };
   $("setClose").onclick = () => { $("settings").hidden = true; $("bSet").focus(); };
   $("setNameOk").onclick = () => setName($("setName").value);
   // the preview zooms in on Chandu's head and hat, whatever his size
