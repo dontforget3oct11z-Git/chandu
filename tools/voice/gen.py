@@ -12,11 +12,22 @@ os.makedirs(out, exist_ok=True)
 syn = Synthesizer(Onnxruntime.load_once(filename=ORT), OpenJtalk(DIC), cpu_num_threads=1)
 with VoiceModelFile.open(VVM) as m: syn.load_voice_model(m)
 emoji = re.compile('[\U0001F000-\U0001FFFF☀-➿️♪]')
-items = sorted(pieces.items())[part::nparts]; t0 = time.time()
+def voice_key(t):   # same FNV-1a hash as voiceKey() in src/chandu.html
+    h = 0x811c9dc5
+    for ch in t: h = ((h ^ ord(ch)) * 0x01000193) & 0xffffffff
+    return f'{h:08x}'
+# NAMES="金城=きんじょう,…" also makes each {name} sentence with that player name (read as written after "=")
+names = [n.split('=', 1) for n in os.environ.get('NAMES', '').split(',') if '=' in n]
+items = sorted(pieces.items()); reads = {}
+for key, s in list(items):
+    if '{name}' in s:
+        for name, read in names:
+            k = voice_key(s.replace('{name}', name)); items.append((k, s)); reads[k] = read
+items = sorted(items)[part::nparts]; t0 = time.time()
 for i, (key, s) in enumerate(items):
     dst = f'{out}/{key}.mp3'
     if os.path.exists(dst): continue
-    t = emoji.sub('', s.replace('{name}', 'きみ').replace('？？？', 'ひみつの おたから')).replace('〜', 'ー').strip()
+    t = emoji.sub('', s.replace('{name}', reads.get(key, 'きみ')).replace('？？？', 'ひみつの おたから')).replace('〜', 'ー').strip()
     aq = syn.create_audio_query(t, STYLE)
     aq.speed_scale, aq.intonation_scale, aq.pre_phoneme_length, aq.post_phoneme_length = SPEED, INTON, 0.05, 0.08
     wav = f'{out}/.tmp-{part}.wav'; open(wav, 'wb').write(syn.synthesis(aq, STYLE))
