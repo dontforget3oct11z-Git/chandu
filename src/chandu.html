@@ -247,6 +247,16 @@ body {
 .cr-got, .cr-mats { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .cr-mat { display: inline-flex; align-items: center; gap: 3px; background: #fff3d6; border-radius: 999px; padding: 2px 8px 2px 3px; font-size: 11px; }
 .cr-mat.none { opacity: .45; }
+.chat-log { display: flex; flex-direction: column; gap: 8px; min-height: 200px; }
+.chat-log p { margin: 0; padding: 8px 12px; border-radius: 16px; max-width: 85%; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+.chat-log .me { align-self: flex-end; background: #ffe3cf; border-bottom-right-radius: 4px; }
+.chat-log .ch { align-self: flex-start; background: #fff3d6; border-bottom-left-radius: 4px; }
+.chat-log .sys { align-self: center; background: none; font-size: 12px; opacity: .7; text-align: center; }
+.chat-in { gap: 6px; }
+.chat-in input { flex: 1; min-width: 0; }
+.ex-row { align-items: center; gap: 6px; }
+.ex-row select { flex: 1; min-width: 0; font: inherit; font-size: 13px; padding: 6px; border-radius: 10px; border: 2px solid #e8d5b5; background: #fffdf8; }
+.ex-row .note { flex: 1; margin: 0; }
 .cr-mat .art-ic { width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; }
 .cr-mat .art-ic .art { width: 24px; height: 24px; display: block; }
 .cr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
@@ -527,7 +537,7 @@ body {
     <div class="voyage-next" id="vNext"></div>
     <div class="vbtns"><button type="button" id="bPick" class="pick-btn" hidden>🧭 きょうの ぼうけんを えらぶ</button></div>
     <div class="treasures" id="treasures"></div>
-    <div class="vbtns"><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bCharZk">👥 キャラずかん</button><button type="button" id="bMuni">📍 ごとうちチャーム</button><button type="button" id="bAlbum">📚 おもいで</button></div>
+    <div class="vbtns"><button type="button" id="bChat">💬 おしゃべり</button><button type="button" id="bMap">🗺️ ちず</button><button type="button" id="bZukan">📖 お宝ずかん</button><button type="button" id="bCharZk">👥 キャラずかん</button><button type="button" id="bMuni">📍 ごとうちチャーム</button><button type="button" id="bAlbum">📚 おもいで</button></div>
   </section>
 
   <div class="story" id="album" hidden role="dialog" aria-modal="true" aria-labelledby="albumTitle">
@@ -586,6 +596,10 @@ body {
         <div class="cr-result" id="crResult" hidden aria-live="polite"></div>
         <h4>🧶 そざい</h4>
         <div class="cr-mats" id="crMats"></div>
+        <h4>🔄 こうかん</h4>
+        <p class="note">バナナ 50本で すきな そざい 1こ。そざいどうしも こうかん できるよ（めずらしい そざいほど たくさん いるよ）。</p>
+        <div class="row ex-row"><select id="exGive" aria-label="わたす もの"></select><span aria-hidden="true">➡</span><select id="exGet" aria-label="もらう そざい"></select></div>
+        <div class="row ex-row"><span id="exCost" class="note"></span><button type="button" class="mini-btn" id="exGo">こうかん</button></div>
         <h4>👕 いしょう</h4>
         <p class="note" id="crWear"></p>
         <div class="cr-grid" id="crCostumes"></div>
@@ -706,6 +720,15 @@ body {
     </div>
   </div>
 
+  <div class="story" id="chatDlg" hidden role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+    <div class="story-card wide">
+      <div class="eyebrow">チャンドゥと おはなし</div>
+      <h3 id="chatTitle">💬 おしゃべり</h3>
+      <div class="scroll chat-log" id="chatLog" aria-live="polite"></div>
+      <div class="row chat-in"><input id="chatInput" placeholder="チャンドゥに はなしかけよう" aria-label="メッセージ" autocomplete="off" enterkeyhint="send"><button type="button" class="mini-btn" id="chatSend">おくる</button></div>
+      <button type="button" id="chatClose">とじる</button>
+    </div>
+  </div>
   <div class="story" id="muniGet" hidden role="dialog" aria-modal="true" aria-labelledby="mgTitle">
     <div class="story-card">
       <div class="eyebrow" id="mgPref"></div>
@@ -836,6 +859,12 @@ body {
         <div class="row"><input id="setSheet" placeholder="https://script.google.com/macros/s/…/exec" aria-label="シートの URL" inputmode="url"></div>
         <div class="row"><button type="button" class="mini-btn" id="setSheetOk">よみこむ</button><button type="button" class="mini-btn" id="setSheetOff">はずす</button></div>
         <p class="note" id="sheetStatus"></p>
+        <h4>💬 おしゃべり（ChatGPT）</h4>
+        <p class="note">OpenAIの APIキー（sk-…）を いれると、チャンドゥと おしゃべり できるよ。ChatGPTの まいつきの かきんとは べつで、APIの りょうきんが つかった ぶんだけ かかるよ。キーは この iPhoneの なかだけに しまって、OpenAI いがいには おくらないよ（「セーブの ひっこし」にも ふくまれないよ）。おしゃべりの ことばは OpenAIに おくられるよ。</p>
+        <div class="row"><input id="aiKey" type="password" placeholder="sk-..." aria-label="OpenAI APIキー" autocomplete="off" spellcheck="false"></div>
+        <div class="row"><input id="aiModel" placeholder="モデル（からなら gpt-5-mini）" aria-label="モデル" autocomplete="off" spellcheck="false"></div>
+        <div class="row"><button type="button" class="mini-btn" id="aiSave">ほぞん</button><button type="button" class="mini-btn" id="aiClear">けす</button></div>
+        <p class="note" id="aiNote" role="status"></p>
         <h4>📦 セーブの ひっこし</h4>
         <p class="note">べつの チャンドゥの アプリへ セーブを うつすときに つかうよ。<br>① まえの アプリで「セーブを コピー」<br>② あたらしい アプリで、したの わくに ながおしで はりつけて「よみこむ」</p>
         <div class="row"><textarea id="moveText" rows="3" aria-label="セーブの もじ" placeholder="ここに はりつける" autocomplete="off" spellcheck="false" style="flex:1;font-size:12px"></textarea></div>
@@ -875,7 +904,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.51";
+  const VERSION = "1.52";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -5196,7 +5225,41 @@ body {
     document.querySelectorAll("#craft .art-ic[data-icon]").forEach((el) => setArt(el, el.dataset.icon));
     const on = ["body", "front", "back"].map((sl) => (S.wearOn || {})[sl]).filter((k) => COSTUME_BY_KEY[k]).map((k) => COSTUME_BY_KEY[k].name);
     $("crWear").textContent = "いま きているもの: " + (on.length ? on.join("・") : "なし") + "（からだ・くび・せなか に 1つずつ きられるよ）";
+    renderTrade();
   }
+  // ---- こうかん: bananas or other materials → the material the player wants.
+  // Value: common materials 1, rare ones (ほしの すな, ほうせき, きんの いと) and event ones 3.
+  // A trade costs twice the wanted material's value, paid in the given material (at least 1).
+  const BANANA_PER_MAT = 50;
+  const matValue = (n) => { const m = MATS.find((x) => x[0] === n); return !m || m[2] || m[1] <= 2 ? 3 : 1; };
+  const tradeable = () => { const ev = eventNow(); return MATS.filter(([n, , e]) => !e || (ev && ev.id === e) || ((S.mats || {})[n] || 0) > 0).map((m) => m[0]); };
+  const exCost = (give, get) => give === "🍌" ? BANANA_PER_MAT : Math.max(1, Math.ceil((2 * matValue(get)) / matValue(give)));
+  function renderTrade() {
+    const give = $("exGive"), get = $("exGet"), g0 = give.value, t0 = get.value, list = tradeable();
+    give.innerHTML = ""; get.innerHTML = "";
+    const opt = (sel, v, t) => { const o = document.createElement("option"); o.value = v; o.textContent = t; sel.appendChild(o); };
+    opt(give, "🍌", `🍌 バナナ（${S.bananas}本）`);
+    list.forEach((n) => { if ((S.mats || {})[n] > 0) opt(give, n, `${n}（${S.mats[n]}こ）`); });
+    list.forEach((n) => opt(get, n, n));
+    if ([...give.options].some((o) => o.value === g0)) give.value = g0;
+    if ([...get.options].some((o) => o.value === t0)) get.value = t0;
+    updateTrade();
+  }
+  function updateTrade() {
+    const g = $("exGive").value, t = $("exGet").value, c = exCost(g, t), have = g === "🍌" ? S.bananas : (S.mats || {})[g] || 0;
+    const same = g === t;
+    $("exCost").textContent = same ? "おなじ そざいだよ" : `${g === "🍌" ? "バナナ" : g} ${c}${g === "🍌" ? "本" : "こ"} → ${t} 1こ`;
+    $("exGo").disabled = same || have < c;
+  }
+  $("exGive").onchange = updateTrade; $("exGet").onchange = updateTrade;
+  $("exGo").onclick = () => {
+    const g = $("exGive").value, t = $("exGet").value, c = exCost(g, t);
+    if (g === t) return;
+    if (g === "🍌") { if (S.bananas < c) return; S.bananas -= c; }
+    else { if (((S.mats || {})[g] || 0) < c) return; S.mats[g] -= c; }
+    addMat(t); save(); render(); renderCraft(); sfx("reveal");
+    say(`こうかん して「${t}」を 1こ もらったよ！`);
+  };
   function craftCostume(key) {
     const c = COSTUME_BY_KEY[key];
     if (!c || (S.wear || {})[key]) return;
@@ -5602,9 +5665,14 @@ body {
   $("bSleep").onclick = sleepToggle;
   $("bClean").onclick = clean;
   $("bMed").onclick = medicine;
+  const PET_MAX = 5;   // なでなで that count, per hour
   $("pet").onclick = () => {
     if (stageOf().id === "egg") return say("ころころ… もうすぐ でるよ！");
     if (S.sleeping) return say("Zzz…");
+    // なでなで raises ごきげん at most PET_MAX times an hour, so tapping can't fill it up
+    const now = Date.now(); S.petTaps = (S.petTaps || []).filter((t) => now - t < 3600e3);
+    if (S.petTaps.length >= PET_MAX) { render(); return say(["えへへ、もう じゅうぶん しあわせ！ また あとで なでてね。", "くすぐったいよ〜！ ちょっと きゅうけい！", "なでなで ありがと！ こんどは いっしょに あるこうよ！"][Math.floor(Math.random() * 3)]); }
+    S.petTaps.push(now);
     S.happy = clamp(S.happy + 1); say(["えへへっ", "なでなで、もっと！", "ぼく、チャンドゥ！", "あそぼうよ〜！", "シンドバッド どこ いったのかな？", "バナナ もってない？", "{name}、だいすき！", "{name}と いっしょだと たのしいな！"][Math.floor(Math.random() * 8)]); render();
   };
 
@@ -5740,6 +5808,65 @@ body {
     $("settings").hidden = false; $("setClose").focus();
   }
   $("bSet").onclick = openSettings;
+  // ---- おしゃべり: talk with Chandu through the OpenAI API, with the player's own key.
+  // The key stays in this browser's storage (its own entry, not in the save, not in ひっこし) and is sent only to OpenAI.
+  const AI_KEY = "chandu-ai-v1", AI_DEFAULT_MODEL = "gpt-5-mini";
+  let ai = {};
+  try { ai = JSON.parse(localStorage.getItem(AI_KEY)) || {}; } catch (e) {}
+  const saveAi = () => { try { localStorage.setItem(AI_KEY, JSON.stringify(ai)); } catch (e) {} };
+  const aiShow = () => { $("aiKey").value = ""; $("aiKey").placeholder = ai.key ? "sk-…" + ai.key.slice(-4) + "（ほぞんずみ）" : "sk-..."; $("aiModel").value = ai.model || ""; $("aiNote").textContent = ai.key ? "キーは ほぞん してあるよ。" : ""; };
+  $("aiSave").onclick = () => {
+    const k = $("aiKey").value.trim(); if (k) ai.key = k;
+    ai.model = $("aiModel").value.trim(); saveAi(); aiShow();
+    $("aiNote").textContent = ai.key ? "ほぞん したよ！「💬 おしゃべり」で はなしかけてね。" : "キーを いれてね。";
+  };
+  $("aiClear").onclick = () => { ai = {}; saveAi(); aiShow(); $("aiNote").textContent = "キーを けしたよ。"; };
+  aiShow();
+  let chatMsgs = [];   // this conversation only; not saved
+  function chatAdd(cls, text) { const p = document.createElement("p"); p.className = cls; p.textContent = text; $("chatLog").appendChild(p); p.scrollIntoView({ block: "end" }); return p; }
+  function chatSystem() {
+    const c = CHAPTERS[Math.min(S.chapter, CHAPTERS.length - 1)] || {};
+    const it = S.badge && S.badge.item;
+    return [
+      "あなたは「チャンドゥ」。オレンジいろの ちいさな トラの こどもで、シンドバッドの あいぼう。こどもむけの おさんぽゲーム「チャンドゥの大冒険」の なかで、あそんでいる ひとと おしゃべり します。",
+      "はなしかた: ひらがな おおめで、ことばの あいだに スペースを いれる（れい:「きょうも いっしょに あるこうね！」）。いちにんしょうは「ぼく」。げんきで やさしい こども らしく、1〜3ぶん くらいで みじかく こたえる。むずかしい ことばや かんじは つかいすぎない。",
+      "こどもに ふさわしくない はなし・こわい はなし・いじわるな ことばには のらず、やさしく べつの はなしに かえる。じゅうしょ・でんわばんごう・がっこうの なまえ など、こじんの じょうほうは きかないし、いわれても おぼえない。わからない ことは むりに こたえない。",
+      `いまの ようす: あいての なまえは「${S.userName || "きみ"}」。きょうの ほすうは ${S.stepsToday || 0}ほ、いままでで ${(S.totalSteps || 0).toLocaleString()}ほ。ぼうけんは「${c.title || ""}」（${c.place || ""}）。おなかの みたされぐあい ${Math.round(S.hunger)}/100、ごきげん ${Math.round(S.happy)}/100、バナナ ${S.bananas}ほん。${S.sleeping ? "いまは ねむっている（ねぼけて こたえる）。" : ""}${it ? `むねには ごとうちチャーム「${it}」を つけている。` : ""}`,
+    ].join("\n");
+  }
+  async function chatSend() {
+    const text = $("chatInput").value.trim(); if (!text || $("chatSend").disabled) return;
+    if (!ai.key) { chatAdd("sys", "せっていの「💬 おしゃべり」で OpenAIの APIキーを いれてね。"); return; }
+    $("chatInput").value = ""; chatAdd("me", text); chatMsgs.push({ role: "user", content: text }); chatMsgs = chatMsgs.slice(-16);
+    const wait = chatAdd("ch sys", "…"); $("chatSend").disabled = true;
+    const model = ai.model || AI_DEFAULT_MODEL;
+    const ask = (extra) => fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + ai.key },
+      body: JSON.stringify(Object.assign({ model, messages: [{ role: "system", content: chatSystem() }, ...chatMsgs], max_completion_tokens: 1200 }, extra)),
+    }).then(async (r) => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
+    try {
+      let r = await ask(/^(gpt-5|o\d)/.test(model) ? { reasoning_effort: "minimal" } : {});
+      if (!r.ok && /reasoning_effort/.test(JSON.stringify(r.j))) r = await ask({});
+      wait.remove();
+      if (!r.ok) {
+        const m = (r.j.error && r.j.error.message) || "";
+        chatAdd("sys", r.status === 401 ? "APIキーが ちがうみたい。せっていで たしかめてね。" : r.status === 429 ? "いまは おしゃべり できないみたい（APIの りょうきんの ざんだかや げんどを たしかめてね）。" : "うまく つながらなかったよ。" + (m ? "\n" + m.slice(0, 160) : ""));
+        chatMsgs.pop(); return;
+      }
+      const reply = ((r.j.choices || [])[0] || {}).message?.content?.trim() || "…えへへ、なんて いおうかな？";
+      chatMsgs.push({ role: "assistant", content: reply });
+      chatAdd("ch", reply); say(reply, 6000);
+    } catch (e) { wait.remove(); chatAdd("sys", "インターネットに つながって いないみたい。"); chatMsgs.pop(); }
+    finally { $("chatSend").disabled = false; }
+  }
+  $("chatSend").onclick = chatSend;
+  $("chatInput").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); chatSend(); } });
+  $("bChat").onclick = () => {
+    $("chatDlg").hidden = false;
+    if (!$("chatLog").childElementCount) chatAdd("ch", ai.key ? `やっほー、${S.userName || "きみ"}！ なにを はなそうか？` : "せっていの「💬 おしゃべり」で APIキーを いれると、ぼくと おしゃべり できるよ！");
+    $("chatInput").focus();
+  };
+  $("chatClose").onclick = () => { $("chatDlg").hidden = true; $("bChat").focus(); };
   // ---- セーブの ひっこし: copy the whole save (and settings, pictures) as text, and paste it into another copy of the app.
   // Nothing is sent anywhere; the text only goes through this phone's clipboard.
   const MOVE_KEYS = [KEY, PREF_KEY, FACE_KEY, PHOTO_KEY];
