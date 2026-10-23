@@ -904,7 +904,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.53";
+  const VERSION = "1.54";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -5855,7 +5855,7 @@ body {
       }
       if (prov === "gemini") {
         const r = await post(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { "x-goog-api-key": ai.key },
-          { systemInstruction: { parts: [{ text: sys }] }, contents: chatMsgs.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })) });
+          Object.assign(/^gemini-2\.5-flash/.test(model) ? { generationConfig: { thinkingConfig: { thinkingBudget: 0 } } } : {}, { systemInstruction: { parts: [{ text: sys }] }, contents: chatMsgs.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })) }));
         return Object.assign(r, { text: ((((r.j.candidates || [])[0] || {}).content || {}).parts || []).map((p) => p.text || "").join("") });
       }
       const body = (extra) => Object.assign({ model, messages: [{ role: "system", content: sys }, ...chatMsgs], max_completion_tokens: 1200 }, extra);
