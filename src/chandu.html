@@ -859,10 +859,10 @@ body {
         <div class="row"><input id="setSheet" placeholder="https://script.google.com/macros/s/…/exec" aria-label="シートの URL" inputmode="url"></div>
         <div class="row"><button type="button" class="mini-btn" id="setSheetOk">よみこむ</button><button type="button" class="mini-btn" id="setSheetOff">はずす</button></div>
         <p class="note" id="sheetStatus"></p>
-        <h4>💬 おしゃべり（ChatGPT）</h4>
-        <p class="note">OpenAIの APIキー（sk-…）を いれると、チャンドゥと おしゃべり できるよ。ChatGPTの まいつきの かきんとは べつで、APIの りょうきんが つかった ぶんだけ かかるよ。キーは この iPhoneの なかだけに しまって、OpenAI いがいには おくらないよ（「セーブの ひっこし」にも ふくまれないよ）。おしゃべりの ことばは OpenAIに おくられるよ。</p>
-        <div class="row"><input id="aiKey" type="password" placeholder="sk-..." aria-label="OpenAI APIキー" autocomplete="off" spellcheck="false"></div>
-        <div class="row"><input id="aiModel" placeholder="モデル（からなら gpt-5-mini）" aria-label="モデル" autocomplete="off" spellcheck="false"></div>
+        <h4>💬 おしゃべり（AI）</h4>
+        <p class="note">AIの APIキーを いれると、チャンドゥと おしゃべり できるよ。つかえるのは Claude（sk-ant-…）・ChatGPT（sk-…）・Gemini（AIza…）。キーの かたちで どれか わかるよ。APIの りょうきんは つかった ぶんだけ かかるよ（ChatGPTや Claudeの まいつきの かきんとは べつ）。キーは この iPhoneの なかだけに しまって、その AIの かいしゃ いがいには おくらないよ（「セーブの ひっこし」にも ふくまれないよ）。おしゃべりの ことばは その かいしゃに おくられるよ。</p>
+        <div class="row"><input id="aiKey" type="password" placeholder="APIキー" aria-label="AIの APIキー" autocomplete="off" spellcheck="false"></div>
+        <div class="row"><input id="aiModel" placeholder="モデル（からで いいよ）" aria-label="モデル" autocomplete="off" spellcheck="false"></div>
         <div class="row"><button type="button" class="mini-btn" id="aiSave">ほぞん</button><button type="button" class="mini-btn" id="aiClear">けす</button></div>
         <p class="note" id="aiNote" role="status"></p>
         <h4>📦 セーブの ひっこし</h4>
@@ -904,7 +904,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.52";
+  const VERSION = "1.53";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -5810,11 +5810,15 @@ body {
   $("bSet").onclick = openSettings;
   // ---- おしゃべり: talk with Chandu through the OpenAI API, with the player's own key.
   // The key stays in this browser's storage (its own entry, not in the save, not in ひっこし) and is sent only to OpenAI.
-  const AI_KEY = "chandu-ai-v1", AI_DEFAULT_MODEL = "gpt-5-mini";
+  const AI_KEY = "chandu-ai-v1";
+  // which company the key belongs to, from its shape, and the model used when the player leaves it empty
+  const aiProvider = (k) => /^sk-ant-/.test(k) ? "claude" : /^AIza/.test(k) ? "gemini" : "openai";
+  const AI_DEFAULT_MODEL = { claude: "claude-haiku-5-5", openai: "gpt-5-mini", gemini: "gemini-2.5-flash" };
+  const AI_NAME = { claude: "Claude", openai: "ChatGPT", gemini: "Gemini" };
   let ai = {};
   try { ai = JSON.parse(localStorage.getItem(AI_KEY)) || {}; } catch (e) {}
   const saveAi = () => { try { localStorage.setItem(AI_KEY, JSON.stringify(ai)); } catch (e) {} };
-  const aiShow = () => { $("aiKey").value = ""; $("aiKey").placeholder = ai.key ? "sk-…" + ai.key.slice(-4) + "（ほぞんずみ）" : "sk-..."; $("aiModel").value = ai.model || ""; $("aiNote").textContent = ai.key ? "キーは ほぞん してあるよ。" : ""; };
+  const aiShow = () => { $("aiKey").value = ""; $("aiKey").placeholder = ai.key ? `${AI_NAME[aiProvider(ai.key)]}の キー …${ai.key.slice(-4)}（ほぞんずみ）` : "APIキー"; $("aiModel").value = ai.model || ""; $("aiModel").placeholder = `モデル（からなら ${AI_DEFAULT_MODEL[aiProvider(ai.key || "")]}）`; $("aiNote").textContent = ai.key ? `${AI_NAME[aiProvider(ai.key)]}の キーを ほぞん してあるよ。` : ""; };
   $("aiSave").onclick = () => {
     const k = $("aiKey").value.trim(); if (k) ai.key = k;
     ai.model = $("aiModel").value.trim(); saveAi(); aiShow();
@@ -5839,21 +5843,36 @@ body {
     if (!ai.key) { chatAdd("sys", "せっていの「💬 おしゃべり」で OpenAIの APIキーを いれてね。"); return; }
     $("chatInput").value = ""; chatAdd("me", text); chatMsgs.push({ role: "user", content: text }); chatMsgs = chatMsgs.slice(-16);
     const wait = chatAdd("ch sys", "…"); $("chatSend").disabled = true;
-    const model = ai.model || AI_DEFAULT_MODEL;
-    const ask = (extra) => fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + ai.key },
-      body: JSON.stringify(Object.assign({ model, messages: [{ role: "system", content: chatSystem() }, ...chatMsgs], max_completion_tokens: 1200 }, extra)),
-    }).then(async (r) => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
+    const prov = aiProvider(ai.key), model = ai.model || AI_DEFAULT_MODEL[prov], sys = chatSystem();
+    const post = (url, headers, body) => fetch(url, { method: "POST", headers: Object.assign({ "Content-Type": "application/json" }, headers), body: JSON.stringify(body) })
+      .then(async (r) => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
+    // one request to the chosen company; returns {ok, status, j, text}
+    const ask = async () => {
+      if (prov === "claude") {
+        const r = await post("https://api.anthropic.com/v1/messages", { "x-api-key": ai.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+          { model, max_tokens: 400, system: sys, messages: chatMsgs });
+        return Object.assign(r, { text: ((r.j.content || []).find((c) => c.type === "text") || {}).text });
+      }
+      if (prov === "gemini") {
+        const r = await post(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, { "x-goog-api-key": ai.key },
+          { systemInstruction: { parts: [{ text: sys }] }, contents: chatMsgs.map((m) => ({ role: m.role === "assistant" ? "model" : "user", parts: [{ text: m.content }] })) });
+        return Object.assign(r, { text: ((((r.j.candidates || [])[0] || {}).content || {}).parts || []).map((p) => p.text || "").join("") });
+      }
+      const body = (extra) => Object.assign({ model, messages: [{ role: "system", content: sys }, ...chatMsgs], max_completion_tokens: 1200 }, extra);
+      const url = "https://api.openai.com/v1/chat/completions", h = { Authorization: "Bearer " + ai.key };
+      let r = await post(url, h, body(/^(gpt-5|o\d)/.test(model) ? { reasoning_effort: "minimal" } : {}));
+      if (!r.ok && /reasoning_effort/.test(JSON.stringify(r.j))) r = await post(url, h, body({}));
+      return Object.assign(r, { text: (((r.j.choices || [])[0] || {}).message || {}).content });
+    };
     try {
-      let r = await ask(/^(gpt-5|o\d)/.test(model) ? { reasoning_effort: "minimal" } : {});
-      if (!r.ok && /reasoning_effort/.test(JSON.stringify(r.j))) r = await ask({});
+      const r = await ask();
       wait.remove();
       if (!r.ok) {
         const m = (r.j.error && r.j.error.message) || "";
-        chatAdd("sys", r.status === 401 ? "APIキーが ちがうみたい。せっていで たしかめてね。" : r.status === 429 ? "いまは おしゃべり できないみたい（APIの りょうきんの ざんだかや げんどを たしかめてね）。" : "うまく つながらなかったよ。" + (m ? "\n" + m.slice(0, 160) : ""));
+        chatAdd("sys", r.status === 401 || r.status === 403 ? "APIキーが ちがうみたい。せっていで たしかめてね。" : r.status === 429 || r.status === 402 ? "いまは おしゃべり できないみたい（APIの りょうきんの ざんだかや げんどを たしかめてね）。" : "うまく つながらなかったよ。" + (m ? "\n" + m.slice(0, 160) : ""));
         chatMsgs.pop(); return;
       }
-      const reply = ((r.j.choices || [])[0] || {}).message?.content?.trim() || "…えへへ、なんて いおうかな？";
+      const reply = String(r.text || "").trim() || "…えへへ、なんて いおうかな？";
       chatMsgs.push({ role: "assistant", content: reply });
       chatAdd("ch", reply); say(reply, 6000);
     } catch (e) { wait.remove(); chatAdd("sys", "インターネットに つながって いないみたい。"); chatMsgs.pop(); }
