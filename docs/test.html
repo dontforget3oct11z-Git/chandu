@@ -260,6 +260,16 @@ body {
 .ex-row .note { flex: 1; margin: 0; }
 .cr-mat .art-ic { width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; }
 .cr-mat .art-ic .art { width: 24px; height: 24px; display: block; }
+.cr-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0 8px; }
+.story-card .cr-tabs button { font-size: 12px; padding: 5px 10px; box-shadow: none; background: #fff3d6; color: #6b3f1f; border: 2px solid #f0d9a8; }
+.story-card .cr-tabs.sub button { font-size: 11px; padding: 3px 9px; }
+.story-card .cr-tabs button[aria-pressed="true"] { background: #f4891f; color: #fff; border-color: #f4891f; }
+.cr-mgroup { margin: 4px 0 8px; }
+.cr-mgroup > b { display: block; font-size: 12px; margin: 2px 0 4px; }
+.cr-mgroup .cr-mats { justify-content: flex-start; }
+.cr-mat.now { background: #ffe3cf; box-shadow: 0 0 0 2px #f4891f; }
+.cr-mat .mo { font-size: 10px; opacity: .75; margin-left: 2px; }
+.cr-empty { grid-column: 1 / -1; text-align: center; font-size: 12px; opacity: .7; padding: 12px; }
 .cr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
 .cr-card { background: #efe6da; border: 2px solid #e2d6c6; border-radius: 12px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
 .cr-card.own { background: #fff3d6; border-color: #f0d9a8; }
@@ -601,8 +611,10 @@ body {
         <p class="note">バナナ 50本で すきな そざい 1こ。そざいどうしも こうかん できるよ（めずらしい そざいほど たくさん いるよ）。きせつの そざいは その つきの あいだだけ もらえるよ。</p>
         <div class="row ex-row"><select id="exGive" aria-label="わたす もの"></select><span aria-hidden="true">➡</span><select id="exGet" aria-label="もらう そざい"></select></div>
         <div class="row ex-row"><span id="exCost" class="note"></span><button type="button" class="mini-btn" id="exGo">こうかん</button></div>
-        <h4>👕 いしょう</h4>
+        <h4>👕 いしょう <small id="crCount"></small></h4>
         <p class="note" id="crWear"></p>
+        <div class="cr-tabs" id="crSlotTabs" role="tablist" aria-label="しゅるい"></div>
+        <div class="cr-tabs sub" id="crStateTabs" aria-label="しぼりこみ"></div>
         <div class="cr-grid" id="crCostumes"></div>
       </div>
       <button type="button" id="craftClose">とじる</button>
@@ -905,7 +917,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.55";
+  const VERSION = "1.56";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -5268,6 +5280,7 @@ body {
       g.appendChild(d);
     });
   }
+  const crTab = { slot: "all", state: "all" };   // which costumes the いしょう list shows
   function openCraft() { lastBagOpen = null; renderCraft(); $("craft").hidden = false; $("craftClose").focus(); }
   function renderCraft() {
     activateBags();
@@ -5286,20 +5299,45 @@ body {
     const res = $("crResult");
     res.hidden = !lastBagOpen;
     if (lastBagOpen) res.innerHTML = `<b>${BAGS[lastBagOpen.t].name}を ひらいた！</b><span class="cr-got">${Object.entries(lastBagOpen.got).map(([n, k]) => `<span class="cr-mat"><span class="art-ic" data-icon="${matIcon(n)}"></span>${n} ×${k}</span>`).join("")}</span>`;
+    // materials in three groups: usual, rare, and the twelve season ones (this month's first and marked)
     const mats = $("crMats"); mats.innerHTML = "";
-    const ev = eventNow();
-    MATS.forEach(([n, , e]) => {
-      const k = (S.mats || {})[n] || 0;
-      if (e && !k && (!ev || ev.id !== e)) return;   // event materials show during their event, or once owned
-      const c = document.createElement("span"); c.className = "cr-mat" + (k ? "" : " none");
+    const ev = eventNow(), have = (n) => (S.mats || {})[n] || 0;
+    const chip = (n, extra) => {
+      const c = document.createElement("span"); c.className = "cr-mat" + (have(n) ? "" : " none") + (extra && extra.now ? " now" : "");
       c.innerHTML = `<span class="art-ic" data-icon="${matIcon(n)}"></span><span></span>`;
-      c.lastChild.textContent = `${n} ${k}`;
-      mats.appendChild(c);
-    });
+      c.lastChild.textContent = `${n} ${have(n)}`;
+      if (extra && extra.mo) { const m = document.createElement("span"); m.className = "mo"; m.textContent = extra.mo; c.appendChild(m); }
+      return c;
+    };
+    const group = (title, list) => {
+      const g = document.createElement("div"); g.className = "cr-mgroup";
+      g.innerHTML = `<b></b><div class="cr-mats"></div>`; g.firstChild.textContent = title;
+      list.forEach((c) => g.lastChild.appendChild(c)); mats.appendChild(g);
+    };
+    group("ふつうの そざい", MATS.filter((m) => !m[2] && m[1] > 2).map((m) => chip(m[0])));
+    group("めずらしい そざい", MATS.filter((m) => !m[2] && m[1] <= 2).map((m) => chip(m[0])));
+    const seas = EVENTS.slice().sort((a, b) => ((a.m - (ev ? ev.m : 1) + 12) % 12) - ((b.m - (ev ? ev.m : 1) + 12) % 12));
+    group(`きせつの そざい（その つき だけ もらえるよ${ev ? `・こんげつは ${ev.icon}${ev.name}` : ""}）`,
+      seas.map((e) => chip(MATS.find((m) => m[2] === e.id)[0], { now: ev && ev.id === e.id, mo: `${e.m}がつ` })));
     const grid = $("crCostumes"); grid.innerHTML = "";
-    COSTUMES.forEach((c) => {
-      const own = !!(S.wear || {})[c.key];
-      const can = Object.entries(c.recipe).every(([n, k]) => ((S.mats || {})[n] || 0) >= k);
+    const canMake = (c) => Object.entries(c.recipe).every(([n, k]) => ((S.mats || {})[n] || 0) >= k);
+    const owned = (c) => !!(S.wear || {})[c.key];
+    const SLOT_TABS = [["all", "ぜんぶ"], ["body", "👕 からだ"], ["front", "🎀 くび"], ["back", "🦸 せなか"], ["season", "🗓️ きせつ"]];
+    const STATE_TABS = [["all", "ぜんぶ"], ["can", "✨ つくれる"], ["own", "✅ もっている"], ["not", "まだ"]];
+    const inSlot = (c, t) => t === "all" || (t === "season" ? !!c.ev : c.slot === t && !c.ev);
+    const inState = (c, t) => t === "all" || (t === "can" ? !owned(c) && canMake(c) : t === "own" ? owned(c) : !owned(c));
+    const tabs = (el, list, cur, set, count) => { el.innerHTML = ""; list.forEach(([id, label]) => { const b = document.createElement("button"); b.type = "button"; b.textContent = `${label} ${count(id)}`; b.setAttribute("aria-pressed", String(cur === id)); b.onclick = () => { set(id); renderCraft(); }; el.appendChild(b); }); };
+    tabs($("crSlotTabs"), SLOT_TABS, crTab.slot, (v) => (crTab.slot = v), (id) => COSTUMES.filter((c) => inSlot(c, id)).length);
+    tabs($("crStateTabs"), STATE_TABS, crTab.state, (v) => (crTab.state = v), (id) => COSTUMES.filter((c) => inSlot(c, crTab.slot) && inState(c, id)).length);
+    $("crCount").textContent = `${COSTUMES.filter(owned).length} / ${COSTUMES.length}`;
+    // order: in season now first (for the きせつ tab, by month from this month), then craftable, then the rest
+    const curM = ev ? ev.m : 1, mOf = (c) => (c.ev ? (EVENT_BY_ID[c.ev].m - curM + 12) % 12 : 0);
+    const shown = COSTUMES.filter((c) => inSlot(c, crTab.slot) && inState(c, crTab.state))
+      .sort((a, b) => (crTab.slot === "season" ? mOf(a) - mOf(b) : 0) || (canMake(b) && !owned(b)) - (canMake(a) && !owned(a)));
+    if (!shown.length) grid.innerHTML = `<p class="cr-empty">ここには まだ ないよ。</p>`;
+    shown.forEach((c) => {
+      const own = owned(c);
+      const can = canMake(c);
       const worn = (S.wearOn || {})[c.slot] === c.key;
       const card = document.createElement("div"); card.className = "cr-card" + (own ? " own" : "") + (worn ? " worn" : "");
       card.innerHTML = `<b class="cr-art"></b><span class="cr-name"></span><span class="cr-rec"></span><span class="cr-btns"></span>`;
