@@ -878,9 +878,9 @@ body {
         <div class="row"><button type="button" class="mini-btn" id="aiSave">ほぞん</button><button type="button" class="mini-btn" id="aiClear">けす</button></div>
         <p class="note" id="aiNote" role="status"></p>
         <h4>📦 セーブの ひっこし</h4>
-        <p class="note">べつの チャンドゥの アプリへ セーブを うつすときに つかうよ。<br>① まえの アプリで「セーブを コピー」<br>② あたらしい アプリで、したの わくに ながおしで はりつけて「よみこむ」</p>
+        <p class="note">べつの チャンドゥの アプリへ セーブを うつすときに つかうよ。<br>① まえの アプリで「セーブを コピー」<br>② あたらしい アプリで、したの わくに ながおしで はりつけて「よみこむ」<br>「たしあわせる」なら、いまの セーブは そのままで、バナナ・金貨・そざい・お宝・いしょう・チャーム・あるいた きろくを たしあわせるよ。</p>
         <div class="row"><textarea id="moveText" rows="3" aria-label="セーブの もじ" placeholder="ここに はりつける" autocomplete="off" spellcheck="false" style="flex:1;font-size:12px"></textarea></div>
-        <div class="row"><button type="button" class="mini-btn" id="moveCopy">セーブを コピー</button><button type="button" class="mini-btn" id="moveLoad">よみこむ</button></div>
+        <div class="row"><button type="button" class="mini-btn" id="moveCopy">セーブを コピー</button><button type="button" class="mini-btn" id="moveLoad">よみこむ</button><button type="button" class="mini-btn" id="moveMerge">たしあわせる</button></div>
         <p class="note" id="moveNote" role="status"></p>
       </div>
       <button type="button" id="setClose">とじる</button>
@@ -916,7 +916,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.56";
+  const VERSION = "1.57";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -6020,13 +6020,75 @@ body {
   $("moveCopy").onclick = () => {
     save(); savePrefs();
     const all = {}; MOVE_KEYS.forEach((k) => { try { const v = localStorage.getItem(k); if (v != null) all[k] = v; } catch (e) {} });
+    all.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);   // so the same copy is never added twice
     const text = "CHANDU1:" + JSON.stringify(all);
     $("moveText").value = text;
     const done = () => { $("moveNote").textContent = "コピーしたよ！ あたらしい アプリの この わくに はりつけてね。"; };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => { $("moveText").select(); $("moveNote").textContent = "わくの もじを ぜんぶ えらんで「コピー」してね。"; });
     else { $("moveText").select(); $("moveNote").textContent = "わくの もじを ぜんぶ えらんで「コピー」してね。"; }
   };
-  $("moveText").oninput = () => { movePending = null; $("moveLoad").textContent = "よみこむ"; };
+  $("moveText").oninput = () => { movePending = null; mergePending = null; $("moveLoad").textContent = "よみこむ"; $("moveMerge").textContent = "たしあわせる"; };
+  // Adding another save into this one. Counts are added up; what Chandu is doing right now (story, mood, worn
+  // clothes, this week's boss and missions) stays as it is here. Days walked in both saves are counted once.
+  function readMove() {
+    const raw = ($("moveText").value || "").trim();
+    let all = null; try { if (raw.startsWith("CHANDU1:")) all = JSON.parse(raw.slice(8)); } catch (e) {}
+    let st = null; try { st = all && JSON.parse(all[KEY]); } catch (e) {}
+    return st && typeof st.age === "number" ? { all, st } : null;
+  }
+  function mergeSave(o, oFaces, oPhotos) {
+    const add = (a, b) => { const r = Object.assign({}, a || {}); Object.entries(b || {}).forEach(([k, v]) => { if (typeof v === "number") r[k] = (r[k] || 0) + v; }); return r; };
+    const gain = { bananas: o.bananas || 0, coins: o.coins || 0, steps: 0, days: 0 };
+    S.bananas = (S.bananas || 0) + gain.bananas;
+    S.coins = (S.coins || 0) + gain.coins;
+    S.mats = add(S.mats, o.mats); S.items = add(S.items, o.items); S.treasures = add(S.treasures, o.treasures);
+    S.bossBeat = add(S.bossBeat, o.bossBeat); S.stat = add(S.stat, o.stat);
+    S.goalDays = (S.goalDays || 0) + (o.goalDays || 0);
+    S.wear = Object.assign({}, o.wear || {}, S.wear || {});
+    S.muni = Object.assign({}, o.muni || {}, S.muni || {});
+    S.medals = S.medals || {}; Object.entries(o.medals || {}).forEach(([k, t]) => { if (t > (S.medals[k] || 0)) S.medals[k] = t; });
+    S.best = S.best || {};
+    Object.entries(o.best || {}).forEach(([id, v]) => {
+      const g = GAMES.find((x) => x.id === id), prev = S.best[id];
+      if (prev == null || (g && g.lower ? v < prev : v > prev)) S.best[id] = v;
+    });
+    S.log = S.log || {};
+    Object.entries(o.log || {}).forEach(([day, e]) => {
+      const mine = S.log[day], had = (mine && mine.steps) || 0, more = Math.max(0, ((e && e.steps) || 0) - had);
+      if (!mine) gain.days++;
+      if (!mine || more > 0) S.log[day] = Object.assign({}, mine || {}, e);
+      gain.steps += more;
+    });
+    S.totalSteps = (S.totalSteps || 0) + gain.steps;
+    S.bags = S.bags || [];
+    (o.bags || []).forEach((b) => { if (S.bags.length < BAG_MAX) S.bags.push({ t: b.t }); else S.coins += 30; });
+    activateBags();
+    if (!S.userName && o.userName) S.userName = o.userName;
+    if ((o.born || Infinity) < S.born) S.born = o.born;
+    S.age = Math.max(S.age || 0, o.age || 0);
+    faces = Object.assign({}, oFaces || {}, faces); saveFaces();
+    photos = Object.assign({}, oPhotos || {}, photos); try { localStorage.setItem(PHOTO_KEY, JSON.stringify(photos)); } catch (e) {}
+    return gain;
+  }
+  let mergePending = null;
+  $("moveMerge").onclick = () => {
+    const m = readMove();
+    if (!m) { $("moveNote").textContent = "セーブの もじが よめなかったよ。まえの アプリで コピーした もじを ぜんぶ はりつけてね。"; return; }
+    if (m.all.id && (S.mergedIds || []).includes(m.all.id)) { $("moveNote").textContent = "この セーブは もう たしあわせて あるよ。"; return; }
+    if (!mergePending) {
+      mergePending = m;
+      const o = m.st, sum = (x) => Object.values(x || {}).reduce((a, b) => a + (typeof b === "number" ? b : 0), 0);
+      $("moveNote").textContent = `たしあわせる セーブ: バナナ ${(o.bananas || 0).toLocaleString()}ほん・金貨 ${(o.coins || 0).toLocaleString()}まい・そざい ${sum(o.mats)}こ・いしょう ${Object.keys(o.wear || {}).length}こ・チャーム ${Object.keys(o.muni || {}).length}こ・きろく ${Object.keys(o.log || {}).length}にちぶん。いまの セーブに たすよ（おなじ ひの 歩数は 1かい だけ かぞえるよ）。いいなら もういちど おしてね。`;
+      $("moveMerge").textContent = "たしあわせる（かくにん）";
+      return;
+    }
+    let oF = {}, oP = {}; try { oF = JSON.parse(m.all[FACE_KEY] || "{}") || {}; } catch (e) {} try { oP = JSON.parse(m.all[PHOTO_KEY] || "{}") || {}; } catch (e) {}
+    const g = mergeSave(m.st, oF, oP);
+    if (m.all.id) (S.mergedIds = S.mergedIds || []).push(m.all.id);
+    save(); mergePending = null;
+    $("moveNote").textContent = `たしあわせたよ！ バナナ +${g.bananas.toLocaleString()}・金貨 +${g.coins.toLocaleString()}・歩数 +${g.steps.toLocaleString()}歩。チャンドゥを よびなおすね…`;
+    setTimeout(() => location.reload(), 900);
+  };
   $("moveLoad").onclick = () => {
     if (movePending) {   // second tap: really overwrite
       Object.entries(movePending).forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch (e) {} });
