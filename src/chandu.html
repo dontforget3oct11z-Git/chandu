@@ -916,7 +916,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.57";
+  const VERSION = "1.58";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4314,7 +4314,7 @@ body {
   // which Chandu can wear on his chest. The items (name, emoji, words) are in jp-muni-items.json.
   // The position is used only here on the device, to look up the municipality in jp-muni.json (a file next to the page);
   // it is never sent anywhere or saved. Only the cards (municipality code → day) are saved, in S.muni.
-  let muniData = null, muniLoading = null, locWatch = null, lastFix = null, muniAsked = new Set();
+  let muniData = null, muniLoading = null, locWatch = null, lastFix = null, muniAsked = new Set(), roughSaid = false;
   const PREF_HUE = (pref) => { let h = 0; for (const ch of pref) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h % 360; };
   // A charm not found yet shows as the grey shape of its town (its outline on the map).
   // m = [code, prefecture, name, bbox, polygons] from jp-muni.json.
@@ -4387,7 +4387,11 @@ body {
     return null;
   }
   function onFix(pos) {
-    const c = pos.coords; if (!c || c.accuracy > 2000) return;
+    const c = pos.coords; if (!c) return;
+    if (c.accuracy > 2000) {   // a rough position (often 「正確な位置情報」 turned off): the town can't be told, so say how to fix it, once
+      if (!roughSaid) { roughSaid = true; say("いばしょが おおざっぱで、どの まちか わからないよ。iPhoneの せってい →「プライバシーと セキュリティ」→「位置情報サービス」→ この アプリで「正確な位置情報」を オンに してね。", 9000); }
+      return;
+    }
     if (lastFix && Math.abs(lastFix[0] - c.longitude) < 0.001 && Math.abs(lastFix[1] - c.latitude) < 0.001) return;   // hardly moved
     lastFix = [c.longitude, c.latitude];
     loadMuni().then(() => {
@@ -4416,7 +4420,7 @@ body {
     loadMuni().catch(() => {});
     locWatch = navigator.geolocation.watchPosition(onFix, (e) => {
       if (e && e.code === 1) { S.locOn = false; save(); locStop(); if (!$("settings").hidden) $("setLoc").checked = false; say("いばしょが つかえなかったよ。せっていで きょかしてね。"); }
-    }, { enableHighAccuracy: false, maximumAge: 60000, timeout: 60000 });
+    }, { enableHighAccuracy: true, maximumAge: 30000, timeout: 60000 });
   }
   function locStop() { if (locWatch != null && navigator.geolocation) navigator.geolocation.clearWatch(locWatch); locWatch = null; }
   document.addEventListener("visibilitychange", () => { if (document.hidden) locStop(); else { lastFix = null; locStart(); } });
