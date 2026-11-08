@@ -866,6 +866,8 @@ body {
         <label class="row" style="font-size:13px" id="setLocBellRow" hidden><input type="checkbox" id="setLocBell" style="flex:0"> アプリを とじていても、まだの まちに はいったら おしらせする</label>
         <p class="note" id="setLocBellNote" hidden>iPhoneに「位置情報の利用を つねに 許可」と「通知」を きかれたら、きょかしてね。いばしょは iPhoneの なかで まちを しらべる だけで、ほぞんも そうしんも しないよ。</p>
         <p class="note" id="setLocNote">にほんの しくちょうそんに はいると、その まちの ごとうちチャーム（むねに つける おたから）が もらえるよ。いばしょは この iPhoneの なかだけで つかって、どこにも おくらないし、のこさないよ（のこるのは もらった バッジだけ）。ちずの データ: 「国土数値情報（行政区域データ）」（国土交通省）を加工</p>
+        <label class="row" style="font-size:13px" id="setShareRow"><input type="checkbox" id="setShare" style="flex:0"> おなじ シートを つないだ iPhoneと、ごとうちチャームを きょうゆうする</label>
+        <p class="note" id="setShareNote"></p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
         <h4>📋 スプレッドシート</h4>
@@ -918,7 +920,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.59";
+  const VERSION = "1.60";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4410,7 +4412,7 @@ body {
     $("mgText").textContent = (it ? `ごとうちチャーム「${it[0]}」を みつけた！\n${it[2]}` : `${m[2]}の ごとうちチャームを みつけた！`) + "\nゲットしたら、チャンドゥの むねに つけられるよ。";
     $("mgGet").onclick = () => {
       S.muni = S.muni || {}; S.muni[m[0]] = S.stepDay; S.happy = clamp(S.happy + 5);
-      bump("muni"); save(); render(); $("muniGet").hidden = true; tellApp();
+      bump("muni"); save(); render(); $("muniGet").hidden = true; tellApp(); sendCharms();
       if (!S.badge) S.badge = c;   // the first one goes straight on his chest
       drawPet(); sfx("fanfare"); cheer(); say(`「${c.item || m[2]}」、ゲット！ ごとうちチャーム ${Object.keys(S.muni).length}こめだよ！`, 5000);
     };
@@ -4436,6 +4438,35 @@ body {
   }
   $("setLocBell").onchange = () => { S.muniBell = $("setLocBell").checked; if (S.muniBell && !S.locOn) { S.locOn = true; $("setLoc").checked = true; lastFix = null; locStart(); } save(); tellApp(); };
   setTimeout(tellApp, 1500);
+  // ---- ごとうちチャーム shared with the other iPhones on the same sheet (v1.60). Only town codes go to the
+  // sheet (the 「チャーム」 tab, one row per player): no position, no dates. A charm someone else found is
+  // kept as "👥name", so the list still shows who got it.
+  const ownCharms = () => Object.keys(S.muni || {}).filter((k) => !String(S.muni[k]).startsWith("👥"));
+  function sendCharms() {
+    const u = syncUrl(); if (!u || !S.muniShare) return;
+    if (!S.pid) { S.pid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); save(); }
+    fetch(u, { method: "POST", body: JSON.stringify({ op: "charms", id: S.pid, name: S.userName || "", codes: ownCharms() }) })
+      .then((r) => r.json()).then((r) => { S.shareErr = r && r.ok ? "" : "old"; }).catch(() => {});
+  }
+  function takeCharms(rows) {
+    if (!S.muniShare || !Array.isArray(rows)) return 0;
+    let n = 0; S.muni = S.muni || {};
+    rows.forEach((r) => {
+      if (!r || !r.ID || r.ID === S.pid) return;
+      String(r["チャーム"] || "").split(",").map((c) => c.trim()).filter(Boolean).map((c) => c.padStart(5, "0")).forEach((c) => {
+        if (!S.muni[c]) { S.muni[c] = "👥" + (r["なまえ"] || "なかま"); n++; }
+      });
+    });
+    if (n) { save(); render(); tellApp(); say(`なかまが みつけた ごとうちチャームが ${n}こ ふえたよ！`, 5000); }
+    return n;
+  }
+  function shareNote() {
+    $("setShareNote").textContent = !syncUrl() ? "つかうには、したの「シートの URL」に Apps Scriptの URLを いれてね（2だいとも おなじ URL）。"
+      : S.shareErr === "old" ? "シートの Apps Scriptを あたらしく してね（sheet-sync.gs を はりつけて、デプロイの「あたらしい バージョン」）。"
+      : "どちらかが チャームを みつけると、もう ひとりにも ふえるよ。シートに おくるのは あつめた まちの コードと なまえ だけ（いばしょや ひにちは おくらないよ）。";
+  }
+  $("setShare").onchange = () => { S.muniShare = $("setShare").checked; save(); shareNote(); if (S.muniShare) { sendCharms(); loadSheet(false, true); } };
+  setTimeout(sendCharms, 2500);
   function openMuniZk() {
     $("mzBody").innerHTML = ""; $("muniZk").hidden = false; $("mzClose").focus();
     $("mzNote").textContent = (S.locOn ? "" : "せっていの「いばしょを つかって ごとうちチャームを あつめる」を オンに すると あつめられるよ。\n") + "もっている チャームを タップすると、チャンドゥの むねに つけたり はずしたり できるよ。";
@@ -5940,6 +5971,7 @@ body {
     $("setToon").checked = !!prefs.toon;
     $("setLoc").checked = !!S.locOn; $("setLoc").disabled = !navigator.geolocation;
     $("setLocBellRow").hidden = $("setLocBellNote").hidden = !appBridge(); $("setLocBell").checked = !!S.muniBell;
+    $("setShare").checked = !!S.muniShare; $("setShare").disabled = !syncUrl() && !S.muniShare; shareNote();
     $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
     $("setSong").innerHTML = `<option value="-1">🔀 いろいろ（じゅんばんに かわる）</option>` + SONGS.map((x, i) => `<option value="${i}">${i + 1}. ${x.name}</option>`).join(""); $("setSong").value = String(prefs.bgmSong ?? -1);
     $("setVoice").value = prefs.voiceVol; $("setVoiceV").textContent = prefs.voiceVol;
@@ -6265,6 +6297,7 @@ body {
         Object.entries(facePending).forEach(([n, d]) => { if (d) imgs[n] = d; else delete imgs[n]; });   // not uploaded yet
         faces = imgs; saveFaces();                          // the sheet is the shared copy of every picture
         sheetFaces = data.icons || {}; chanduFaces = data.chandu || []; applyBossSheet(data.bosses, data.bossIcons);
+        if (S.muniShare) { if (!data.charms) S.shareErr = "old"; takeCharms(data.charms); }
         setTimeout(cacheIcons, 500);
         sheetInfo = { id, at: Date.now(), data: { areas: data.areas, chars: data.chars, bgs: data.bgs, charInfo: data.charInfo }, icons: sheetFaces, chandu: chanduFaces, bosses: data.bosses || [], bossIcons: data.bossIcons || {}, oldScript: !data.bosses, bossMissed: data.bossMissed || 0, n: applySheet(data), faces: Object.keys(imgs).length, icons_n: Object.keys(sheetFaces).length, missed: data.iconsMissed || 0 };
         try { localStorage.setItem(SHEET_KEY, JSON.stringify(sheetInfo)); } catch (e) {}

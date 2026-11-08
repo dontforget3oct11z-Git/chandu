@@ -10,12 +10,14 @@
 //          {op:"chanduImages", data:["data:image/jpeg;base64,…"]}  チャンドゥ シートの アイコン欄の あいている ところに じゅんに いれる
 //          {op:"itemArt", rows:[{No, key, data}]}  エリア シートの お宝アイコン欄に お宝の イラストを いれる（key は 代替テキスト）
 //          {op:"artTab", items:[{key, label, data}]}  「お宝イラスト」シートに イラストの いちらんを つくる（コピーして つかえる）
+//          {op:"charms", id, name, codes:["13104",…]}  「チャーム」シートに その ひとの ごとうちチャーム（まちの コード）を しまう（ver 1.60〜）
 //   お宝アイコン欄の がぞうは、代替テキスト（タイトル）が あれば それを、なければ がぞうの リンクを アプリに わたす
 const IMG = "がぞう";
 const ICONS = "アイコン";   // one row per character: put its picture in the アイコン column
 const CHANDU = "チャンドゥ";
 const BOSS = "ボス";   // weekly bosses: put a picture in アイコン, change ひとこと freely
 const TABS = { areas: "エリア", chars: "キャラクター", bgs: "はいけい" };
+const CHARMS = "チャーム";   // ごとうちチャーム shared between the iPhones on this sheet: one row per player, town codes only
 
 function doGet(e) {
   // ?img=<がぞうの リンク> … シートの がぞうを アプリが ほぞん できるように data URL で かえす（ver 1.35〜）
@@ -49,6 +51,7 @@ function doGet(e) {
   out.bosses = readTab(bs);
   try { const bi = readIcons(bs); out.bossIcons = bi.icons; out.bossMissed = bi.iconsMissed; } catch (e) { out.bossIcons = {}; out.bossError = e.message; }
   lap("bosses");
+  out.charms = readTab(ss.getSheetByName(CHARMS)); lap("charms");
   out.ms = ms; out.readAt = new Date().toISOString();
   const text = JSON.stringify(out);
   cachePut(text);
@@ -109,6 +112,7 @@ function doPost(e) {
     if (b.op === "itemArt") return json(putItemArt(ss.getSheetByName(TABS.areas), b.rows || []));
     if (b.op === "artTab") return json(makeArtTab(ss, b.items || []));
     if (b.op === "chanduImages") return json(addChanduImages(ss, b.data || []));
+    if (b.op === "charms") return json(saveCharms(ss, b));
     if (b.op === "rows") return json(saveRows(ss.getSheetByName(b.tab), b.rows || [], b.key || "No"));
     if (b.op === "tab") {
       const sh = ss.getSheetByName(b.tab) || ss.insertSheet(b.tab);
@@ -278,6 +282,15 @@ function saveImage(ss, name, data) {
   sh.getRange(row, 1, 1, sh.getMaxColumns()).clearContent();
   sh.getRange(row, 1, 1, w).setValues([[name, new Date()].concat(parts)]);
   return { ok: true };
+}
+
+// One row per player (the ID is made by the app). Only town codes are kept: no places, no dates.
+function saveCharms(ss, b) {
+  const id = String(b.id || "").slice(0, 40), codes = (b.codes || []).map(String).filter((c) => /^\d{5}$/.test(c));
+  if (!id) return { ok: false, error: "no id" };
+  let sh = ss.getSheetByName(CHARMS);
+  if (!sh) { sh = ss.insertSheet(CHARMS); sh.getRange(1, 1, 1, 5).setValues([["ID", "なまえ", "かず", "チャーム", "こうしん"]]); sh.setFrozenRows(1); }
+  return saveRows(sh, [{ ID: id, なまえ: String(b.name || "").slice(0, 20), かず: codes.length, チャーム: codes.join(","), こうしん: new Date() }], "ID");
 }
 
 function saveRows(sh, rows, key) {
