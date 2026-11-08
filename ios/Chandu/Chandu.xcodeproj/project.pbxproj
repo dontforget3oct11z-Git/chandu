@@ -12,6 +12,7 @@
 		A10000000000000000000003 /* PedometerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* PedometerService.swift */; };
 		A10000000000000000000091 /* HealthService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000091 /* HealthService.swift */; };
 		A10000000000000000000004 /* GameWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* GameWebView.swift */; };
+		A100000000000000000000A1 /* MuniWatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A200000000000000000000A1 /* MuniWatcher.swift */; };
 		A10000000000000000000005 /* chandu.html in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* chandu.html */; };
 		A10000000000000000000006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -23,6 +24,7 @@
 		A20000000000000000000091 /* HealthService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthService.swift; sourceTree = "<group>"; };
 		A20000000000000000000092 /* Chandu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Chandu.entitlements; sourceTree = "<group>"; };
 		A20000000000000000000004 /* GameWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameWebView.swift; sourceTree = "<group>"; };
+		A200000000000000000000A1 /* MuniWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MuniWatcher.swift; sourceTree = "<group>"; };
 		A20000000000000000000005 /* chandu.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = chandu.html; sourceTree = "<group>"; };
 		A20000000000000000000006 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A20000000000000000000010 /* Chandu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chandu.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -56,6 +58,7 @@
 				A20000000000000000000091 /* HealthService.swift */,
 				A20000000000000000000092 /* Chandu.entitlements */,
 				A20000000000000000000004 /* GameWebView.swift */,
+				A200000000000000000000A1 /* MuniWatcher.swift */,
 				A20000000000000000000005 /* chandu.html */,
 				A20000000000000000000006 /* Assets.xcassets */,
 			);
@@ -146,6 +149,7 @@
 				A10000000000000000000003 /* PedometerService.swift in Sources */,
 				A10000000000000000000091 /* HealthService.swift in Sources */,
 				A10000000000000000000004 /* GameWebView.swift in Sources */,
+				A100000000000000000000A1 /* MuniWatcher.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,7 +204,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "ヘルスケアの歩数・距離・カロリー・心拍数・睡眠などを、ゲームの「きろく」画面に表示するために読み取ります。";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "いまいる市区町村の「ごとうちカード」をわたすために使います。位置はiPhoneの中だけで使い、どこにも送りません。";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "アプリを閉じていても、まだ持っていない市区町村に入ったときに「ごとうちチャーム」をお知らせするために使います。位置はiPhoneの中だけで使い、保存も送信もしません。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "いまいる市区町村の「ごとうちチャーム」をわたすために使います。位置はiPhoneの中だけで使い、どこにも送りません。";
 				CODE_SIGN_ENTITLEMENTS = Chandu/Chandu.entitlements;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -229,7 +234,8 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "チャンドゥの大冒険";
 				INFOPLIST_KEY_NSMotionUsageDescription = "歩いた歩数でチャンドゥのバナナを集めるために、歩数を使います。";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "ヘルスケアの歩数・距離・カロリー・心拍数・睡眠などを、ゲームの「きろく」画面に表示するために読み取ります。";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "いまいる市区町村の「ごとうちカード」をわたすために使います。位置はiPhoneの中だけで使い、どこにも送りません。";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "アプリを閉じていても、まだ持っていない市区町村に入ったときに「ごとうちチャーム」をお知らせするために使います。位置はiPhoneの中だけで使い、保存も送信もしません。";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "いまいる市区町村の「ごとうちチャーム」をわたすために使います。位置はiPhoneの中だけで使い、どこにも送りません。";
 				CODE_SIGN_ENTITLEMENTS = Chandu/Chandu.entitlements;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -864,6 +864,8 @@ body {
         <p class="note">0に すると おとが でないよ。おとは がめんを さいしょに タップしたときから でるよ。<br>チャンドゥの こえ: VOICEVOX:猫使ビィ</p>
         <h4>📍 ごとうちチャーム</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setLoc" style="flex:0"> いばしょを つかって ごとうちチャームを あつめる</label>
+        <label class="row" style="font-size:13px" id="setLocBellRow" hidden><input type="checkbox" id="setLocBell" style="flex:0"> アプリを とじていても、まだの まちに はいったら おしらせする</label>
+        <p class="note" id="setLocBellNote" hidden>iPhoneに「位置情報の利用を つねに 許可」と「通知」を きかれたら、きょかしてね。いばしょは iPhoneの なかで まちを しらべる だけで、ほぞんも そうしんも しないよ。</p>
         <p class="note" id="setLocNote">にほんの しくちょうそんに はいると、その まちの ごとうちチャーム（むねに つける おたから）が もらえるよ。いばしょは この iPhoneの なかだけで つかって、どこにも おくらないし、のこさないよ（のこるのは もらった バッジだけ）。ちずの データ: 「国土数値情報（行政区域データ）」（国土交通省）を加工</p>
         <h4>🖼️ はいけい</h4>
         <label class="row" style="font-size:13px"><input type="checkbox" id="setToon" style="flex:0"> しゃしんを イラストふうに する</label>
@@ -917,7 +919,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.58";
+  const VERSION = "1.59";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -4409,7 +4411,7 @@ body {
     $("mgText").textContent = (it ? `ごとうちチャーム「${it[0]}」を みつけた！\n${it[2]}` : `${m[2]}の ごとうちチャームを みつけた！`) + "\nゲットしたら、チャンドゥの むねに つけられるよ。";
     $("mgGet").onclick = () => {
       S.muni = S.muni || {}; S.muni[m[0]] = S.stepDay; S.happy = clamp(S.happy + 5);
-      bump("muni"); save(); render(); $("muniGet").hidden = true;
+      bump("muni"); save(); render(); $("muniGet").hidden = true; tellApp();
       if (!S.badge) S.badge = c;   // the first one goes straight on his chest
       drawPet(); sfx("fanfare"); cheer(); say(`「${c.item || m[2]}」、ゲット！ ごとうちチャーム ${Object.keys(S.muni).length}こめだよ！`, 5000);
     };
@@ -4425,7 +4427,16 @@ body {
   }
   function locStop() { if (locWatch != null && navigator.geolocation) navigator.geolocation.clearWatch(locWatch); locWatch = null; }
   document.addEventListener("visibilitychange", () => { if (document.hidden) locStop(); else { lastFix = null; locStart(); } });
-  $("setLoc").onchange = () => { S.locOn = $("setLoc").checked; save(); if (S.locOn) { lastFix = null; locStart(); } else locStop(); };
+  $("setLoc").onchange = () => { S.locOn = $("setLoc").checked; save(); if (S.locOn) { lastFix = null; locStart(); } else locStop(); tellApp(); };
+  // The iPhone app (v1.59 on) can announce new towns while the game is closed. It only gets the codes of the
+  // charms already owned and whether to announce; the position stays inside the app and is never stored.
+  const appBridge = () => window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.chandu;
+  function tellApp() {
+    const b = appBridge(); if (!b) return;
+    try { b.postMessage({ muni: Object.keys(S.muni || {}), notify: !!(S.locOn && S.muniBell) }); } catch (e) {}
+  }
+  $("setLocBell").onchange = () => { S.muniBell = $("setLocBell").checked; if (S.muniBell && !S.locOn) { S.locOn = true; $("setLoc").checked = true; lastFix = null; locStart(); } save(); tellApp(); };
+  setTimeout(tellApp, 1500);
   function openMuniZk() {
     $("mzBody").innerHTML = ""; $("muniZk").hidden = false; $("mzClose").focus();
     $("mzNote").textContent = (S.locOn ? "" : "せっていの「いばしょを つかって ごとうちチャームを あつめる」を オンに すると あつめられるよ。\n") + "もっている チャームを タップすると、チャンドゥの むねに つけたり はずしたり できるよ。";
@@ -5929,6 +5940,7 @@ body {
     requestAnimationFrame(showHatPrev);   // once the dialog is showing, so the preview can measure Chandu
     $("setToon").checked = !!prefs.toon;
     $("setLoc").checked = !!S.locOn; $("setLoc").disabled = !navigator.geolocation;
+    $("setLocBellRow").hidden = $("setLocBellNote").hidden = !appBridge(); $("setLocBell").checked = !!S.muniBell;
     $("setBgm").value = prefs.bgmVol; $("setBgmV").textContent = prefs.bgmVol;
     $("setSong").innerHTML = `<option value="-1">🔀 いろいろ（じゅんばんに かわる）</option>` + SONGS.map((x, i) => `<option value="${i}">${i + 1}. ${x.name}</option>`).join(""); $("setSong").value = String(prefs.bgmSong ?? -1);
     $("setVoice").value = prefs.voiceVol; $("setVoiceV").textContent = prefs.voiceVol;

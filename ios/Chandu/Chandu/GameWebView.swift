@@ -24,6 +24,8 @@ struct GameWebView: UIViewRepresentable {
         config.userContentController.addUserScript(
             WKUserScript(source: "window.CHANDU_NATIVE = true;", injectionTime: .atDocumentStart, forMainFrameOnly: true)
         )
+        // the game tells the app which ごとうちチャーム it has, and whether to announce new towns
+        config.userContentController.add(context.coordinator, name: "chandu")
         let webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = context.coordinator
         webView.isOpaque = false
@@ -46,7 +48,7 @@ struct GameWebView: UIViewRepresentable {
         context.coordinator.pushHealth(health)
     }
 
-    final class Coordinator: NSObject, WKNavigationDelegate {
+    final class Coordinator: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         weak var webView: WKWebView?
         var lastToken = 0
         private var loaded = false
@@ -119,6 +121,11 @@ struct GameWebView: UIViewRepresentable {
             lastSteps = latest
             let (steps, day) = latest
             webView.evaluateJavaScript("window.chanduSetSteps && window.chanduSetSteps(\(steps), \"\(day)\")")
+        }
+
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            guard let body = message.body as? [String: Any], let owned = body["muni"] as? [String] else { return }
+            MuniWatcher.shared.update(owned: owned, notify: (body["notify"] as? Bool) ?? false)
         }
 
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
