@@ -882,7 +882,7 @@ body {
         <div class="row"><button type="button" class="mini-btn" id="aiSave">ほぞん</button><button type="button" class="mini-btn" id="aiClear">けす</button></div>
         <p class="note" id="aiNote" role="status"></p>
         <h4>📦 セーブの ひっこし</h4>
-        <p class="note">べつの チャンドゥの アプリへ セーブを うつすときに つかうよ。<br>① まえの アプリで「セーブを コピー」<br>② あたらしい アプリで、したの わくに ながおしで はりつけて「よみこむ」<br>「たしあわせる」なら、いまの セーブは そのままで、バナナ・金貨・そざい・お宝・いしょう・チャーム・あるいた きろくを たしあわせるよ。</p>
+        <p class="note">べつの チャンドゥの アプリへ セーブを うつすときに つかうよ。<br>① まえの アプリで「セーブを コピー」<br>② あたらしい アプリで、したの わくに ながおしで はりつけて「よみこむ」<br>「たしあわせる」なら、いまの セーブは そのままで、バナナ・金貨・そざい・そざいぶくろ・お宝・いしょう・チャーム・あるいた きろくを たして、ものがたりも すすんだ エリアの ぶんだけ さきに すすめるよ。</p>
         <div class="row"><textarea id="moveText" rows="3" aria-label="セーブの もじ" placeholder="ここに はりつける" autocomplete="off" spellcheck="false" style="flex:1;font-size:12px"></textarea></div>
         <div class="row"><button type="button" class="mini-btn" id="moveCopy">セーブを コピー</button><button type="button" class="mini-btn" id="moveLoad">よみこむ</button><button type="button" class="mini-btn" id="moveMerge">たしあわせる</button></div>
         <p class="note" id="moveNote" role="status"></p>
@@ -920,7 +920,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.60";
+  const VERSION = "1.61";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -6089,9 +6089,19 @@ body {
     const gain = { bananas: o.bananas || 0, coins: o.coins || 0, steps: 0, days: 0 };
     S.bananas = (S.bananas || 0) + gain.bananas;
     S.coins = (S.coins || 0) + gain.coins;
-    S.mats = add(S.mats, o.mats); S.items = add(S.items, o.items); S.treasures = add(S.treasures, o.treasures);
+    S.mats = add(S.mats, o.mats); S.items = add(S.items, o.items);
     S.bossBeat = add(S.bossBeat, o.bossBeat); S.stat = add(S.stat, o.stat);
-    S.goalDays = (S.goalDays || 0) + (o.goalDays || 0);
+    // The story moves on by as many areas as the other save cleared. Each area gives its own reward here
+    // (the other save's story rewards, for its first areas, are not added again), quietly, without the pages.
+    gain.areas = Math.max(0, o.goalDays || 0);
+    if (S.doneChapter == null) { S.doneChapter = S.chapter ? S.chapter - 1 : -1; S.doneDay = S.goalDay || ""; }
+    for (let n = 0; n < gain.areas; n++) {
+      if (!S.chapter || S.doneChapter === S.chapter - 1) { S.chapter = (S.chapter || 0) + 1; S.pickK = null; S.pickSlot = null; }   // on to the next area
+      const k = S.chapter - 1, { c } = chapterAt(k);
+      S.doneChapter = k; S.goalDays = (S.goalDays || 0) + 1;
+      if (c.reward) { S.bananas += c.reward.bananas; S.treasures = S.treasures || {}; S.treasures[c.reward.item] = (S.treasures[c.reward.item] || 0) + 1; }
+    }
+    if (gain.areas) { S.doneDay = ""; S.goalDay = ""; }   // the next area starts today
     S.wear = Object.assign({}, o.wear || {}, S.wear || {});
     S.muni = Object.assign({}, o.muni || {}, S.muni || {});
     S.medals = S.medals || {}; Object.entries(o.medals || {}).forEach(([k, t]) => { if (t > (S.medals[k] || 0)) S.medals[k] = t; });
@@ -6126,7 +6136,7 @@ body {
     if (!mergePending) {
       mergePending = m;
       const o = m.st, sum = (x) => Object.values(x || {}).reduce((a, b) => a + (typeof b === "number" ? b : 0), 0);
-      $("moveNote").textContent = `たしあわせる セーブ: バナナ ${(o.bananas || 0).toLocaleString()}ほん・金貨 ${(o.coins || 0).toLocaleString()}まい・そざい ${sum(o.mats)}こ・いしょう ${Object.keys(o.wear || {}).length}こ・チャーム ${Object.keys(o.muni || {}).length}こ・きろく ${Object.keys(o.log || {}).length}にちぶん。いまの セーブに たすよ（おなじ ひの 歩数は 1かい だけ かぞえるよ）。いいなら もういちど おしてね。`;
+      $("moveNote").textContent = `たしあわせる セーブ: バナナ ${(o.bananas || 0).toLocaleString()}ほん・金貨 ${(o.coins || 0).toLocaleString()}まい・そざい ${sum(o.mats)}こ・いしょう ${Object.keys(o.wear || {}).length}こ・チャーム ${Object.keys(o.muni || {}).length}こ・きろく ${Object.keys(o.log || {}).length}にちぶん・ものがたり ${o.goalDays || 0}エリアぶん。いまの セーブに たすよ（おなじ ひの 歩数は 1かい だけ かぞえるよ）。いいなら もういちど おしてね。`;
       $("moveMerge").textContent = "たしあわせる（かくにん）";
       return;
     }
@@ -6134,7 +6144,7 @@ body {
     const g = mergeSave(m.st, oF, oP);
     if (m.all.id) (S.mergedIds = S.mergedIds || []).push(m.all.id);
     save(); mergePending = null;
-    $("moveNote").textContent = `たしあわせたよ！ バナナ +${g.bananas.toLocaleString()}・金貨 +${g.coins.toLocaleString()}・歩数 +${g.steps.toLocaleString()}歩。チャンドゥを よびなおすね…`;
+    $("moveNote").textContent = `たしあわせたよ！ バナナ +${g.bananas.toLocaleString()}・金貨 +${g.coins.toLocaleString()}・歩数 +${g.steps.toLocaleString()}歩・ものがたり +${g.areas}エリア。チャンドゥを よびなおすね…`;
     setTimeout(() => location.reload(), 900);
   };
   $("moveLoad").onclick = () => {
