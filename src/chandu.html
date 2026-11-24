@@ -257,6 +257,7 @@ body {
 .ex-row { align-items: center; gap: 6px; }
 .ex-row select { flex: 1; min-width: 0; font: inherit; font-size: 13px; padding: 6px; border-radius: 10px; border: 2px solid #e8d5b5; background: #fffdf8; }
 .ex-row .note { flex: 1; margin: 0; }
+#exGo.armed { background: #ffd166; color: #8a3b12; border-color: #e0a630; }
 .cr-mat .art-ic { width: 24px; height: 24px; font-size: 18px; line-height: 24px; text-align: center; }
 .cr-mat .art-ic .art { width: 24px; height: 24px; display: block; }
 .cr-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0 8px; }
@@ -614,7 +615,7 @@ body {
         <h4>🔄 こうかん</h4>
         <p class="note">バナナ 50本で すきな そざい 1こ。そざいどうしも こうかん できるよ（めずらしい そざいほど たくさん いるよ）。きせつの そざいは その つきの あいだだけ もらえるよ。</p>
         <div class="row ex-row"><select id="exGive" aria-label="わたす もの"></select><span aria-hidden="true">➡</span><select id="exGet" aria-label="もらう そざい"></select></div>
-        <div class="row ex-row"><span id="exCost" class="note"></span><button type="button" class="mini-btn" id="exGo">こうかん</button></div>
+        <div class="row ex-row"><span id="exCost" class="note"></span><button type="button" class="mini-btn" id="exGo">こうかん</button><button type="button" class="mini-btn" id="exUndo" hidden>↩ もどす</button></div>
         <h4>👕 いしょう <small id="crCount"></small></h4>
         <p class="note" id="crWear"></p>
         <div class="cr-tabs" id="crSlotTabs" role="tablist" aria-label="しゅるい"></div>
@@ -926,7 +927,7 @@ body {
 
 <script>
 (() => {
-  const VERSION = "1.63";
+  const VERSION = "1.64";
   // docs/test.html sets CHANDU_TEST: mini games cost no energy and the real save is never touched
   const TEST = !!window.CHANDU_TEST;
   const KEY = TEST ? "chandu-test-v1" : "chandu-save-v1";
@@ -5393,7 +5394,7 @@ body {
     });
   }
   const crTab = { slot: "all", state: "all" };   // which costumes the いしょう list shows
-  function openCraft() { lastBagOpen = null; renderCraft(); $("craft").hidden = false; $("craftClose").focus(); }
+  function openCraft() { lastBagOpen = null; exLast = null; $("exUndo").hidden = true; renderCraft(); $("craft").hidden = false; $("craftClose").focus(); }
   function renderCraft() {
     activateBags();
     const bags = $("crBags"); bags.innerHTML = "";
@@ -5500,15 +5501,34 @@ body {
     const same = g === t;
     $("exCost").textContent = same ? "おなじ そざいだよ" : `${g === "🍌" ? "バナナ" : g} ${c}${g === "🍌" ? "本" : "こ"} → ${t} 1こ`;
     $("exGo").disabled = same || have < c;
+    exArm(false);
+  }
+  // A trade costs a lot (50 bananas), so it takes two taps, and the last one can be undone.
+  let exArmed = null, exLast = null;
+  function exArm(on) {
+    clearTimeout(exArmed); exArmed = on ? setTimeout(() => exArm(false), 5000) : null;
+    $("exGo").textContent = on ? "もういちど おすと こうかん" : "こうかん";
+    $("exGo").classList.toggle("armed", !!on);
   }
   $("exGive").onchange = updateTrade; $("exGet").onchange = updateTrade;
   $("exGo").onclick = () => {
     const g = $("exGive").value, t = $("exGet").value, c = exCost(g, t);
     if (g === t) return;
+    if (!exArmed) { exArm(true); say(`${g === "🍌" ? "バナナ " + c + "本" : g + " " + c + "こ"}を つかって「${t}」に こうかん するよ。いいなら もういちど おしてね！`, 4500); return; }
+    exArm(false);
     if (g === "🍌") { if (S.bananas < c) return; S.bananas -= c; }
     else { if (((S.mats || {})[g] || 0) < c) return; S.mats[g] -= c; }
-    addMat(t); save(); render(); renderCraft(); sfx("reveal");
-    say(`こうかん して「${t}」を 1こ もらったよ！`);
+    addMat(t); exLast = { g, t, c }; save(); render(); renderCraft(); sfx("reveal");
+    $("exUndo").hidden = false;
+    say(`${g === "🍌" ? "バナナ " + c + "本" : g + " " + c + "こ"}で「${t}」を 1こ もらったよ！ まちがえたら「もどす」を おしてね。`, 4500);
+  };
+  $("exUndo").onclick = () => {
+    const x = exLast; exLast = null; $("exUndo").hidden = true;
+    if (!x || !((S.mats || {})[x.t] > 0)) return;
+    S.mats[x.t]--;
+    if (x.g === "🍌") S.bananas += x.c; else addMat(x.g, x.c);
+    save(); render(); renderCraft();
+    say(`こうかんを もどしたよ。${x.g === "🍌" ? "バナナ " + x.c + "本" : x.g + " " + x.c + "こ"}が かえってきたよ！`);
   };
   function craftCostume(key) {
     const c = COSTUME_BY_KEY[key];
